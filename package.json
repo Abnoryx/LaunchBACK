@@ -1,0 +1,27 @@
+{
+  "name": "launchback",
+  "version": "1.0.0",
+  "description": "LaunchBACK — Find Instagram/YouTube creators via Google Search by niche keyword, country, and follower range",
+  "type": "module",
+  "main": "dist/main.js",
+  "scripts": {
+    "start": "node dist/main.js",
+    "build": "tsc",
+    "dev": "tsx src/main.ts",
+    "lint": "eslint src --ext .ts"
+  },
+  "dependencies": {
+    "apify": "^3.2.0",
+    "crawlee": "^3.11.0",
+    "playwright": "^1.45.0"
+  },
+  "devDependencies": {
+    "@apify/eslint-config": "^0.4.0",
+    "@types/node": "^20.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
