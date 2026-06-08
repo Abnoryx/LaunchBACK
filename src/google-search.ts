@@ -43,7 +43,10 @@ export function buildGoogleSearchRequests(input: ActorInput, startPage = 0, vari
   return requests;
 }
 
-  // Strategy 1: Direct hrefs containing the platform domain
+function extractProfileUrls($: CheerioAPI, platform: Platform): string[] {
+  const found = new Set<string>();
+  const domain = platform === 'instagram' ? 'instagram.com' : 'youtube.com';
+
   $('a[href]').each((_, el) => {
     const href = $(el).attr('href') ?? '';
     if (href.startsWith('http') && href.includes(domain)) {
@@ -51,7 +54,6 @@ export function buildGoogleSearchRequests(input: ActorInput, startPage = 0, vari
     }
   });
 
-  // Strategy 2: Google /url?q= redirect links
   $('a[href*="/url?q="]').each((_, el) => {
     const href = $(el).attr('href') ?? '';
     const match = href.match(/\/url\?q=([^&]+)/);
@@ -80,7 +82,6 @@ export function createGoogleCrawler(opts: GoogleCrawlerOptions): CheerioCrawler 
     minConcurrency: 1,
 
     requestHandler: async ({ $, response, session, request }) => {
-      // Detect Google rate-limit / CAPTCHA
       const body = $('body').text();
       if (
         response.statusCode === 429 ||
@@ -91,7 +92,6 @@ export function createGoogleCrawler(opts: GoogleCrawlerOptions): CheerioCrawler 
         throw new Error('Google rate limit detected — retiring session and retrying');
       }
 
-      // Stop once we have enough candidates
       if (savedCount() >= input.maxResults) {
         log.info(`Reached maxResults (${input.maxResults}), stopping Google crawl`);
         return;
