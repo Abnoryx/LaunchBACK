@@ -26,7 +26,7 @@ export function buildGoogleSearchRequests(input: ActorInput): Request[] {
   const requests: Request[] = [];
 
   for (let page = 0; page < pagesNeeded; page++) {
-    const url = `https://www.google.com/search?q=${encodeURIComponent(query)}&start=${page * 10}&num=10&hl=en&gl=us`;
+    const url = `http://www.google.com/search?q=${encodeURIComponent(query)}&start=${page * 10}&num=10&hl=en&gl=us`;
     requests.push(
       new Request({
         url,
