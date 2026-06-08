@@ -7,6 +7,7 @@ export interface ActorInput {
   minFollowers: number;
   maxFollowers: number;
   maxResults: number;
+  minResults?: number;
 }
 
 export interface CreatorRecord {

@@ -20,12 +20,12 @@ export function buildGoogleQuery(input: ActorInput): string {
   return parts.join(' ');
 }
 
-export function buildGoogleSearchRequests(input: ActorInput): Request[] {
+export function buildGoogleSearchRequests(input: ActorInput, startPage = 0): Request[] {
   const query = buildGoogleQuery(input);
-  const pagesNeeded = Math.ceil(input.maxResults / 10) + 2;
+  const batchSize = Math.max(10, Math.ceil((input.maxResults * 3) / 10));
   const requests: Request[] = [];
 
-  for (let page = 0; page < pagesNeeded; page++) {
+  for (let page = startPage; page < startPage + batchSize; page++) {
     const url = `http://www.google.com/search?q=${encodeURIComponent(query)}&start=${page * 10}&num=10&hl=en&gl=us`;
     requests.push(
       new Request({
@@ -98,7 +98,7 @@ export function createGoogleCrawler(opts: GoogleCrawlerOptions): CheerioCrawler 
       }
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const urls = extractProfileUrls($ as any, input.platform);
+      const urls = extractProfileUrls($ as any, input.platform);
       log.debug(`Page ${(request.userData as { page: number }).page}: found ${urls.length} candidate URLs`);
 
       for (const url of urls) {

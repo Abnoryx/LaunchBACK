@@ -67,6 +67,8 @@ export function validateInput(input: unknown): ActorInput {
     throw new Error('maxResults must be between 1 and 500.');
   }
 
+  const minResults = inp['minResults'];
+
   return {
     platform: inp['platform'] as ActorInput['platform'],
     keyword: keyword.trim(),
@@ -74,5 +76,6 @@ export function validateInput(input: unknown): ActorInput {
     minFollowers: minFollowers as number,
     maxFollowers: maxFollowers as number,
     maxResults: maxResults as number,
+    minResults: typeof minResults === 'number' && minResults >= 1 ? minResults : undefined,
   };
 }
