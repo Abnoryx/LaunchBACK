@@ -49,16 +49,29 @@ try {
   const profileQueue = await RequestQueue.open(`profile-enrichment-${runId}`);
   const websiteQueue = await RequestQueue.open(`website-detection-${runId}`);
 
-  const minResults = input.minResults ?? 1;
+   const minResults = input.minResults ?? 1;
   const batchSize = Math.max(10, Math.ceil((input.maxResults * 3) / 10));
   const maxPages = 100;
+  const maxVariants = 3; // variant 0: "keyword", 1: keyword, 2: #keyword
   let nextPage = 0;
+  let queryVariant = 0;
 
-  // Phase 1 + 2 loop: keep scraping until minResults met or page limit hit
-  while (savedCount() < minResults && nextPage < maxPages) {
-    log.info(`Phase 1: Enqueuing Google pages ${nextPage}–${nextPage + batchSize - 1}...`);
+  // Phase 1 + 2 loop: cycle through query variants until minResults met
+  while (savedCount() < minResults && queryVariant < maxVariants) {
+    if (nextPage >= maxPages) {
+      queryVariant++;
+      nextPage = 0;
+      if (queryVariant < maxVariants) {
+        log.info(`Exhausted ${maxPages} pages — switching to query variant ${queryVariant}`);
+      }
+      continue;
+    }
 
-    const searchRequests = buildGoogleSearchRequests(input, nextPage);
+    log.info(`Phase 1: Enqueuing Google pages ${nextPage}–${nextPage + batchSize - 1} (query variant ${queryVariant})...`);
+
+    const profilesBefore = (await profileQueue.getInfo())?.totalRequestCount ?? 0;
+
+    const searchRequests = buildGoogleSearchRequests(input, nextPage, queryVariant);
     for (const req of searchRequests) await googleQueue.addRequest(req);
     nextPage += batchSize;
 
@@ -79,7 +92,20 @@ try {
 
     googleCrawler.requestQueue = googleQueue;
     await googleCrawler.run();
-    log.info(`Phase 1 batch complete. ${(await profileQueue.getInfo())?.totalRequestCount ?? 0} profiles queued total.`);
+
+    const profilesAfter = (await profileQueue.getInfo())?.totalRequestCount ?? 0;
+    log.info(`Phase 1 batch complete. ${profilesAfter} profiles queued total.`);
+
+    if (profilesAfter === profilesBefore) {
+      queryVariant++;
+      nextPage = 0;
+      if (queryVariant < maxVariants) {
+        log.info(`No new profiles — switching to query variant ${queryVariant}`);
+        continue;
+      }
+      log.info('All query variants exhausted — stopping loop.');
+      break;
+    }
 
     log.info('Phase 2: Enriching creator profiles...');
 
@@ -97,32 +123,6 @@ try {
     await profileCrawler.run();
     log.info(`Phase 2 batch complete. ${savedCount()}/${minResults} creators found.`);
   }
-
-  // ── Phase 3: Website & Monetization Detection ──────────────────────────────
-
-  const websiteCount = (await websiteQueue.getInfo())?.totalRequestCount ?? 0;
-
-  if (websiteCount > 0) {
-    log.info(`Phase 3: Detecting website/product signals for ${websiteCount} creators...`);
-    const websiteCrawler = createWebsiteCrawler({ proxyConfiguration: residentialProxyConfig });
-    websiteCrawler.requestQueue = websiteQueue;
-    await websiteCrawler.run();
-    log.info('Phase 3 complete.');
-  } else {
-    log.info('Phase 3: No websites found — skipping.');
-  }
-
-  // Save seen usernames for next run
-  for (const key of getSeenKeys()) seenUsernames.add(key);
-  await seenStore.setValue(seenKey, [...seenUsernames]);
-  log.info(`Saved ${seenUsernames.size} total seen creators to store.`);
-
-  await flushCreators();
-  apifyLog.info(`Creator Discovery Engine finished. Total creators saved: ${savedCount()}`);
-
-} catch (err) {
-  log.error(`Actor failed: ${(err as Error).message}`);
-  throw err;
 } finally {
   await Actor.exit();
 }
