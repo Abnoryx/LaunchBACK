@@ -2,7 +2,6 @@ import { Actor } from 'apify';
 import { ActorInput, CreatorRecord, Platform, WebsiteUpdate } from './types.js';
 import { isInFollowerRange } from './filters.js';
 
-// In-memory store: dedup key → full record (used by Phase 3 to enrich)
 const creatorStore = new Map<string, CreatorRecord>();
 
 function dedupeKey(platform: Platform, username: string): string {
@@ -39,8 +38,6 @@ export async function saveCreator(
   };
 
   creatorStore.set(key, record);
-  // Push immediately for crash-safety; Phase 3 will push an enriched version
-  await Actor.pushData(record);
   return true;
 }
 
@@ -55,10 +52,11 @@ export async function updateCreatorWebsite(
 
   const updated: CreatorRecord = { ...existing, ...update };
   creatorStore.set(key, updated);
+}
 
-  // Re-push updated record. Dataset will have two entries per enriched creator;
-  // downstream consumers should deduplicate by (platform, username), keeping latest.
-  await Actor.pushData(updated);
+export async function flushCreators(): Promise<void> {
+  const records = [...creatorStore.values()];
+  if (records.length > 0) await Actor.pushData(records);
 }
 
 export function getCreator(platform: Platform, username: string): CreatorRecord | undefined {
