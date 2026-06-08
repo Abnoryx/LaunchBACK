@@ -4,7 +4,7 @@ import { validateInput } from './utils.js';
 import { buildGoogleSearchRequests, createGoogleCrawler } from './google-search.js';
 import { createProfileCrawler, makeProfileRequest } from './profile-enrichment.js';
 import { createWebsiteCrawler, makeWebsiteRequest } from './website-detection.js';
-import { savedCount } from './output.js';
+import { savedCount, flushCreators } from './output.js';
 import type { Platform } from './types.js';
 
 await Actor.init();
@@ -110,6 +110,7 @@ const websiteCount = (await websiteQueue.getInfo())?.totalRequestCount ?? 0;
 
   // ── Summary ────────────────────────────────────────────────────────────────
 
+  await flushCreators();
   apifyLog.info(`Creator Discovery Engine finished. Total creators saved: ${savedCount()}`);
 
 } catch (err) {
