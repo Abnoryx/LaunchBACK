@@ -97,7 +97,8 @@ export function createGoogleCrawler(opts: GoogleCrawlerOptions): CheerioCrawler 
         return;
       }
 
-      const urls = extractProfileUrls($, input.platform);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+const urls = extractProfileUrls($ as any, input.platform);
       log.debug(`Page ${(request.userData as { page: number }).page}: found ${urls.length} candidate URLs`);
 
       for (const url of urls) {
