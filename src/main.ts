@@ -69,8 +69,8 @@ try {
   });
 
   googleCrawler.requestQueue = googleQueue;
-  await googleCrawler.run();
-  log.info(`Phase 1 complete. Queued ${(await profileQueue.getInfo()).totalRequestCount} profiles.`);
+  await googleCrawler.run() 
+log.info(`Phase 1 complete. Queued ${(await profileQueue.getInfo())?.totalRequestCount ?? 0} profiles.`);
 
   // ── Phase 2: Profile Enrichment ────────────────────────────────────────────
 
