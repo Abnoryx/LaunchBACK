@@ -39,10 +39,11 @@ try {
   }
 
   // ── Shared queues ──────────────────────────────────────────────────────────
-
-  const googleQueue = await RequestQueue.open('google-search');
-  const profileQueue = await RequestQueue.open('profile-enrichment');
-  const websiteQueue = await RequestQueue.open('website-detection');
+  
+const runId = Actor.getEnv().actorRunId ?? 'local';
+const googleQueue = await RequestQueue.open(`google-search-${runId}`);
+const profileQueue = await RequestQueue.open(`profile-enrichment-${runId}`);
+const websiteQueue = await RequestQueue.open(`website-detection-${runId}`);
 
   // ── Phase 1: Google Search ─────────────────────────────────────────────────
 
