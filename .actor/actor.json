@@ -1,0 +1,13 @@
+{
+  "actorSpecification": 1,
+  "name": "launchback",
+  "title": "LaunchBACK",
+  "version": "1.0",
+  "buildTag": "latest",
+  "input": "./input_schema.json",
+  "readme": "../README.md",
+  "dockerfile": "../Dockerfile",
+  "defaultMemoryMbytes": 4096,
+  "minMemoryMbytes": 2048,
+  "maxMemoryMbytes": 8192
+}
