@@ -12,16 +12,20 @@ export interface GoogleCrawlerOptions {
   onProfileFound: (profileUrl: string, username: string) => Promise<void>;
 }
 
-export function buildGoogleQuery(input: ActorInput): string {
+export function buildGoogleQuery(input: ActorInput, variant = 0): string {
   const site = input.platform === 'instagram' ? 'site:instagram.com' : 'site:youtube.com';
   const keyword = stripSurroundingQuotes(input.keyword);
-  const parts = [site, `"${keyword}"`];
+  let keywordPart: string;
+  if (variant === 1) keywordPart = keyword;
+  else if (variant === 2) keywordPart = `#${keyword.replace(/\s+/g, '')}`;
+  else keywordPart = `"${keyword}"`;
+  const parts = [site, keywordPart];
   if (input.country) parts.push(`"${input.country}"`);
   return parts.join(' ');
 }
 
-export function buildGoogleSearchRequests(input: ActorInput, startPage = 0): Request[] {
-  const query = buildGoogleQuery(input);
+export function buildGoogleSearchRequests(input: ActorInput, startPage = 0, variant = 0): Request[] {
+  const query = buildGoogleQuery(input, variant);
   const batchSize = Math.max(10, Math.ceil((input.maxResults * 3) / 10));
   const requests: Request[] = [];
 
@@ -38,10 +42,6 @@ export function buildGoogleSearchRequests(input: ActorInput, startPage = 0): Req
 
   return requests;
 }
-
-function extractProfileUrls($: CheerioAPI, platform: Platform): string[] {
-  const found = new Set<string>();
-  const domain = platform === 'instagram' ? 'instagram.com' : 'youtube.com';
 
   // Strategy 1: Direct hrefs containing the platform domain
   $('a[href]').each((_, el) => {
