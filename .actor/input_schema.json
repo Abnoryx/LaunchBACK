@@ -52,6 +52,14 @@
       "minimum": 1,
       "maximum": 500,
       "default": 100
+    },
+    "minResults": {
+      "title": "Min Results",
+      "type": "integer",
+      "description": "Minimum creators to find. Actor will keep scraping more Google pages until this number is reached (up to 100 pages max).",
+      "editor": "number",
+      "minimum": 1,
+      "maximum": 500
     }
   },
   "required": ["platform", "keyword", "minFollowers", "maxFollowers", "maxResults"]
