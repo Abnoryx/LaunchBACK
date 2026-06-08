@@ -92,7 +92,7 @@ log.info(`Phase 1 complete. Queued ${(await profileQueue.getInfo())?.totalReques
 
   // ── Phase 3: Website & Monetization Detection ──────────────────────────────
 
-  const websiteCount = (await websiteQueue.getInfo()).totalRequestCount;
+const websiteCount = (await websiteQueue.getInfo())?.totalRequestCount ?? 0;
 
   if (websiteCount > 0) {
     log.info(`Phase 3: Detecting website/product signals for ${websiteCount} creators...`);
