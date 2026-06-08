@@ -2,6 +2,7 @@ import { Actor } from 'apify';
 import { ActorInput, CreatorRecord, Platform, WebsiteUpdate } from './types.js';
 import { isInFollowerRange } from './filters.js';
 
+// In-memory store: dedup key → full record (used by Phase 3 to enrich)
 const creatorStore = new Map<string, CreatorRecord>();
 
 function dedupeKey(platform: Platform, username: string): string {
@@ -61,4 +62,8 @@ export async function flushCreators(): Promise<void> {
 
 export function getCreator(platform: Platform, username: string): CreatorRecord | undefined {
   return creatorStore.get(dedupeKey(platform, username));
+}
+
+export function getSeenKeys(): string[] {
+  return [...creatorStore.keys()];
 }
