@@ -1,0 +1,58 @@
+{
+  "title": "Creator Discovery Engine Input",
+  "description": "Configure search parameters for finding social media creators by niche keyword, country, and follower range.",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "platform": {
+      "title": "Platform",
+      "type": "string",
+      "description": "Social media platform to search creators on.",
+      "editor": "select",
+      "enum": ["instagram", "youtube"],
+      "enumTitles": ["Instagram", "YouTube"],
+      "default": "instagram"
+    },
+    "keyword": {
+      "title": "Keyword / Niche",
+      "type": "string",
+      "description": "Creator niche or keyword (e.g. 'parenting coach', 'fitness creator', 'career mentor'). This keyword is pre-processed upstream — the actor searches exactly as provided.",
+      "editor": "textfield",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "country": {
+      "title": "Country",
+      "type": "string",
+      "description": "Target country for the search (e.g. 'United States', 'Canada', 'Australia'). Leave blank to search worldwide.",
+      "editor": "textfield",
+      "default": ""
+    },
+    "minFollowers": {
+      "title": "Minimum Followers",
+      "type": "integer",
+      "description": "Minimum follower/subscriber count. Creators below this threshold are filtered out.",
+      "editor": "number",
+      "minimum": 0,
+      "default": 10000
+    },
+    "maxFollowers": {
+      "title": "Maximum Followers",
+      "type": "integer",
+      "description": "Maximum follower/subscriber count. Creators above this threshold are filtered out.",
+      "editor": "number",
+      "minimum": 1,
+      "default": 1000000
+    },
+    "maxResults": {
+      "title": "Max Results",
+      "type": "integer",
+      "description": "Maximum number of creator profiles to return in the dataset.",
+      "editor": "number",
+      "minimum": 1,
+      "maximum": 500,
+      "default": 100
+    }
+  },
+  "required": ["platform", "keyword", "minFollowers", "maxFollowers", "maxResults"]
+}
