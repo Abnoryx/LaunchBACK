@@ -1,0 +1,22 @@
+{
+  "name": "video",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource-variable/inter-tight": "^5.3.0",
+    "@fontsource/anton": "^5.3.0",
+    "@fontsource/archivo-narrow": "^5.3.0",
+    "@fontsource/league-gothic": "^5.3.0",
+    "@fontsource/patrick-hand": "^5.3.0",
+    "@fontsource/tinos": "^5.3.0"
+  },
+  "type": "module"
+}

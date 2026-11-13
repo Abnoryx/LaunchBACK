@@ -1,0 +1,87 @@
+// Render a comp from a dumped .aep project with the WebGL engine in headless Chromium.
+// usage: node render.mjs --project dump.json --footage <dir> --comp "name" --from 8.5 --to 13.6 --out out.mp4 [--samples 8] [--fps N] [--frames-dir dir]
+import fs from 'fs';
+import path from 'path';
+import { spawn, execFileSync } from 'child_process';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const { chromium } = require('playwright');
+
+const args = Object.fromEntries(process.argv.slice(2).reduce((a, v, i, arr) => (v.startsWith('--') ? [...a, [v.slice(2), arr[i + 1]]] : a), []));
+const HERE = path.dirname(new URL(import.meta.url).pathname);
+const project = JSON.parse(fs.readFileSync(args.project));
+const comp = project.comps.find((c) => c.name === args.comp);
+const fps = +(args.fps || comp.fps);
+const from = +(args.from || 0), to = +(args.to || comp.dur);
+const samples = +(args.samples || 8);
+const cacheDir = args.cache || '/tmp/engine-cache';
+fs.mkdirSync(cacheDir, { recursive: true });
+
+// index footage files by basename
+const files = new Map();
+const walk = (d) => { for (const e of fs.readdirSync(d, { withFileTypes: true })) { const p = path.join(d, e.name); if (e.isDirectory()) walk(p); else files.set(e.name.normalize('NFC'), p); } };
+for (const d of (args.footage || '').split(',').filter(Boolean)) walk(d);
+const findFile = (name) => files.get(decodeURIComponent(name).normalize('NFC')) || [...files.entries()].find(([k]) => k.replace(/#U[0-9A-F]{4}/g, '') === name.replace(/[^\x00-\x7f]/g, ''))?.[1];
+
+const MIME = { '.js': 'text/javascript', '.html': 'text/html', '.json': 'application/json', '.woff2': 'font/woff2', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif' };
+const browser = await chromium.launch({ args: ['--enable-unsafe-swiftshader', '--disable-web-security'] });
+const page = await browser.newPage();
+page.on('console', (m) => { if (m.type() === 'warning' || m.type() === 'error') console.error('[page]', m.text()); });
+page.on('pageerror', (e) => console.error('[pageerror]', e.message));
+await page.route('http://engine.local/**', async (route) => {
+  const u = new URL(route.request().url());
+  const p = decodeURIComponent(u.pathname);
+  try {
+    if (p === '/') return route.fulfill({ path: path.join(HERE, 'page.html') });
+    if (p === '/project.json') return route.fulfill({ body: JSON.stringify(project), contentType: 'application/json' });
+    if (p === '/config.json') return route.fulfill({ body: JSON.stringify({ comp: args.comp, samples, blurK: args.blurk ? +args.blurk : undefined }), contentType: 'application/json' });
+    if (p.startsWith('/engine/')) return route.fulfill({ path: path.join(HERE, p.slice(8)), contentType: MIME[path.extname(p)] });
+    if (p.startsWith('/nm/')) return route.fulfill({ path: path.join(HERE, '..', 'node_modules', p.slice(4)) });
+    if (p.startsWith('/asset/')) {
+      const f = findFile(p.slice(7));
+      if (!f) return route.fulfill({ status: 404 });
+      const ext = path.extname(f).toLowerCase();
+      if (['.png', '.jpg', '.jpeg', '.gif', '.webp'].includes(ext)) return route.fulfill({ path: f, contentType: MIME[ext] });
+      // psd/ai/other stills: rasterise once via ImageMagick
+      const out = path.join(cacheDir, 'still_' + path.basename(f) + '.png');
+      if (!fs.existsSync(out)) { try { execFileSync('convert', [f + '[0]', '-background', 'none', out], { stdio: 'ignore' }); } catch { return route.fulfill({ status: 404 }); } }
+      return route.fulfill({ path: out, contentType: 'image/png' });
+    }
+    if (p.startsWith('/vid/')) {
+      const [, , id, ms] = p.split('/');
+      const name = u.searchParams.get('name');
+      const f = findFile(name);
+      if (!f) return route.fulfill({ status: 404 });
+      const out = path.join(cacheDir, `v${id}_${ms}`);
+      if (!fs.existsSync(out)) {
+        try { execFileSync('ffmpeg', ['-v', 'error', '-y', '-ss', String(parseInt(ms) / 1000), '-i', f, '-frames:v', '1', '-q:v', '2', '-f', 'image2', '-c:v', 'mjpeg', out]); } catch { return route.fulfill({ status: 404 }); }
+      }
+      return route.fulfill({ path: out, contentType: 'image/jpeg' });
+    }
+    return route.fulfill({ status: 404 });
+  } catch (e) { console.error('route', p, e.message); return route.fulfill({ status: 500 }); }
+});
+await page.goto('http://engine.local/');
+await page.waitForFunction('window.ready === true', null, { timeout: 120000 });
+
+const n = Math.round((to - from) * fps);
+const framesDir = args['frames-dir'];
+if (framesDir) fs.mkdirSync(framesDir, { recursive: true });
+const ff = args.out ? spawn('ffmpeg', ['-v', 'error', '-y', '-f', 'rawvideo', '-pix_fmt', 'rgba', '-s', `${comp.w}x${comp.h}`, '-r', String(fps), '-i', '-', '-c:v', 'libx264', '-crf', '14', '-tune', 'grain', '-pix_fmt', 'yuv420p', args.out], { stdio: ['pipe', 'inherit', 'inherit'] }) : null;
+const t0 = Date.now();
+for (let k = 0; k < n; k++) {
+  const t = from + k / fps;
+  const b64 = await page.evaluate((t) => window.renderFrame(t), t);
+  const buf = Buffer.from(b64, 'base64');
+  if (ff) await new Promise((r) => (ff.stdin.write(buf) ? r() : ff.stdin.once('drain', r)));
+  if (framesDir && (args.every ? k % +args.every === 0 : true)) {
+    const raw = path.join(framesDir, `f${String(Math.round(t * fps)).padStart(5, '0')}.rgba`);
+    fs.writeFileSync(raw, buf);
+    execFileSync('convert', ['-size', `${comp.w}x${comp.h}`, '-depth', '8', 'rgba:' + raw, raw.replace('.rgba', '.png')]);
+    fs.unlinkSync(raw);
+  }
+  if (k % 10 === 0) console.log(`frame ${k + 1}/${n} t=${t.toFixed(3)} ${((Date.now() - t0) / (k + 1) / 1000).toFixed(2)}s/frame`);
+}
+if (ff) { ff.stdin.end(); await new Promise((r) => ff.on('close', r)); }
+console.log('warnings:', JSON.stringify(await page.evaluate(() => window.engineWarnings())));
+await browser.close();
