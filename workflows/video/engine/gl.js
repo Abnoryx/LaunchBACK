@@ -64,11 +64,20 @@ const SHADERS = {
     else if (uOp == 6) { rgb = 1.0 - rgb; }                                                                       // invert
     else if (uOp == 7) { vec2 p = vUV*uRes; vec2 d = uB.xy-uA.xy; float f = clamp(dot(p-uA.xy,d)/max(dot(d,d),1e-3),0.0,1.0); rgb *= mix(vec3(0.0), vec3(1.0), f) * uK + (1.0-uK); } // gradient multiply
     else if (uOp == 8) { vec2 p = vUV - 0.5; float v = 1.0 - uK*dot(p,p)*2.0; rgb *= clamp(v,0.0,1.0); }         // vignette
+    else if (uOp == 9) { // dot halftone (AM, 45 deg): uK = cell px, uA = ink, uB = paper
+      vec2 p = vUV*uRes; float c = 0.70710678; mat2 R = mat2(c,-c,c,c); vec2 q = R*p; vec2 cell = floor(q/uK)*uK + 0.5*uK;
+      vec2 cp = transpose(R)*cell; vec4 s = texture(uTex, cp/uRes); float l = s.a > 0.0 ? dot(s.rgb/s.a, vec3(.2126,.7152,.0722)) : 1.0;
+      float r = uK*0.5*1.414*sqrt(clamp(1.0-l,0.0,1.0)); float d = length(q-cell);
+      float ink = 1.0 - smoothstep(r-0.75, r+0.75, d); rgb = mix(uB.rgb, uA.rgb, ink); }
+    else if (uOp == 10) { // light sweep: band across direction uA.z (deg) centred at uA.xy (px), width uK, colour uB
+      vec2 p = vUV*uRes; float an = radians(uA.z); vec2 n = vec2(cos(an), sin(an)); float d = abs(dot(p-uA.xy, n));
+      float k = exp(-d*d/(2.0*uK*uK/9.0)); rgb = rgb + uB.rgb*k*uB.a; }
     o = vec4(rgb*a, a); }`,
   // drop shadow: uTex = blurred source alpha, uDst = original. Offset in px.
   shadow: `${FS_HEAD} uniform sampler2D uDst; uniform vec2 uOff; uniform vec4 uA; uniform float uK; uniform int uOnly;
   void main(){ float sa = texture(uTex, vUV - uOff/uRes).a * uK; vec4 sh = vec4(uA.rgb*sa, sa); vec4 src = texture(uDst, vUV);
     o = uOnly==1 ? sh : src + sh*(1.0-src.a); }`,
+  rgbsplit: `${FS_HEAD} uniform vec2 uOff; void main(){ vec4 c = texture(uTex, vUV); float r = texture(uTex, vUV + uOff/uRes).r; float b = texture(uTex, vUV - uOff/uRes).b; o = vec4(r, c.g, b, c.a); }`,
   add: `${FS_HEAD} uniform sampler2D uDst; uniform float uK; void main(){ o = texture(uDst, vUV) + texture(uTex, vUV)*uK; }`,
   mix: `${FS_HEAD} uniform sampler2D uDst, uMask; uniform float uK; uniform int uHasMask;
   void main(){ float m = uK * (uHasMask==1 ? texture(uMask, vUV).a : 1.0); o = mix(texture(uDst, vUV), texture(uTex, vUV), m); }`,

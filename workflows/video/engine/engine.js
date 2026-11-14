@@ -442,6 +442,23 @@ export class Engine {
           swap(o);
           break;
         }
+        case 'BCC Halftone': case 'X Halftone': {
+          const cell = P('Cell', 5 * 2.2) * sx; // BCC 'scale 5' ~ 11 px cells at 1080p (visual match)
+          swap(g.color(cur, 9, { uK: Math.max(2, cell), uA: P('Ink', [0.11, 0.11, 0.11, 1]), uB: P('Paper', [0.86, 0.86, 0.86, 1]) }));
+          break;
+        }
+        case 'CC Light Sweep': {
+          const c = P('Center', [(rect[0] + rect[2]) / 2, (rect[1] + rect[3]) / 2]), dir = P('Direction', 30), w = P('Width', 80);
+          const col = P('Light Color', [1, 1, 1, 1]), inten = P('Sweep Intensity', 50) / 100;
+          swap(g.color(cur, 10, { uA: [(c[0] - rect[0]) * sx, (c[1] - rect[1]) * sx, dir, 0], uB: [col[0], col[1], col[2], Math.max(0.2, inten)], uK: w * sx }));
+          break;
+        }
+        case 'S_TimeWarpRGB': case 'X RGB Split': {
+          const o = g.target(cur.w, cur.h);
+          g.run('rgbsplit', o, { uOff: [P('Amount', 8) * sx, 0] }, { uTex: cur });
+          swap(o);
+          break;
+        }
         case 'ADBE Slider Control': case 'ADBE Checkbox Control': case 'ADBE Layer Control': case 'ADBE Color Control': case 'ADBE Point Control': case 'ADBE Angle Control': break;
         default: this.warn('effect not implemented: ' + e.m + ' (' + e.n + ')');
       }
