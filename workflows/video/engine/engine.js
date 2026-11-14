@@ -71,7 +71,8 @@ export class Engine {
     if (L.time_remap_enabled && tr) return evalProp(tr, t);
     return (t - st) / str;
   }
-  active(L, t) { return isEnabled(L) && t >= L.in_point - 1e-6 && t < L.out_point - 1e-6; }
+  // in/out points are frame-aligned but stored rounded to 1e-4 s: compare with a 1 ms tolerance
+  active(L, t) { return isEnabled(L) && t >= L.in_point - 1e-3 && t < L.out_point - 1e-3; }
 
   // ------------------------------------------------------------ expressions context
   ctxFor(comp, L) {
@@ -218,7 +219,7 @@ export class Engine {
     if (L.src_id == null) return null;
     const sub = this.comps.get(L.src_id);
     if (sub) {
-      const tg = this.renderComp(sub, lt, opts);
+      const tg = this.renderComp(sub, lt, { ...opts, tc: this.localTime(L, opts.tcL ?? t) });
       return { tg, rect: [0, 0, sub.w, sub.h] };
     }
     const f = this.footage.get(L.src_id);
@@ -450,41 +451,44 @@ export class Engine {
 
   // ------------------------------------------------------------ comp rendering
   // Returns a pooled target with the comp rendered at time t (no motion blur here).
-  renderComp(comp, t, opts = {}) {
+  // ts = sub-frame time (motion-blur sample), opts.tc = the frame's own time in this comp.
+  // AE semantics: visibility follows the frame time; only layers with their motion-blur switch on
+  // (in a comp with motion blur enabled) move with the sub-frame time, others stay at the frame time.
+  renderComp(comp, ts, opts = {}) {
     const g = this.g;
-    this._t = t;
+    const tc = opts.tc ?? ts;
+    this._t = tc;
     const out = g.target(comp.w, comp.h);
     g.clear(out);
-    const cache = new Map();
-    const cam = this.cameraOf(comp, t, cache);
-    // bottom-to-top: highest index first
+    const cacheS = new Map(), cacheC = ts === tc ? cacheS : new Map();
+    const camS = this.cameraOf(comp, ts, cacheS), camC = ts === tc ? camS : this.cameraOf(comp, tc, cacheC);
     const layers = [...comp.layers].sort((a, b) => b.i - a.i);
-    // group consecutive 3D layers for depth sorting
     const items = [];
     for (const L of layers) {
-      if (!this.active(L, t)) continue;
+      if (!this.active(L, tc)) continue;
       if (L.type === 'CameraLayer' || L.type === 'LightLayer' || L.guide_layer || L.is_track_matte) continue;
       if (L.null_layer) continue;
       const f = L.src_id != null ? this.footage.get(L.src_id) : null;
       if (f && (f.has_video === false || /\.(mp3|wav|aac|m4a|aif+)$/i.test(f.file || f.name))) continue;
-      items.push(L);
+      const mb = !!(comp.motion_blur && L.motion_blur);
+      items.push({ L, t: mb ? ts : tc, cache: mb ? cacheS : cacheC, cam: mb ? camS : camC });
     }
     // depth sort runs of 3D layers (AE sorts 3D layers among themselves between 2D layers)
     let i = 0;
     const ordered = [];
     while (i < items.length) {
-      if (!items[i].three_d_layer) { ordered.push(items[i++]); continue; }
+      if (!items[i].L.three_d_layer) { ordered.push(items[i++]); continue; }
       const run = [];
-      while (i < items.length && items[i].three_d_layer) run.push(items[i++]);
-      run.forEach((L) => {
-        const w = this.worldOf(comp, L, t, cache);
-        const [sw, sh] = L.type === 'TextLayer' || L.type === 'ShapeLayer' ? [0, 0] : this.sourceSize(L);
-        L._z = xf(cam.view, xf(w.m, [sw / 2, sh / 2, 0, 1]))[2];
+      while (i < items.length && items[i].L.three_d_layer) run.push(items[i++]);
+      run.forEach((it) => {
+        const w = this.worldOf(comp, it.L, it.t, it.cache);
+        const [sw, sh] = it.L.type === 'TextLayer' || it.L.type === 'ShapeLayer' ? [0, 0] : this.sourceSize(it.L);
+        it.z = xf(it.cam.view, xf(w.m, [sw / 2, sh / 2, 0, 1]))[2];
       });
-      run.sort((a, b) => b._z - a._z || b.i - a.i);
+      run.sort((a, b) => b.z - a.z || b.L.i - a.L.i);
       ordered.push(...run);
     }
-    for (const L of ordered) this.drawLayer(comp, L, t, out, cam, cache, opts);
+    for (const it of ordered) this.drawLayer(comp, it.L, it.t, out, it.cam, it.cache, { ...opts, tcL: tc });
     return out;
   }
 
@@ -496,16 +500,21 @@ export class Engine {
     const sub = L.src_id != null ? this.comps.get(L.src_id) : null;
     // collapsed 3D precomp: draw its layers into this comp with combined transforms and our camera
     if (sub && L.collapse_transformation && !findM(L, 'ADBE Effect Parade')?.c?.length && !findM(L, 'ADBE Mask Parade')?.c?.length) {
-      const lt = this.localTime(L, t);
+      const lt = this.localTime(L, t), ltc = this.localTime(L, opts.tcL ?? t);
       const subCache = new Map();
       const base = parentM ? mm(parentM, w.m) : w.m;
-      const kids = [...sub.layers].sort((a, b) => b.i - a.i).filter((K) => this.active(K, lt) && K.type !== 'CameraLayer' && !K.null_layer && !K.is_track_matte && !K.guide_layer);
+      const kids = [...sub.layers].sort((a, b) => b.i - a.i).filter((K) => this.active(K, ltc) && K.type !== 'CameraLayer' && !K.null_layer && !K.is_track_matte && !K.guide_layer);
       // depth-sort children by projected depth
       const third = (K) => { const kw = this.worldOf(sub, K, lt, subCache); return xf(cam.view, xf(mm(base, kw.m), [0, 0, 0, 1]))[2]; };
       const sorted = kids.map((K) => [K, K.three_d_layer || L.three_d_layer ? third(K) : 0]);
       if (L.three_d_layer) sorted.sort((a, b) => b[1] - a[1] || b[0].i - a[0].i);
       const saveT = this._t;
-      for (const [K] of sorted) { this._t = lt; this.drawLayer(sub, K, lt, out, cam, subCache, opts, base, op * (L.blending_mode ? 1 : 1)); }
+      const subCacheC = new Map();
+      for (const [K] of sorted) {
+        const mbK = !!(K.motion_blur && L.motion_blur);
+        this._t = mbK ? lt : ltc;
+        this.drawLayer(sub, K, mbK ? lt : ltc, out, cam, mbK ? subCache : subCacheC, { ...opts, tcL: ltc }, base, op);
+      }
       this._t = saveT;
       return;
     }
@@ -593,10 +602,11 @@ export class Engine {
     const n = mb ? this.mbSamples : 1;
     const ang = (comp.shutter_angle ?? 180) / 360, ph = (comp.shutter_phase ?? -90) / 360;
     const acc = g.target(comp.w, comp.h); g.clear(acc);
+    await this.prepare(comp, t);
     for (let i = 0; i < n; i++) {
       const ts = mb ? t + T * ph + T * ang * ((i + 0.5) / n) : t;
       await this.prepare(comp, ts);
-      const f = this.renderComp(comp, ts);
+      const f = this.renderComp(comp, ts, { tc: t });
       const dst = g.target(comp.w, comp.h); g.copy(acc, dst);
       g.run('add', acc, { uK: 1 / n }, { uTex: f, uDst: dst });
       g.release(dst); g.release(f);
