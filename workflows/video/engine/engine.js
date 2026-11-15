@@ -195,8 +195,14 @@ export class Engine {
     return url;
   }
   // Walk visible layers and preload what will be drawn at time t.
-  async prepare(comp, t, depth = 0) {
+  async prepare(comp, t, depth = 0, opts = {}) {
     if (depth > 12) return;
+    if (!opts.tw) for (const L of comp.layers) {
+      if (L.adjustment_layer && this.active(L, t) && findM(L, 'ADBE Effect Parade')?.c?.some((e) => e.m === 'S_TimeWarpRGB' && !e.off)) {
+        await this.prepare(comp, t + 1 / comp.fps, depth, { tw: 1 }); await this.prepare(comp, t - 1 / comp.fps, depth, { tw: 1 });
+        break;
+      }
+    }
     for (const L of comp.layers) {
       if (!this.active(L, t) && !(L.is_track_matte && t >= L.in_point && t < L.out_point)) continue;
       if (L.src_id == null) continue;
@@ -339,12 +345,19 @@ export class Engine {
       if (!sh || !sh._shape) continue;
       const op = (evalProp(findM(m, 'ADBE Mask Opacity'), t) ?? 100) / 100;
       const fe = evalProp(findM(m, 'ADBE Mask Feather'), t) ?? [0, 0];
+      const ex = evalProp(findM(m, 'ADBE Mask Offset'), t) ?? 0;
       maxFeather = Math.max(maxFeather, fe[0] || 0);
       const tmp = new OffscreenCanvas(W, H), tc = tmp.getContext('2d');
       tc.setTransform(sx, 0, 0, sy, -rx0 * sx, -ry0 * sy);
-      if (fe[0] > 0.5) tc.filter = `blur(${(fe[0] * sx) / 2.5}px)`;
+      if (fe[0] > 0.5) tc.filter = `blur(${(fe[0] * sx) / 2}px)`;
       tc.fillStyle = `rgba(255,255,255,${op})`;
-      tc.fill(bezPath(sh));
+      const mp = bezPath(sh);
+      if (ex < 0) { // contract: fill, then erase a stroke band
+        tc.fill(mp); tc.globalCompositeOperation = 'destination-out'; tc.lineWidth = -2 * ex; tc.lineJoin = 'round'; tc.strokeStyle = '#fff'; tc.stroke(mp); tc.globalCompositeOperation = 'source-over';
+      } else {
+        tc.fill(mp);
+        if (ex > 0) { tc.lineWidth = 2 * ex; tc.lineJoin = 'round'; tc.strokeStyle = `rgba(255,255,255,${op})`; tc.stroke(mp); }
+      }
       if (m.inv) { tc.globalCompositeOperation = 'xor'; tc.setTransform(1, 0, 0, 1, 0, 0); tc.filter = 'none'; tc.fillRect(0, 0, W, H); }
       const mode = m.mode || 6813;
       if (first && mode === 6814) { c.fillStyle = '#fff'; c.fillRect(0, 0, W, H); }
@@ -423,7 +436,7 @@ export class Engine {
           const op = PM('0001', 2), rad = PM('0002', 0) * sx, dir = PM('0004', 1);
           const dirs = dir === 2 ? [[1, 0]] : dir === 3 ? [[0, 1]] : [[1, 0], [0, 1]];
           if (rad >= 1) {
-            if (op === 1 || op === 2) swap(g.minimax(cur, rad, dirs, op === 2));
+            if (op === 1 || op === 2) swap(g.minimax(cur, rad, dirs, op === 1));
             else { const a = g.minimax(cur, rad, dirs, op === 4); swap(a); swap(g.minimax(cur, rad, dirs, op !== 4)); }
           }
           break;
@@ -432,6 +445,26 @@ export class Engine {
           const a = P('Start XY', [0, 0]), b = P('End XY', [0, rect[3]]);
           const toPx = (p) => [(p[0] - rect[0]) * sx, (p[1] - rect[1]) * sx];
           swap(g.color(cur, 7, { uA: [...toPx(a), 0, 0], uB: [...toPx(b), 0, 0], uK: 0.6 }));
+          break;
+        }
+        case 'ADBE Linear Wipe': {
+          const src = this.footage.get(L.src_id) || this.comps.get(L.src_id);
+          const bw = src ? (src.width ?? src.w) : rect[2] - rect[0], bh = src ? (src.height ?? src.h) : rect[3] - rect[1];
+          const bx = src ? 0 : rect[0], by = src ? 0 : rect[1];
+          const an = PM('0002', 90), r = (an * Math.PI) / 180;
+          const half = (Math.abs(bw * Math.sin(r)) + Math.abs(bh * Math.cos(r))) / 2;
+          swap(g.color(cur, 12, { uA: [(bx + bw / 2 - rect[0]) * sx, (by + bh / 2 - rect[1]) * sx, an, half * sx], uK: PM('0001', 0) / 100, uB: [PM('0003', 0) * sx, 0, 0, 0] }));
+          break;
+        }
+        case 'ADBE Color Balance (HLS)': swap(g.color(cur, 13, { uA: [PM('0001', 0), PM('0002', 0), PM('0003', 0), 0] })); break;
+        case 'MB LookSuite3': { // Magic Bullet Looks: per-layer 3D LUT fitted from reel/engine pairs (luts.json)
+          const key = `${comp.name}|${L.i}`, lut = this.luts?.[key];
+          if (!lut) break;
+          this._lutTex = this._lutTex || new Map();
+          if (!this._lutTex.has(key)) this._lutTex.set(key, g.lut3dTex(lut.data, lut.n));
+          const o = g.target(cur.w, cur.h);
+          g.run('lut3d', o, { uN: lut.n, uK: 1 }, { uTex: cur, uLut: this._lutTex.get(key) });
+          swap(o);
           break;
         }
         case 'CS Vignette': swap(g.color(cur, 8, { uK: Math.min(1, PM('0001', 100) / 250) })); break;
@@ -464,7 +497,28 @@ export class Engine {
           swap(g.color(cur, 10, { uA: [(c[0] - rect[0]) * sx, (c[1] - rect[1]) * sx, dir, 0], uB: [col[0], col[1], col[2], Math.max(0.2, inten)], uK: w * sx }));
           break;
         }
-        case 'S_TimeWarpRGB': case 'X RGB Split': {
+        case 'PEQCAGL': { // Quick Chromatic Aberration: radial R/B scale; edge fringe ~1.7 px per unit (fit to the reel's ~5 px at 3.0)
+          const amt = PM('0002', 0), half = Math.hypot(cur.w, cur.h) / 2;
+          if (amt > 0) { const o = g.target(cur.w, cur.h); g.run('radialca', o, { uK: (amt * 1.7 * sx) / half }, { uTex: cur }); swap(o); }
+          break;
+        }
+        case 'S_ScanLines': { // fine diagonal lines: period 2.7 px at 1080 wide, +-3 levels
+          const o = g.target(cur.w, cur.h);
+          g.run('scanlines', o, { uK: 3 / 255, uP: 2.7 * sx, uAng: PM('0052', 35) + 90 }, { uTex: cur });
+          swap(o);
+          break;
+        }
+        case 'S_TimeWarpRGB': if (isAdjustment && this._adj?.L === L) { // temporal: R from t+1 frame, B from t-1 frame
+          const { comp: ac } = this._adj, dt = 1 / ac.fps, saveT = this._t, saveAdj = this._adj;
+          this._adj = null;
+          const A = this.renderComp(ac, t + dt, { tc: t + dt, onlyBelow: L.i }), B = this.renderComp(ac, t - dt, { tc: t - dt, onlyBelow: L.i });
+          this._adj = saveAdj; this._t = saveT;
+          const o = g.target(cur.w, cur.h);
+          g.run('rgbtime', o, {}, { uTex: cur, uA: A, uB: B });
+          g.release(A); g.release(B); swap(o);
+          break;
+        } // falls through to the spatial approximation
+        case 'X RGB Split': {
           const o = g.target(cur.w, cur.h);
           g.run('rgbsplit', o, { uOff: [P('Amount', 8) * sx, 0] }, { uTex: cur });
           swap(o);
@@ -484,6 +538,17 @@ export class Engine {
           const ow = PM('0004', 100) / 100, oh = PM('0005', 100) / 100;
           const o = g.target(cur.w, cur.h);
           g.run('mtile', o, { uK: PM('0006', 0) ? 1 : 0, uOff: [ow, oh] }, { uTex: cur });
+          swap(o);
+          break;
+        }
+        case 'VIDEOCOPILOT OpticalFlares': {
+          const pos = PM('0001', [rect[2] / 2, rect[3] / 2]), br = PM('0003', 100) / 100, sc = PM('0004', 100) / 100;
+          const fl = PM('0050', 0) ? 1 : 0, spd = PM('0051', 40), amt = PM('0052', 60) / 100;
+          // flicker: stepped random brightness every ~8-12 frames (measured on the reel)
+          const step = Math.floor((this._t || t) * 30 / 10), rnd = Math.abs(Math.sin(step * 12.9898) * 43758.5453) % 1;
+          const k = br * (1 - amt * 0.5 + amt * 0.5 * rnd);
+          const o = g.target(cur.w, cur.h); g.clear(o);
+          g.run('flare', o, { uPos: [(pos[0] - rect[0]) * sx, (pos[1] - rect[1]) * sx], uK: k * 1.6, uS: sc }, {});
           swap(o);
           break;
         }
@@ -510,6 +575,7 @@ export class Engine {
     const layers = [...comp.layers].sort((a, b) => b.i - a.i);
     const items = [];
     for (const L of layers) {
+      if (opts.onlyBelow != null && L.i <= opts.onlyBelow) continue;
       if (!this.active(L, tc)) continue;
       if (L.type === 'CameraLayer' || L.type === 'LightLayer' || L.guide_layer) continue;
       if (L.null_layer) continue;
@@ -614,6 +680,14 @@ export class Engine {
       }
     }
     const mode = BLEND[L.blending_mode] ?? 0;
+    if (L.blending_mode === 5240 || L.blending_mode === 5242) {
+      const gl = g.gl, tmp = g.target(out.w, out.h); g.clear(tmp);
+      g.run('layer', tmp, { uOpacity: op, uMode: 10, uMatteMode: matteMode, uHasMask: 0 }, { uTex: tg, uDst: g.blank, uMatte: matte, uMask: null }, quad, [gl.ONE, gl.ONE_MINUS_SRC_ALPHA]);
+      const dst = g.target(out.w, out.h); g.copy(out, dst);
+      g.run('stencil', out, { uMode: L.blending_mode === 5240 ? 9 : 11 }, { uTex: tmp, uDst: dst });
+      g.release(tmp); g.release(dst); g.release(tg); if (matte) g.release(matte);
+      return;
+    }
     if (mode === 0) {
       const gl = g.gl;
       g.run('layer', out, { uOpacity: op, uMode: 10, uMatteMode: matteMode, uHasMask: 0 }, { uTex: tg, uDst: g.blank, uMatte: matte, uMask: null }, quad, [gl.ONE, gl.ONE_MINUS_SRC_ALPHA]);
@@ -645,7 +719,9 @@ export class Engine {
   drawAdjustment(comp, L, t, out, op) {
     const g = this.g;
     const below = g.target(out.w, out.h); g.copy(out, below);
+    this._adj = { comp, L };
     const fx = this.applyEffects(comp, L, t, below, [0, 0, comp.w, comp.h], true);
+    this._adj = null;
     const mp = findM(L, 'ADBE Mask Parade');
     let mask = null;
     if (mp?.c?.length) mask = this.maskTarget(L, t, { tg: { w: out.w, h: out.h }, rect: [0, 0, comp.w, comp.h] });

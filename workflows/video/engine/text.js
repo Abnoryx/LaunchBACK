@@ -184,6 +184,7 @@ export function textAnimation(layer, tComp, ctx) {
           case 'ADBE Text Blur': c.blur += (Array.isArray(v) ? v[0] : v) * Math.abs(k); break;
           case 'ADBE Text Fill Color': c.fill = v; c.fillAmt = Math.max(c.fillAmt, Math.min(1, k)); break;
           case 'ADBE Text Tracking Amount': c.track += v * k; break;
+          case 'ADBE Text Character Offset': c.charOff = (c.charOff || 0) + v * k; break;
           default: break;
         }
       });
@@ -191,7 +192,77 @@ export function textAnimation(layer, tComp, ctx) {
   }
   return { text, font, size, fill, tracking, chars, justify: base.justification ?? 7413, leading: base.leading,
     stroke: base.apply_stroke ? base.stroke_color : null, strokeWidth: base.stroke_width || 0,
-    box: base.box_text ? base.box_text_size : null };
+    box: base.box_text ? base.box_text_size : null,
+    // AE's own saved layout (line baselines + per-glyph advances) and style runs; valid while the text is unchanged
+    lines: base.lines && text === base.text ? base.lines : null, runs: base.runs || null,
+    caps: !!base.all_caps, vscale: base.vertical_scale ?? 1 };
+}
+
+// Lay out and draw using AE's cached layout: exact line and glyph positions whatever the substitute font is.
+function drawTextAE(anim, ss) {
+  const meas = drawText._m || (drawText._m = document.createElement('canvas').getContext('2d'));
+  const runAt = (i) => (anim.runs || []).find((r) => i >= r.s && i < r.e) || {};
+  const glyphs = [];
+  let maxSize = anim.size;
+  for (const ln of anim.lines) {
+    for (let k = 0; k < ln.e - ln.s; k++) {
+      const i = ln.s + k;
+      let ch = anim.text[i];
+      if (ch === undefined || ch === '\r' || ch === '\n' || ch === '\u0003') continue;
+      const r = runAt(i);
+      const size = r.size || anim.size, font = r.font || anim.font;
+      maxSize = Math.max(maxSize, size);
+      const x0 = ln.x + (k ? ln.adv[k - 1] : 0), x1 = ln.x + (ln.adv[k] ?? ln.adv[k - 1] ?? 0);
+      if (anim.caps || r.caps) ch = ch.toUpperCase();
+      const tr = ((r.tracking ?? anim.tracking) / 1000) * size;
+      glyphs.push({ c: anim.chars[i], ch, x: x0, w: Math.max(0, x1 - x0 - tr), y: ln.y - (r.bshift || 0), size, font,
+        fill: r.fill || anim.fill, vs: r.vs ?? anim.vscale ?? 1 });
+    }
+  }
+  if (!glyphs.length) return null;
+  let maxBlur = 0, maxD = 0;
+  for (const g of glyphs) { maxBlur = Math.max(maxBlur, g.c?.blur || 0); maxD = Math.max(maxD, Math.abs(g.c?.dx || 0), Math.abs(g.c?.dy || 0)); }
+  const minX = Math.min(...glyphs.map((g) => g.x)), maxX = Math.max(...glyphs.map((g) => g.x + g.w));
+  const minY = Math.min(...glyphs.map((g) => g.y - g.size * 1.05)), maxY = Math.max(...glyphs.map((g) => g.y + g.size * 0.4));
+  const pad = Math.ceil((maxBlur * 3 + maxD + maxSize * 0.3) * ss) + 8;
+  const cv = document.createElement('canvas');
+  cv.width = Math.max(4, Math.ceil((maxX - minX) * ss + 2 * pad)); cv.height = Math.max(4, Math.ceil((maxY - minY) * ss + 2 * pad));
+  const ctx = cv.getContext('2d');
+  ctx.textBaseline = 'alphabetic';
+  const ox = pad - minX * ss, oy = pad - minY * ss;
+  const css = (rgb) => `rgb(${rgb.map((v) => Math.round(Math.min(1, Math.max(0, v)) * 255)).join(',')})`;
+  for (const g of glyphs) {
+    const c = g.c;
+    if (!c || c.op <= 0.002 || /\s/.test(g.ch)) continue;
+    if (c.charOff) g.ch = shiftChar(g.ch, Math.round(c.charOff));
+    const f = mapFont(g.font);
+    const fs = g.size * (f.sizeScale || 1) * ss;
+    ctx.font = `${f.italic ? 'italic ' : ''}${f.weight} ${fs}px "${f.family}"`;
+    meas.font = ctx.font;
+    const nw = meas.measureText(g.ch).width;
+    const hs = nw > 0 && g.w > 0 ? Math.min(1.3, Math.max(0.75, (g.w * ss) / nw)) : 1;
+    ctx.save();
+    ctx.globalAlpha = Math.min(1, c.op);
+    const col = c.fill && c.fillAmt ? g.fill.map((v, i) => v + (c.fill[i] - v) * c.fillAmt) : g.fill;
+    ctx.fillStyle = css(col);
+    ctx.filter = c.blur > 0.3 ? `blur(${(c.blur * ss) / 2}px)` : 'none';
+    ctx.translate(ox + (g.x + g.w / 2 + c.dx) * ss, oy + (g.y + c.dy) * ss);
+    if (c.rot) ctx.rotate((c.rot * Math.PI) / 180);
+    ctx.scale(c.sx * hs, c.sy * (g.vs > 3 ? g.vs / 100 : g.vs));
+    if (anim.stroke && anim.strokeWidth > 0) { ctx.lineJoin = 'round'; ctx.strokeStyle = css(anim.stroke); ctx.lineWidth = (anim.strokeWidth * ss) / hs; ctx.strokeText(g.ch, -nw / 2, 0); }
+    ctx.fillText(g.ch, -nw / 2, 0);
+    ctx.restore();
+  }
+  return { canvas: cv, ox: ox / ss, oy: oy / ss, scale: ss };
+}
+
+// AE Character Offset with "Preserve Case & Digits": wraps within a-z, A-Z, 0-9
+function shiftChar(ch, n) {
+  const wrap = (base, len) => String.fromCharCode(base + ((((ch.charCodeAt(0) - base + n) % len) + len) % len));
+  if (/[a-z]/.test(ch)) return wrap(97, 26);
+  if (/[A-Z]/.test(ch)) return wrap(65, 26);
+  if (/[0-9]/.test(ch)) return wrap(48, 10);
+  return ch;
 }
 
 const fontsReady = new Set();
@@ -204,6 +275,7 @@ export async function ensureFont(f) {
 
 // Draw the text into a canvas. Returns {canvas, ox, oy, scale}: layer-space origin of the canvas.
 export function drawText(anim, ss = 2) {
+  if (anim.lines) { const r = drawTextAE(anim, ss); if (r) return r; }
   const f = mapFont(anim.font);
   const size = anim.size * (f.sizeScale || 1);
   const fontStr = `${f.italic ? 'italic ' : ''}${f.weight} ${size * ss}px "${f.family}"`;
@@ -255,6 +327,7 @@ export function drawText(anim, ss = 2) {
   for (const g of glyphs) {
     const c = g.c;
     if (!c || c.op <= 0.002 || /\s/.test(g.ch)) continue;
+    if (c.charOff) g.ch = shiftChar(g.ch, Math.round(c.charOff));
     ctx.save();
     ctx.globalAlpha = Math.min(1, c.op);
     const col = c.fill && c.fillAmt ? anim.fill.map((v, i) => v + (c.fill[i] - v) * c.fillAmt) : anim.fill;

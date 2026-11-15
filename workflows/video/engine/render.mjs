@@ -34,7 +34,7 @@ await page.route('http://engine.local/**', async (route) => {
   try {
     if (p === '/') return route.fulfill({ path: path.join(HERE, 'page.html') });
     if (p === '/project.json') return route.fulfill({ body: JSON.stringify(project), contentType: 'application/json' });
-    if (p === '/config.json') return route.fulfill({ body: JSON.stringify({ comp: args.comp, samples, blurK: args.blurk ? +args.blurk : undefined, modelOpts: args.modelopts ? JSON.parse(fs.readFileSync(args.modelopts)) : {} }), contentType: 'application/json' });
+    if (p === '/config.json') return route.fulfill({ body: JSON.stringify({ comp: args.comp, samples, blurK: args.blurk ? +args.blurk : undefined, modelOpts: args.modelopts ? JSON.parse(fs.readFileSync(args.modelopts)) : {}, luts: args.luts ? JSON.parse(fs.readFileSync(args.luts)) : {} }), contentType: 'application/json' });
     if (p.startsWith('/engine/')) return route.fulfill({ path: path.join(HERE, p.slice(8)), contentType: MIME[path.extname(p)] });
     if (p.startsWith('/nm/')) return route.fulfill({ path: path.join(HERE, '..', 'node_modules', p.slice(4)), contentType: MIME[path.extname(p)] || undefined });
     if (p.startsWith('/file/')) return route.fulfill({ path: p.slice(5) });
@@ -56,9 +56,10 @@ await page.route('http://engine.local/**', async (route) => {
       if (!f) return route.fulfill({ status: 404 });
       const out = path.join(cacheDir, `v${id}_${ms}`);
       if (!fs.existsSync(out)) {
-        try { execFileSync('ffmpeg', ['-v', 'error', '-y', '-ss', String(parseInt(ms) / 1000), '-i', f, '-frames:v', '1', '-q:v', '2', '-f', 'image2', '-c:v', 'mjpeg', out]); } catch { return route.fulfill({ status: 404 }); }
+        const alpha = /\.(gif|mov|webm|png)$/i.test(f);
+        try { execFileSync('ffmpeg', ['-v', 'error', '-y', '-ss', String(parseInt(ms) / 1000), '-i', f, '-frames:v', '1', ...(alpha ? ['-pix_fmt', 'rgba', '-f', 'image2', '-c:v', 'png'] : ['-q:v', '2', '-f', 'image2', '-c:v', 'mjpeg']), out]); } catch { return route.fulfill({ status: 404 }); }
       }
-      return route.fulfill({ path: out, contentType: 'image/jpeg' });
+      return route.fulfill({ path: out, contentType: /\.(gif|mov|webm|png)$/i.test(f) ? 'image/png' : 'image/jpeg' });
     }
     return route.fulfill({ status: 404 });
   } catch (e) { console.error('route', p, e.message); return route.fulfill({ status: 500 }); }
@@ -77,7 +78,7 @@ for (let k = 0; k < n; k++) {
   const buf = Buffer.from(b64, 'base64');
   if (ff) await new Promise((r) => (ff.stdin.write(buf) ? r() : ff.stdin.once('drain', r)));
   if (framesDir && (args.every ? k % +args.every === 0 : true)) {
-    const raw = path.join(framesDir, `f${String(Math.round(t * fps)).padStart(5, '0')}.rgba`);
+    const raw = path.join(framesDir, `f${String(Math.round(t * comp.fps)).padStart(5, '0')}.rgba`);
     fs.writeFileSync(raw, buf);
     execFileSync('convert', ['-size', `${comp.w}x${comp.h}`, '-depth', '8', 'rgba:' + raw, raw.replace('.rgba', '.png')]);
     fs.unlinkSync(raw);

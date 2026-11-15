@@ -25,6 +25,7 @@ const eng = new Engine(project, {
   videoFrameUrl: (f, t) => (f.file ? `/vid/${f.id}/${Math.max(0, Math.round(((f.loop && f.duration) ? (t % (f.duration - 0.05)) : t) * 1000))}.jpg?name=${encodeURIComponent(f.file.split(/[\\/]/).pop())}` : null),
 });
 eng.modelOpts = cfg.modelOpts || {};
+eng.luts = cfg.luts || {};
 await eng.init(cv);
 window.renderFrame = async (t) => {
   const acc = await eng.frame(comp, t);

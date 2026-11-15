@@ -73,6 +73,21 @@ const SHADERS = {
       float l = dot(rgb, vec3(.2126,.7152,.0722));
       float k = smoothstep(uA.x - uA.z, uA.x + uA.z, l) * (1.0 - smoothstep(uA.y - uA.w, uA.y + uA.w, l));
       a *= k; }
+    else if (uOp == 12) { // linear wipe: uA = (cx, cy, angle deg, half-extent), uK = completion 0..1, uB.x = feather px
+      vec2 p = vUV*uRes; float an = radians(uA.z); vec2 d = vec2(sin(an), -cos(an));
+      float u = (dot(p - uA.xy, d) + uA.w) / max(2.0*uA.w, 1e-3); float f = max(uB.x, 1e-3) / max(2.0*uA.w, 1e-3);
+      a *= smoothstep(uK - f*0.5, uK + f*0.5, u * (1.0 + f) - f*0.5 + 1e-4) * step(1e-4, 1.0 - uK); }
+    else if (uOp == 13) { // colour balance (HLS): uA = (hue deg, lightness -100..100, saturation -100..100)
+      float mx = max(rgb.r, max(rgb.g, rgb.b)), mn = min(rgb.r, min(rgb.g, rgb.b)), l = (mx + mn) * 0.5, dl = mx - mn;
+      float h = 0.0, sat = 0.0;
+      if (dl > 1e-5) { sat = l > 0.5 ? dl / (2.0 - mx - mn) : dl / (mx + mn);
+        h = mx == rgb.r ? (rgb.g - rgb.b) / dl + (rgb.g < rgb.b ? 6.0 : 0.0) : mx == rgb.g ? (rgb.b - rgb.r) / dl + 2.0 : (rgb.r - rgb.g) / dl + 4.0; h /= 6.0; }
+      h = fract(h + uA.x / 360.0); sat = clamp(sat * (1.0 + uA.z / 100.0), 0.0, 1.0);
+      l = uA.y >= 0.0 ? l + (1.0 - l) * uA.y / 100.0 : l * (1.0 + uA.y / 100.0);
+      float q = l < 0.5 ? l * (1.0 + sat) : l + sat - l * sat, pp = 2.0 * l - q;
+      vec3 t3 = fract(vec3(h + 1.0/3.0, h, h - 1.0/3.0)); vec3 c3;
+      for (int i = 0; i < 3; i++) { float tt = t3[i]; c3[i] = tt < 1.0/6.0 ? pp + (q - pp) * 6.0 * tt : tt < 0.5 ? q : tt < 2.0/3.0 ? pp + (q - pp) * (2.0/3.0 - tt) * 6.0 : pp; }
+      rgb = c3; }
     else if (uOp == 10) { // light sweep: band across direction uA.z (deg) centred at uA.xy (px), width uK, colour uB
       vec2 p = vUV*uRes; float an = radians(uA.z); vec2 n = vec2(cos(an), sin(an)); float d = abs(dot(p-uA.xy, n));
       float k = exp(-d*d/(2.0*uK*uK/9.0)); rgb = rgb + uB.rgb*k*uB.a; }
@@ -82,6 +97,27 @@ const SHADERS = {
   void main(){ float sa = texture(uTex, vUV - uOff/uRes).a * uK; vec4 sh = vec4(uA.rgb*sa, sa); vec4 src = texture(uDst, vUV);
     o = uOnly==1 ? sh : src + sh*(1.0-src.a); }`,
   mtile: `${FS_HEAD} uniform float uK; uniform vec2 uOff; void main(){ vec2 q = vUV; if (uK > 0.5) { q = abs(mod(q + 1.0, 2.0) - 1.0); } else { q = fract(q); } o = texture(uTex, q); }`,
+  stencil: `${FS_HEAD} uniform sampler2D uDst; uniform int uMode; void main(){ float a = texture(uTex, vUV).a; vec4 d = texture(uDst, vUV);
+    o = uMode == 9 ? d * a : uMode == 11 ? d * (1.0 - a) : d; }`,
+  flare: `${FS_HEAD} uniform vec2 uPos; uniform float uK, uS; void main(){ vec2 p = vUV*uRes - uPos; float r = length(p);
+    float core = exp(-r*r/(2.0*pow(26.0*uS,2.0)));
+    float glow = exp(-r/(170.0*uS)) * 0.55;
+    float streak = exp(-abs(p.y)/(3.5*uS)) * exp(-abs(p.x)/(260.0*uS)) * 0.9;
+    float streak2 = exp(-abs(p.y)/(1.6*uS)) * exp(-abs(p.x)/(140.0*uS)) * 0.6;
+    vec3 c = vec3(1.0)*core + vec3(0.85,0.95,1.0)*(glow + streak + streak2);
+    c *= uK; o = vec4(c, max(c.r, max(c.g, c.b))); }`,
+  radialca: `${FS_HEAD} uniform float uK; void main(){ vec2 c = vec2(0.5); vec2 d = vUV - c; vec4 g = texture(uTex, vUV);
+    o = vec4(texture(uTex, c + d*(1.0+uK)).r, g.g, texture(uTex, c + d*(1.0-uK)).b, g.a); }`,
+  scanlines: `${FS_HEAD} uniform float uK, uP, uAng; void main(){ vec4 c = texture(uTex, vUV); vec2 p = vUV*uRes; float an = radians(uAng);
+    float s = sin(6.2831853 * dot(p, vec2(cos(an), sin(an))) / uP); o = vec4(c.rgb + uK*s*c.a, c.a); }`,
+  // 3D LUT tiled as N*N x N (blue slices side by side), trilinear by blending two slices
+  lut3d: `${FS_HEAD} uniform sampler2D uLut; uniform float uN, uK; void main(){ vec4 c = texture(uTex, vUV); float a = c.a; vec3 rgb = a > 0.0 ? clamp(c.rgb/a, 0.0, 1.0) : vec3(0.0);
+    float b = rgb.b*(uN-1.0), b0 = floor(b), b1 = min(b0+1.0, uN-1.0), f = b-b0;
+    vec2 q = (rgb.rg*(uN-1.0) + 0.5) / vec2(uN*uN, uN);
+    vec3 l0 = texture(uLut, q + vec2(b0/uN, 0.0)).rgb, l1 = texture(uLut, q + vec2(b1/uN, 0.0)).rgb;
+    o = vec4(mix(rgb, mix(l0, l1, f), uK)*a, a); }`,
+  rgbtime: `${FS_HEAD} uniform sampler2D uA, uB; void main(){ vec4 c = texture(uTex, vUV), a = texture(uA, vUV), b = texture(uB, vUV);
+    o = vec4(a.r, c.g, b.b, max(c.a, max(a.a, b.a))); }`,
   rgbsplit: `${FS_HEAD} uniform vec2 uOff; void main(){ vec4 c = texture(uTex, vUV); float r = texture(uTex, vUV + uOff/uRes).r; float b = texture(uTex, vUV - uOff/uRes).b; o = vec4(r, c.g, b, c.a); }`,
   add: `${FS_HEAD} uniform sampler2D uDst; uniform float uK; void main(){ o = texture(uDst, vUV) + texture(uTex, vUV)*uK; }`,
   mix: `${FS_HEAD} uniform sampler2D uDst, uMask; uniform float uK; uniform int uHasMask;
@@ -242,6 +278,14 @@ export class GL {
     const t = this.target(src.w, src.h);
     this.run('color', t, { uOp: op, uA: [0, 0, 0, 0], uB: [0, 0, 0, 0], uK: 1, ...u }, { uTex: src, uLut: lut });
     return t;
+  }
+  lut3dTex(lut, n) { // lut: flat [r,g,b]*n^3 in 0..255, index ((b*n)+g)*n+r
+    const d = new Uint8Array(n * n * n * 4);
+    for (let b = 0; b < n; b++) for (let g = 0; g < n; g++) for (let r = 0; r < n; r++) {
+      const i = ((b * n + g) * n + r) * 3, o = (g * n * n + b * n + r) * 4;
+      d[o] = lut[i]; d[o + 1] = lut[i + 1]; d[o + 2] = lut[i + 2]; d[o + 3] = 255;
+    }
+    return this.texFromData(n * n, n, d);
   }
   lutTex(curve) { // curve: Float32Array(256) per channel x3 → RGBA8 1D texture
     const d = new Uint8Array(256 * 4);
