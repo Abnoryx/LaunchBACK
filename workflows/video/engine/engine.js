@@ -360,7 +360,9 @@ export class Engine {
       const ex = evalProp(findM(m, 'ADBE Mask Offset'), t) ?? 0;
       maxFeather = Math.max(maxFeather, fe[0] || 0);
       // large feathers: draw sharp on a padded canvas and blur on the GPU (canvas blur clips at the canvas edge)
-      const big = fe[0] * sx > 40, P = big ? Math.ceil(fe[0] * sx * 1.2) : 0;
+      // only when the shape runs past the layer edge (the canvas blur would clip there) and the mask isn't inverted
+      const outside = sh.vtx.some((v) => v[0] < rx0 || v[1] < ry0 || v[0] > rx1 || v[1] > ry1);
+      const big = fe[0] * sx > 40 && outside && !m.inv, P = big ? Math.ceil(fe[0] * sx * 1.2) : 0;
       let tmp = new OffscreenCanvas(W + 2 * P, H + 2 * P), tc = tmp.getContext('2d');
       tc.setTransform(sx, 0, 0, sy, -rx0 * sx + P, -ry0 * sy + P);
       if (fe[0] > 0.5 && !big) tc.filter = `blur(${(fe[0] * sx) / 2}px)`;
