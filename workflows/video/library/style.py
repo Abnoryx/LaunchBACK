@@ -42,11 +42,11 @@ def char_reveal(t0, t1, **kw):
 
 
 # ---------------------------------------------------------------- finish stack (paper shots)
-def paper_finish(proj, comp, t_in, t_out, film=True, fringe=0.8, edge_blur=14, edge_fringe=3, edge_feather=150):
+def paper_finish(proj, comp, t_in, t_out, film=True, fringe=0.8, edge_blur=14, edge_fringe=3, edge_feather=150, diamond=1.0):
     """Adjustments + overlays that sit on top of every paper shot: edge blur (inverted diamond), radial fringing,
     film-edge print (multiply). Call FIRST so they end up on top of the stack."""
     edge = comp.adjustment('edge blur', t_in, t_out)
-    comp.masks(edge, mask([[540, 60], [70, 960], [540, 1860], [1010, 960]], inv=True, feather=edge_feather))
+    comp.masks(edge, mask([[540 + (x - 540) * diamond, 960 + (y - 960) * diamond] for x, y in ([540, 60], [70, 960], [540, 1860], [1010, 960])], inv=True, feather=edge_feather))
     comp.effects(edge, gaussian(edge_blur), qca(edge_fringe))
     q = comp.adjustment('fringe', t_in, t_out)
     comp.effects(q, qca(fringe))

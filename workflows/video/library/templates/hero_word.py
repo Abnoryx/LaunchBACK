@@ -14,9 +14,11 @@ DEFAULTS = {
     'mark': '?',
     'prop': {'file': 'car.png', 'w': 1024, 'h': 688, 'scale': 85},
     'palette': 'original',
+    'finish': {'edge_blur': 6},  # reel's corners are sharper than a Gaussian 14 edge blur (sharpness grid)
     'layout': {
-        'kicker': [-185, 669, 671], 'hero': [-230, 1235, 671], 'hero_size': 370, 'hero_scale': [140, 163, 100],
-        'q1': [524, 1110, -264], 'q2': [661, 1110, -264], 'sub1': [318, 1028, 582], 'sub2': [318, 1153, 582],
+        # hand-tuned against reel S1 (the SSIM hill-climb was rejected by the visual check)
+        'kicker': [-185, 669, 671], 'kicker_scale': 100, 'hero': [-230, 1235, 671], 'hero_size': 370, 'hero_scale': [140, 163, 100],
+        'q1': [524, 1110, -264], 'q2': [661, 1110, -264], 'q_scale': 100, 'sub1': [318, 1028, 582], 'sub2': [318, 1153, 582],
         'markB': [1137, 85, 1049], 'markB_scale': 150, 'markB_rot': 8,
         'markA': [520, 1675, 99], 'markA_scale': 125, 'markA_rot': -8,
         'prop_y': 1090, 'prop_park_x': 470, 'prop_z': 193,
@@ -44,23 +46,23 @@ def build(proj, name='hero_word', **params):
     S.minimax_flash(c, 67, 2, 31)
     S.minimax_flash(c, 96, 3, 35)
     S.lens_blur_in(c, 0, 20, 20)
-    S.paper_finish(proj, c, 0, end)
+    S.paper_finish(proj, c, 0, end, **P.get('finish', {}))
     c.camera('camera', 0, end, S.solved_camera('Comp 1', 0, DUR_F))
 
     k = c.text('kicker', W['kicker'], 0, end, sans, 131, pal['ink_soft'], tracking=-80, three_d_layer=True,
                reveal=S.word_reveal(*T['kicker']))
-    c.transform(k, pos=Lo['kicker'])
+    c.transform(k, pos=Lo['kicker'], scale=[Lo['kicker_scale']] * 2 + [100])
     h = c.text('hero', W['hero'], 0, end, hero_font, Lo['hero_size'], pal['accent_dark'], three_d_layer=True,
                reveal=S.char_reveal(*T['hero']))
     c.transform(h, pos=Lo['hero'], scale=Lo['hero_scale'])
     dof = K((T['dof'][0] * F, 0.0), (T['dof'][1] * F, T['dof_max']))
     q1 = c.text('q1', W['q1'], 0, end, sans, 78, pal['white'], tracking=-80, three_d_layer=True,
                 reveal=S.word_reveal(T['q1'][0] * F, T['q1'][1] * F))
-    c.transform(q1, pos=Lo['q1'])
+    c.transform(q1, pos=Lo['q1'], scale=[Lo['q_scale']] * 2 + [100])
     c.effects(q1, _ds(35, 315, 21, 16), S.gaussian(dof))
     q2 = c.text('q2', W['q2'], 0, end, sans, 78, pal['accent'], tracking=-80, hscale=0.89, three_d_layer=True,
                 reveal=S.word_reveal(T['q2'][0] * F, T['q2'][1] * F))
-    c.transform(q2, pos=Lo['q2'])
+    c.transform(q2, pos=Lo['q2'], scale=[Lo['q_scale']] * 2 + [100])
     c.effects(q2, _ds(35, 305, 15, 40), S.gaussian(dof))
     s1 = c.text('sub1', W['sub1'], T['sub_in'] * F, end, sans, 98, pal['ink'], tracking=-80, three_d_layer=True)
     c.transform(s1, pos=Lo['sub1']); c.effects(s1, _ds(40, 331, 8, 26))
@@ -68,7 +70,7 @@ def build(proj, name='hero_word', **params):
     c.transform(s2, pos=Lo['sub2']); c.effects(s2, _ds(40, 331, 8, 26))
 
     S.stacked_mark(c, 'markB', P['mark'], 0, end, Lo['markB'], Lo['markB_scale'], Lo['markB_rot'], pal)
-    S.stacked_mark(c, 'markA', P['mark'], 0, end, Lo['markA'], Lo['markA_scale'], Lo['markA_rot'], pal)
+    S.stacked_mark(c, 'markA', P['mark'], 0, end, Lo['markA'], Lo['markA_scale'], Lo['markA_rot'], pal, step=(-1.2, 0.9))  # near camera: thinner side
 
     pr = P['prop']
     if pr:

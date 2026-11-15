@@ -303,6 +303,7 @@ export async function ensureFont(f) {
 
 // Draw the text into a canvas. Returns {canvas, ox, oy, scale}: layer-space origin of the canvas.
 export function drawText(anim, ss = 2) {
+  { const est = (anim.text.length * anim.size * 0.7 + anim.size * 2) * ss; if (est > 8000) ss *= 8000 / est; }
   if (anim.lines) { const r = drawTextAE(anim, ss); if (r) return r; }
   const f = mapFont(anim.font);
   const size = anim.size * (f.sizeScale || 1);

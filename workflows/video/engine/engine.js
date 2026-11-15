@@ -224,7 +224,7 @@ export class Engine {
     const lt = this.localTime(L, t);
     if (L.type === 'TextLayer') {
       const anim = textAnimation(L, t, this.ctxFor(comp, L));
-      const ss = Math.max(1, Math.min(4, (opts.scaleHint || 1) * this.ss));
+      const ss = Math.max(1, Math.min(8, (opts.scaleHint || 1) * this.ss)); // big near-camera words need >4x or they upscale soft
       const r = drawText(anim, ss);
       const tex = g.texFromImage(r.canvas);
       const tg = g.target(r.canvas.width, r.canvas.height);
@@ -692,7 +692,7 @@ export class Engine {
       const pa = [a[0] / a[2], a[1] / a[2]], pb = [b[0] / b[2], b[1] / b[2]];
       scaleHint = (Math.hypot(pb[0] - pa[0], pb[1] - pa[1]) * cam.zoom) / 100;
     } else scaleHint = Math.hypot(m[0], m[1]);
-    const ct = this.content(comp, L, t, { ...opts, scaleHint: Math.min(4, Math.max(0.25, scaleHint)) });
+    const ct = this.content(comp, L, t, { ...opts, scaleHint: Math.min(8, Math.max(0.25, scaleHint)) });
     if (!ct) return;
     let tg = ct.tg;
     const mask = this.maskTarget(L, t, ct);
