@@ -37,8 +37,20 @@ def film_edge(ink=(52, 52, 52), name='film_edge.png'):
     im.save(os.path.join(OUT, name))
 
 
+def film_edge_dark(name='film_edge_dark.png', ink=(0x99, 0x83, 0x50)):
+    """Dark-shot version: amber marks on black, used with SCREEN blend (reel S2: amber #998350 on black)."""
+    film_edge(name='_fe_tmp.png')
+    from PIL import ImageOps
+    im = Image.open(os.path.join(OUT, '_fe_tmp.png')).convert('L')
+    a = ImageOps.invert(im)  # ink strength
+    col = Image.new('RGB', im.size, ink)
+    out = Image.composite(col, Image.new('RGB', im.size, 'black'), a)
+    out.save(os.path.join(OUT, name)); os.remove(os.path.join(OUT, '_fe_tmp.png'))
+
+
 if __name__ == '__main__':
     film_edge()
+    film_edge_dark()
     print('assets ->', OUT)
 
 

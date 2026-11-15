@@ -37,6 +37,11 @@ def word_reveal(t0, t1, **kw):
     return reveal(t0, t1, **{**TEXT['word_reveal'], **kw})
 
 
+def reveal_rise(t0, t1, dy=50, blur=10, based_on=3, **kw):
+    """Words/letters rise into place while fading in (reel S2: 'feels like it's' 50 px + blur 10; YOURS 115 px per letter)."""
+    return reveal(t0, t1, based_on=based_on, opacity=0, blur=blur, dy=dy, **kw)
+
+
 def char_reveal(t0, t1, **kw):
     return reveal(t0, t1, **{**TEXT['char_reveal'], **kw})
 
