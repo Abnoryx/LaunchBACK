@@ -202,9 +202,10 @@ class Comp:
         return L
 
     def text(self, name, s, inp, out, font, size, color, tracking=0, justify=LEFT, leading=None, hscale=1.0, vscale=1.0,
-             stroke=None, stroke_w=0, reveal=None, **kw):
+             stroke=None, stroke_w=0, reveal=None, box=None, **kw):
         doc = {'text': s, 'font': font, 'font_size': size, 'fill_color': hexc(color)[:3], 'tracking': tracking,
                'justification': justify, 'apply_fill': True, 'horizontal_scale': hscale, 'vertical_scale': vscale}
+        if box: doc.update(box_text=True, box_text_size=list(box))
         if leading: doc['leading'] = leading
         if stroke: doc.update(apply_stroke=True, stroke_color=hexc(stroke)[:3], stroke_width=stroke_w)
         L = self._layer('TextLayer', name, inp, out, text=doc, **kw)

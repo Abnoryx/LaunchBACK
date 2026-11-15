@@ -210,7 +210,7 @@ export function textAnimation(layer, tComp, ctx) {
     box: base.box_text ? base.box_text_size : null,
     // AE's own saved layout (line baselines + per-glyph advances) and style runs; valid while the text is unchanged
     lines: base.lines && text === base.text ? base.lines : null, runs: base.runs || null,
-    caps: !!base.all_caps, vscale: base.vertical_scale ?? 1 };
+    caps: !!base.all_caps, vscale: base.vertical_scale ?? 1, hscale: base.horizontal_scale ?? 1 };
 }
 
 // Lay out and draw using AE's cached layout: exact line and glyph positions whatever the substitute font is.
@@ -330,8 +330,9 @@ export function drawText(anim, ss = 2) {
     const row = [];
     for (const ch of [...ln]) {
       const c = anim.chars[ci++];
-      const w = meas.measureText(ch).width;
-      row.push({ c, ch, x, w });
+      const hsA = anim.hscale > 3 ? anim.hscale / 100 : (anim.hscale || 1);
+      const w = meas.measureText(ch).width * hsA;
+      row.push({ c, ch, x, w, nw: w / hsA });
       x += w + track + (c ? (c.track / 1000) * size * ss : 0);
     }
     ci++; // newline char
@@ -365,9 +366,10 @@ export function drawText(anim, ss = 2) {
     const cx = ox + g.x + g.w / 2 + c.dx * ss, cy = oy + g.y + c.dy * ss;
     ctx.translate(cx, cy);
     if (c.rot) ctx.rotate((c.rot * Math.PI) / 180);
-    if (c.sx !== 1 || c.sy !== 1) ctx.scale(c.sx, c.sy);
-    if (anim.stroke && anim.strokeWidth > 0) { ctx.lineJoin = 'round'; ctx.strokeStyle = css(anim.stroke); ctx.lineWidth = anim.strokeWidth * ss; if (anim.strokeOver) { ctx.fillText(g.ch, -g.w / 2, 0); ctx.strokeText(g.ch, -g.w / 2, 0); } else { ctx.strokeText(g.ch, -g.w / 2, 0); ctx.fillText(g.ch, -g.w / 2, 0); } }
-    else ctx.fillText(g.ch, -g.w / 2, 0);
+    { const hsA = anim.hscale > 3 ? anim.hscale / 100 : (anim.hscale || 1), vsA = anim.vscale > 3 ? anim.vscale / 100 : (anim.vscale || 1);
+      if (c.sx !== 1 || c.sy !== 1 || hsA !== 1 || vsA !== 1) ctx.scale(c.sx * hsA, c.sy * vsA); }
+    if (anim.stroke && anim.strokeWidth > 0) { ctx.lineJoin = 'round'; ctx.strokeStyle = css(anim.stroke); ctx.lineWidth = anim.strokeWidth * ss; if (anim.strokeOver) { ctx.fillText(g.ch, -(g.nw ?? g.w) / 2, 0); ctx.strokeText(g.ch, -(g.nw ?? g.w) / 2, 0); } else { ctx.strokeText(g.ch, -(g.nw ?? g.w) / 2, 0); ctx.fillText(g.ch, -(g.nw ?? g.w) / 2, 0); } }
+    else ctx.fillText(g.ch, -(g.nw ?? g.w) / 2, 0);
     ctx.restore();
   }
   return { canvas: cv, ox: ox / ss, oy: oy / ss, scale: ss, fontInfo: f };
