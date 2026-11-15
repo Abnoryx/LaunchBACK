@@ -69,6 +69,10 @@ const SHADERS = {
       vec2 cp = transpose(R)*cell; vec4 s = texture(uTex, cp/uRes); float l = s.a > 0.0 ? dot(s.rgb/s.a, vec3(.2126,.7152,.0722)) : 1.0;
       float r = uK*0.5*1.414*sqrt(clamp(1.0-l,0.0,1.0)); float d = length(q-cell);
       float ink = 1.0 - smoothstep(r-0.75, r+0.75, d); rgb = mix(uB.rgb, uA.rgb, ink); }
+    else if (uOp == 11) { // Extract luma key: uA = (black, white, black soft, white soft)
+      float l = dot(rgb, vec3(.2126,.7152,.0722));
+      float k = smoothstep(uA.x - uA.z, uA.x + uA.z, l) * (1.0 - smoothstep(uA.y - uA.w, uA.y + uA.w, l));
+      a *= k; }
     else if (uOp == 10) { // light sweep: band across direction uA.z (deg) centred at uA.xy (px), width uK, colour uB
       vec2 p = vUV*uRes; float an = radians(uA.z); vec2 n = vec2(cos(an), sin(an)); float d = abs(dot(p-uA.xy, n));
       float k = exp(-d*d/(2.0*uK*uK/9.0)); rgb = rgb + uB.rgb*k*uB.a; }
@@ -77,6 +81,7 @@ const SHADERS = {
   shadow: `${FS_HEAD} uniform sampler2D uDst; uniform vec2 uOff; uniform vec4 uA; uniform float uK; uniform int uOnly;
   void main(){ float sa = texture(uTex, vUV - uOff/uRes).a * uK; vec4 sh = vec4(uA.rgb*sa, sa); vec4 src = texture(uDst, vUV);
     o = uOnly==1 ? sh : src + sh*(1.0-src.a); }`,
+  mtile: `${FS_HEAD} uniform float uK; uniform vec2 uOff; void main(){ vec2 q = vUV; if (uK > 0.5) { q = abs(mod(q + 1.0, 2.0) - 1.0); } else { q = fract(q); } o = texture(uTex, q); }`,
   rgbsplit: `${FS_HEAD} uniform vec2 uOff; void main(){ vec4 c = texture(uTex, vUV); float r = texture(uTex, vUV + uOff/uRes).r; float b = texture(uTex, vUV - uOff/uRes).b; o = vec4(r, c.g, b, c.a); }`,
   add: `${FS_HEAD} uniform sampler2D uDst; uniform float uK; void main(){ o = texture(uDst, vUV) + texture(uTex, vUV)*uK; }`,
   mix: `${FS_HEAD} uniform sampler2D uDst, uMask; uniform float uK; uniform int uHasMask;

@@ -34,14 +34,16 @@ await page.route('http://engine.local/**', async (route) => {
   try {
     if (p === '/') return route.fulfill({ path: path.join(HERE, 'page.html') });
     if (p === '/project.json') return route.fulfill({ body: JSON.stringify(project), contentType: 'application/json' });
-    if (p === '/config.json') return route.fulfill({ body: JSON.stringify({ comp: args.comp, samples, blurK: args.blurk ? +args.blurk : undefined }), contentType: 'application/json' });
+    if (p === '/config.json') return route.fulfill({ body: JSON.stringify({ comp: args.comp, samples, blurK: args.blurk ? +args.blurk : undefined, modelOpts: args.modelopts ? JSON.parse(fs.readFileSync(args.modelopts)) : {} }), contentType: 'application/json' });
     if (p.startsWith('/engine/')) return route.fulfill({ path: path.join(HERE, p.slice(8)), contentType: MIME[path.extname(p)] });
-    if (p.startsWith('/nm/')) return route.fulfill({ path: path.join(HERE, '..', 'node_modules', p.slice(4)) });
+    if (p.startsWith('/nm/')) return route.fulfill({ path: path.join(HERE, '..', 'node_modules', p.slice(4)), contentType: MIME[path.extname(p)] || undefined });
+    if (p.startsWith('/file/')) return route.fulfill({ path: p.slice(5) });
     if (p.startsWith('/asset/')) {
       const f = findFile(p.slice(7));
       if (!f) return route.fulfill({ status: 404 });
       const ext = path.extname(f).toLowerCase();
       if (['.png', '.jpg', '.jpeg', '.gif', '.webp'].includes(ext)) return route.fulfill({ path: f, contentType: MIME[ext] });
+      if (ext === '.glb') return route.fulfill({ path: f, contentType: 'model/gltf-binary' });
       // psd/ai/other stills: rasterise once via ImageMagick
       const out = path.join(cacheDir, 'still_' + path.basename(f) + '.png');
       if (!fs.existsSync(out)) { try { execFileSync('convert', [f + '[0]', '-background', 'none', out], { stdio: 'ignore' }); } catch { return route.fulfill({ status: 404 }); } }

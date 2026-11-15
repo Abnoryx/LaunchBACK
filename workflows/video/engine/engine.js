@@ -2,6 +2,7 @@
 import { evalProp, keyValue } from './anim.js';
 import { textAnimation, drawText, mapFont, ensureFont } from './text.js';
 import { GL, BLEND } from './gl.js';
+import { ModelRenderer, U as MODEL_U, ANCHOR_RAW } from './gltf.js';
 
 // ------------------------------------------------------------------ math (column-major 4x4)
 const I4 = () => [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
@@ -115,7 +116,8 @@ export class Engine {
     const [sw, sh] = this.sourceSize(L);
     const isAV = L.type === 'AVLayer' && L.src_id != null;
     const isCam = L.type === 'CameraLayer';
-    const anchor = isCam ? [0, 0, 0] : g('ADBE Anchor Point', isAV ? [sw / 2, sh / 2, 0] : [0, 0, 0]);
+    let anchor = isCam ? [0, 0, 0] : g('ADBE Anchor Point', isAV ? [sw / 2, sh / 2, 0] : [0, 0, 0]);
+    if (L.type === 'ThreeDModelLayer') anchor = anchor.map((a) => (a * MODEL_U) / ANCHOR_RAW); // AE stores model anchors in raw units
     let pos;
     const sep = ['ADBE Position_0', 'ADBE Position_1', 'ADBE Position_2'].map((m) => findM(tg, m));
     const P = g('ADBE Position', [comp.w / 2, comp.h / 2, 0]);
@@ -127,7 +129,7 @@ export class Engine {
     const op = g('ADBE Opacity', 100);
     const is3D = !!L.three_d_layer || isCam;
     let m = T(pos[0], pos[1], is3D ? pos[2] || 0 : 0);
-    if (is3D) m = mm(m, mm(RZ(ori[2]), mm(RY(ori[1]), RX(ori[0]))));
+    if (is3D) m = mm(m, mm(RX(ori[0]), mm(RY(ori[1]), RZ(ori[2]))));
     if (is3D) m = mm(m, mm(RX(rx), mm(RY(ry), RZ(rz))));
     else m = mm(m, RZ(rz));
     if (!isCam) m = mm(m, mm(S(sc[0] / 100, sc[1] / 100, is3D ? (sc[2] ?? 100) / 100 : 1), T(-anchor[0], -anchor[1], is3D ? -(anchor[2] || 0) : 0)));
@@ -185,6 +187,13 @@ export class Engine {
     this.images.set(url, im);
     return im;
   }
+  async loadModel(f) {
+    if (!this.models) this.models = new ModelRenderer(1080, 1920);
+    const url = this.assetUrl(f);
+    const name = (f.file || '').split(/[\\/]/).pop();
+    await this.models.load(url, this.modelOpts?.[name] || {});
+    return url;
+  }
   // Walk visible layers and preload what will be drawn at time t.
   async prepare(comp, t, depth = 0) {
     if (depth > 12) return;
@@ -196,6 +205,7 @@ export class Engine {
       if (sub) { await this.prepare(sub, lt, depth + 1); continue; }
       const f = this.footage.get(L.src_id);
       if (!f || f.source_type === 'SolidSource' || /\.(mp3|wav|aac|m4a|aif+)$/i.test(f.file || f.name)) continue;
+      if (/\.glb$/i.test(f.file || '')) { await this.loadModel(f); continue; }
       if (f.is_still || !f.duration) { const u = this.assetUrl(f); if (u) await this.loadImage(u); }
       else { const u = this.videoFrameUrl(f, lt); if (u) await this.loadImage(u); }
     }
@@ -261,6 +271,7 @@ export class Engine {
       let trim = null;
       for (const it of items) if (it.m === 'ADBE Vector Filter - Trim') trim = { s: ev(findM(it, 'ADBE Vector Trim Start'), 0), e: ev(findM(it, 'ADBE Vector Trim End'), 100), o: ev(findM(it, 'ADBE Vector Trim Offset'), 0) };
       for (const it of items) {
+        if (it.off) continue; // disabled in AE
         if (it.m === 'ADBE Vector Group') { walk(it, localM, opacity); continue; }
         if (it.m === 'ADBE Vector Shape - Rect') {
           const sz = ev(findM(it, 'ADBE Vector Rect Size'), [100, 100]), ps = ev(findM(it, 'ADBE Vector Rect Position'), [0, 0]);
@@ -443,7 +454,7 @@ export class Engine {
           break;
         }
         case 'BCC Halftone': case 'X Halftone': {
-          const cell = P('Cell', 5 * 2.2) * sx; // BCC 'scale 5' ~ 11 px cells at 1080p (visual match)
+          const cell = P('Cell', 3.7) * sx; // BCC default scale 5 ~ 3.7 px cells in layer space (measured on the reel brain)
           swap(g.color(cur, 9, { uK: Math.max(2, cell), uA: P('Ink', [0.11, 0.11, 0.11, 1]), uB: P('Paper', [0.86, 0.86, 0.86, 1]) }));
           break;
         }
@@ -456,6 +467,23 @@ export class Engine {
         case 'S_TimeWarpRGB': case 'X RGB Split': {
           const o = g.target(cur.w, cur.h);
           g.run('rgbsplit', o, { uOff: [P('Amount', 8) * sx, 0] }, { uTex: cur });
+          swap(o);
+          break;
+        }
+        case 'ADBE Extract': { // luma key: below black point -> transparent (softness ramps)
+          const bp = PM('0003', 0) / 255, wp = PM('0004', 255) / 255, bs = PM('0005', 0) / 255, ws = PM('0006', 0) / 255;
+          swap(g.color(cur, 11, { uA: [bp, wp, Math.max(bs, 1e-3), Math.max(ws, 1e-3)] }));
+          break;
+        }
+        case 'ADBE Simple Choker': {
+          const c = PM('0002', 0) * sx; // + chokes (erode), - spreads (dilate)
+          if (Math.abs(c) >= 0.5) swap(g.minimax(cur, Math.abs(c), [[1, 0], [0, 1]], c < 0));
+          break;
+        }
+        case 'ADBE Tile': { // Motion Tile: output size %, mirror edges
+          const ow = PM('0004', 100) / 100, oh = PM('0005', 100) / 100;
+          const o = g.target(cur.w, cur.h);
+          g.run('mtile', o, { uK: PM('0006', 0) ? 1 : 0, uOff: [ow, oh] }, { uTex: cur });
           swap(o);
           break;
         }
@@ -483,7 +511,7 @@ export class Engine {
     const items = [];
     for (const L of layers) {
       if (!this.active(L, tc)) continue;
-      if (L.type === 'CameraLayer' || L.type === 'LightLayer' || L.guide_layer || L.is_track_matte) continue;
+      if (L.type === 'CameraLayer' || L.type === 'LightLayer' || L.guide_layer) continue;
       if (L.null_layer) continue;
       const f = L.src_id != null ? this.footage.get(L.src_id) : null;
       if (f && (f.has_video === false || /\.(mp3|wav|aac|m4a|aif+)$/i.test(f.file || f.name))) continue;
@@ -520,7 +548,7 @@ export class Engine {
       const lt = this.localTime(L, t), ltc = this.localTime(L, opts.tcL ?? t);
       const subCache = new Map();
       const base = parentM ? mm(parentM, w.m) : w.m;
-      const kids = [...sub.layers].sort((a, b) => b.i - a.i).filter((K) => this.active(K, ltc) && K.type !== 'CameraLayer' && !K.null_layer && !K.is_track_matte && !K.guide_layer);
+      const kids = [...sub.layers].sort((a, b) => b.i - a.i).filter((K) => this.active(K, ltc) && K.type !== 'CameraLayer' && !K.null_layer && !K.guide_layer);
       // depth-sort children by projected depth
       const third = (K) => { const kw = this.worldOf(sub, K, lt, subCache); return xf(cam.view, xf(mm(base, kw.m), [0, 0, 0, 1]))[2]; };
       const sorted = kids.map((K) => [K, K.three_d_layer || L.three_d_layer ? third(K) : 0]);
@@ -538,6 +566,7 @@ export class Engine {
     const m = parentM ? mm(parentM, w.m) : w.m;
     const is3D = w.is3D || !!parentM;
     if (L.adjustment_layer) { this.drawAdjustment(comp, L, t, out, op); return; }
+    if (L.type === 'ThreeDModelLayer') { this.drawModel(comp, L, t, out, cam, m, op); return; }
     // scale hint for rasterisation of vectors/text
     let scaleHint = 1;
     if (is3D) {
@@ -595,6 +624,22 @@ export class Engine {
       g.release(dst);
     }
     g.release(tg); if (matte) g.release(matte);
+  }
+
+  drawModel(comp, L, t, out, cam, m, op) {
+    const g = this.g;
+    const f = this.footage.get(L.src_id);
+    if (!f || !this.models) return;
+    if (this.models.w !== comp.w || this.models.h !== comp.h) { this.models.canvas.width = comp.w; this.models.canvas.height = comp.h; this.models.r.setSize(comp.w, comp.h, false); this.models.w = comp.w; this.models.h = comp.h; }
+    const cv = this.models.render(this.assetUrl(f), m, cam.zoom, comp.w, comp.h);
+    if (!cv) return;
+    const tex = g.texFromImage(cv);
+    let tg = g.target(comp.w, comp.h); g.copy(tex, tg); g.deleteTex(tex);
+    tg = this.applyEffects(comp, L, t, tg, [0, 0, comp.w, comp.h]);
+    const quad = [[0, 0], [comp.w, 0], [0, comp.h], [comp.w, comp.h]].map(([x, y]) => this.clip2(out.w, out.h, [x, y, 0, 1]));
+    const gl = g.gl;
+    g.run('layer', out, { uOpacity: op, uMode: 10, uMatteMode: 0, uHasMask: 0 }, { uTex: tg, uDst: g.blank, uMatte: null, uMask: null }, quad, [gl.ONE, gl.ONE_MINUS_SRC_ALPHA]);
+    g.release(tg);
   }
 
   drawAdjustment(comp, L, t, out, op) {

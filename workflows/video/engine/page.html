@@ -10,6 +10,7 @@
 @font-face{font-family:"League Gothic";src:url(/nm/@fontsource/league-gothic/files/league-gothic-latin-400-normal.woff2)}
 @font-face{font-family:"Archivo Narrow";src:url(/nm/@fontsource/archivo-narrow/files/archivo-narrow-latin-700-normal.woff2);font-weight:700}
 body{margin:0;background:#000}</style></head><body><canvas id="c"></canvas>
+<script type="importmap">{"imports":{"three":"/nm/three/build/three.module.js","three/addons/":"/nm/three/examples/jsm/"}}</script>
 <script type="module">
 import { Engine, setBlurK } from '/engine/engine.js';
 const project = await (await fetch('/project.json')).json();
@@ -23,6 +24,7 @@ const eng = new Engine(project, {
   assetUrl: (f) => (f.file ? '/asset/' + encodeURIComponent(f.file.split(/[\\/]/).pop()) : null),
   videoFrameUrl: (f, t) => (f.file ? `/vid/${f.id}/${Math.max(0, Math.round(((f.loop && f.duration) ? (t % (f.duration - 0.05)) : t) * 1000))}.jpg?name=${encodeURIComponent(f.file.split(/[\\/]/).pop())}` : null),
 });
+eng.modelOpts = cfg.modelOpts || {};
 await eng.init(cv);
 window.renderFrame = async (t) => {
   const acc = await eng.frame(comp, t);

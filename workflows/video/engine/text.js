@@ -189,7 +189,9 @@ export function textAnimation(layer, tComp, ctx) {
       });
     }
   }
-  return { text, font, size, fill, tracking, chars, justify: base.justification ?? 7413, leading: base.leading };
+  return { text, font, size, fill, tracking, chars, justify: base.justification ?? 7413, leading: base.leading,
+    stroke: base.apply_stroke ? base.stroke_color : null, strokeWidth: base.stroke_width || 0,
+    box: base.box_text ? base.box_text_size : null };
 }
 
 const fontsReady = new Set();
@@ -207,7 +209,16 @@ export function drawText(anim, ss = 2) {
   const fontStr = `${f.italic ? 'italic ' : ''}${f.weight} ${size * ss}px "${f.family}"`;
   const meas = drawText._m || (drawText._m = document.createElement('canvas').getContext('2d'));
   meas.font = fontStr;
-  const lines = anim.text.split(/\r\n|\r|\n/);
+  let lines = anim.text.split(/\r\n|\r|\n/);
+  if (anim.box && anim.box[0] > 0) { // AE paragraph text: wrap to the box width
+    const maxW = anim.box[0] * ss, out = [];
+    for (const ln of lines) {
+      let cur = '';
+      for (const w of ln.split(/ +/)) { const tr = cur ? cur + ' ' + w : w; if (meas.measureText(tr).width > maxW && cur) { out.push(cur); cur = w; } else cur = tr; }
+      out.push(cur);
+    }
+    lines = out;
+  }
   const lead = (anim.leading || size * 1.2) * ss;
   const track = ((anim.tracking / 1000) + (f.tracking || 0)) * size * ss;
   // layout chars
@@ -253,7 +264,8 @@ export function drawText(anim, ss = 2) {
     ctx.translate(cx, cy);
     if (c.rot) ctx.rotate((c.rot * Math.PI) / 180);
     if (c.sx !== 1 || c.sy !== 1) ctx.scale(c.sx, c.sy);
-    ctx.fillText(g.ch, -g.w / 2, 0);
+    if (anim.stroke && anim.strokeWidth > 0) { ctx.lineJoin = 'round'; ctx.strokeStyle = css(anim.stroke); ctx.lineWidth = anim.strokeWidth * ss; if (anim.strokeOver) { ctx.fillText(g.ch, -g.w / 2, 0); ctx.strokeText(g.ch, -g.w / 2, 0); } else { ctx.strokeText(g.ch, -g.w / 2, 0); ctx.fillText(g.ch, -g.w / 2, 0); } }
+    else ctx.fillText(g.ch, -g.w / 2, 0);
     ctx.restore();
   }
   return { canvas: cv, ox: ox / ss, oy: oy / ss, scale: ss, fontInfo: f };

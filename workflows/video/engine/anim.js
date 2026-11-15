@@ -250,7 +250,8 @@ export function evalProp(prop, t, ctx = {}) {
       const off = ctx.ctrl?.(e.comp, e.layer, e.effect) ?? 0;
       const idx = ctx.index || 0;
       const s = (ctx.ctrl?.(e.comp, e.layer, e.effect.replace('x', 'y')) ?? 0);
-      return [base[0] + (idx * off) / 10, base[1] + (idx * s) / 10, ...(base.length > 2 ? [base[2]] : [])];
+      const zo = ctx.ctrl?.(e.comp, e.layer, e.effect.replace('x', 'z')) ?? 0;
+      return [base[0] + (idx * off) / 10, base[1] + (idx * s) / 10, idx + (idx * zo) / 10];
     }
     case 'ctrlDiv': return (ctx.ctrl?.(e.comp, e.layer, e.effect) ?? 0) / e.div;
     default: return base;
