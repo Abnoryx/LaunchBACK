@@ -50,7 +50,12 @@
     "panel",
     "big"
    ],
-   "status": "draft"
+   "status": "proven",
+   "score": {
+    "ssim_reel": 0.928,
+    "frames": 60
+   },
+   "weak": "f181-184 black gap between the two wipes (0.5-0.8)"
   }
  },
  "transitions": {
