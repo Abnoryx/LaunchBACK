@@ -63,3 +63,7 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 ---
 
 **These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
+
+---
+
+**Video workflows:** before any work under `workflows/video/`, read `workflows/video/REQUIREMENTS.md` (the user's standing rules) and `workflows/video/ROADMAP.md`.

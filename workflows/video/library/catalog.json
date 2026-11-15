@@ -1,0 +1,43 @@
+{
+  "_about": "Index of every building block for the style. status: draft -> proven (passes reel score + check) -> approved (user said yes). New entries are added only after user approval.",
+  "templates": {
+    "hero_word": {"file": "templates/hero_word.py", "source": "reel S1 f0-96", "slots": ["kicker", "hero", "q1", "q2", "sub1", "sub2", "mark", "prop"], "status": "draft", "score": {"ssim_reel": 0.708}}
+  },
+  "transitions": {
+    "minimax_flash": {"fn": "style.minimax_flash", "source": "reel f67-68, f96-98, f140-142", "status": "draft"},
+    "lens_blur_in": {"fn": "style.lens_blur_in", "source": "reel f0-20", "status": "draft"},
+    "lens_blur_out": {"fn": "style.lens_blur_out", "source": "reel f238-248", "status": "draft"},
+    "whip": {"source": "reel f86-96 (camera x 817->1245, ease whip)", "status": "draft", "note": "currently via solved camera"}
+  },
+  "camera_moves": {
+    "solved_reel_camera": {"fn": "style.solved_camera", "source": "research/camera/cam_all.tsv", "status": "draft", "note": "replace with parametric moves (punch-in, push-in, pan, dolly, snap pull-out) as templates are generalised"}
+  },
+  "text_styles": {
+    "word_reveal": {"fn": "style.word_reveal", "spec": "opacity 0->1 + blur 10, offset -100->100 over ~10 f, words"},
+    "char_reveal": {"fn": "style.char_reveal", "spec": "same, per character"},
+    "rise_reveal": {"spec": "per character, rise 115 px + opacity", "source": "reel S2 YOURS"},
+    "pairing_sans_serif_italic": {"spec": "bold sans helpers (Arimo, tracking -80) + serif bold italic hero (Kokila/Tinos)"}
+  },
+  "fonts": {
+    "Arimo": {"role": "sans_bold (Helvetica-Bold)", "license": "Apache 2.0 (fontsource)", "status": "approved"},
+    "Anton": {"role": "hero_condensed (Coolvetica HeavyComp stand-in, best SSIM)", "license": "OFL", "status": "draft"},
+    "Coolvetica Condensed/Compressed/Crammed/Regular": {"role": "pill (SHARE) etc.", "license": "Typodermic free (user supplied, not in repo)", "path": "/home/user/tpl/fonts/"},
+    "Tinos": {"role": "serif italic stand-in (Kokila, Times)", "license": "Apache 2.0"},
+    "Bodoni Moda": {"role": "Didot italic stand-in", "license": "OFL"},
+    "League Gothic": {"role": "condensed alt", "license": "OFL"},
+    "Patrick Hand": {"role": "handwriting (Bradley Hand stand-in)", "license": "OFL"}
+  },
+  "palettes": {"original": {"fn": "style.PALETTES['original']"}, "red": {"fn": "style.PALETTES['red']", "note": "our accent"}},
+  "eases": {"fn": "style.EASE", "names": ["standard", "out", "snap", "whip", "push", "dolly"]},
+  "finishes": {
+    "paper": {"fn": "style.paper", "spec": "#E8E8E8 flat"},
+    "paper_finish": {"fn": "style.paper_finish", "spec": "edge blur (inverted diamond, feather 150, Gaussian 14, fringe 3) + fringe 0.8 + film edge multiply"},
+    "dark_grade": {"spec": "lift (0,16,17), gain .96, sat x.6, black #001011", "status": "todo"}
+  },
+  "assets": {
+    "film_edge.png": {"made_by": "make_assets.film_edge (drawn in code)", "use": "multiply overlay on paper shots", "status": "draft"},
+    "car.png": {"made_by": "Higgsfield gpt_image_2_6 + make_assets.car_cutout (unmixed, recoloured to #156422)", "use": "hero_word prop (original content)", "status": "draft"}
+  },
+  "sfx": {"_todo": "our own whoosh/hit/riser set placed by the reel's onset rules (0-3 f before the visual)"},
+  "music": {"_todo": "user decision pending; bed 12 dB under VO, no ducking"}
+}
