@@ -17,10 +17,10 @@ DEFAULTS = {
     'finish': {'edge_blur': 6},  # reel's corners are sharper than a Gaussian 14 edge blur (sharpness grid)
     'layout': {
         # hand-tuned against reel S1 (the SSIM hill-climb was rejected by the visual check)
-        'kicker': [-185, 669, 671], 'kicker_scale': 100, 'hero': [-230, 1235, 671], 'hero_size': 370, 'hero_scale': [140, 163, 100],
-        'q1': [524, 1110, -264], 'q2': [661, 1110, -264], 'q_scale': 100, 'sub1': [318, 1028, 582], 'sub2': [318, 1153, 582],
-        'markB': [1137, 85, 1049], 'markB_scale': 150, 'markB_rot': 8,
-        'markA': [520, 1675, 99], 'markA_scale': 125, 'markA_rot': -8,
+        'kicker': [-185, 669, 671], 'kicker_scale': 100, 'hero': [-244, 1218, 671], 'hero_size': 370, 'hero_scale': [140, 163, 100],
+        'q1': [528, 1116, -264], 'q2': [667, 1119, -264], 'q_scale': 100, 'q2_scale': 1.0, 'sub1': [318, 1028, 582], 'sub2': [318, 1153, 582],
+        'markB': [1091, 49, 1049], 'markB_scale': 163.8, 'markB_rot': 8,
+        'markA': [525, 1728, 99], 'markA_scale': 130.9, 'markA_rot': -8,
         'prop_y': 1090, 'prop_park_x': 470, 'prop_z': 193,
     },
     'timing': {'kicker': (0.30, 0.60), 'hero': (0.567, 0.9), 'q1': (35, 45), 'q2': (36, 46), 'sub_in': 67,
@@ -62,7 +62,7 @@ def build(proj, name='hero_word', **params):
     c.effects(q1, _ds(35, 315, 21, 16), S.gaussian(dof))
     q2 = c.text('q2', W['q2'], 0, end, sans, 78, pal['accent'], tracking=-80, hscale=0.89, three_d_layer=True,
                 reveal=S.word_reveal(T['q2'][0] * F, T['q2'][1] * F))
-    c.transform(q2, pos=Lo['q2'], scale=[Lo['q_scale']] * 2 + [100])
+    c.transform(q2, pos=Lo['q2'], scale=[Lo['q_scale'] * Lo.get('q2_scale', 1)] * 2 + [100])
     c.effects(q2, _ds(35, 305, 15, 40), S.gaussian(dof))
     s1 = c.text('sub1', W['sub1'], T['sub_in'] * F, end, sans, 98, pal['ink'], tracking=-80, three_d_layer=True)
     c.transform(s1, pos=Lo['sub1']); c.effects(s1, _ds(40, 331, 8, 26))
