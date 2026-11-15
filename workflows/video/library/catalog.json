@@ -16,9 +16,10 @@
    ],
    "status": "draft",
    "score": {
-    "ssim_reel": 0.716,
+    "ssim_reel": 0.728,
     "frames": 97
-   }
+   },
+   "blocked_by": "car shape (different model) and WONDER font (Coolvetica Heavy Comp is paid); position fitting has converged"
   },
   "share_card": {
    "file": "templates/share_card.py",

@@ -12,6 +12,21 @@ Note: Higgsfield downloads are blocked (CDN host not allowed), so tonight favour
 6. **Morning report** at the bottom of this file: scores, clips, what failed, what needs you.
 
 ## Morning report
-- S1 `hero_word`: full shot **0.716** (target 0.75 not yet met). Fixes: crisp big text (8x raster), edge blur from sharpness grid, thinner near-camera extrusion. Clip: out/s1_template_sbs.mp4.
-- S10 `share_card`: **0.882 — target met** (frames 0.89-0.94; card-shrink transition f968-971 weak). Clip: out/s10_template_sbs.mp4. Style fix found here: film-edge print now sits above the edge blur on every paper shot.
-- S2 type section `word_panel`: **0.928 — target met** (frames 0.95-0.99; f181-184 between the two wipes weak). Panel words now matted to the panel, mint outline rim on the big word. Clip: out/s2_word_panel_sbs.mp4.
+
+| # | Target | Result |
+|---|---|---|
+| 1 | S1 `hero_word` ≥ 0.75 | **0.728** — not met (was 0.708). Every word crisp and visible; clip `out/s1_template_sbs.mp4` |
+| 2 | Element fitter v2 | **Done.** First pass improved every checked frame (+0.01–0.02); a second pass made all frames worse, so it was reverted — position fitting has converged for S1 |
+| 3 | S10 `share_card` ≥ 0.85 | **0.882 — met.** Clip `out/s10_template_sbs.mp4` |
+| 4 | S2 type section `word_panel` ≥ 0.80 | **0.928 — met.** Clip `out/s2_word_panel_sbs.mp4` |
+| 5 | Library/catalog updated | **Done** (3 templates, new text style, dark film-edge asset, scores and weak spots logged) |
+
+**Fixes found along the way that help every shot:** big near-camera words were rendering soft (raster cap 4x → 8x); the film-edge print was being washed out by the edge blur (now prints on top, crisp); text horizontal/vertical scale and paragraph boxes now work.
+
+**What's holding S1 below 0.75 (needs you):**
+- The car: ours is a different model from the reel's rounded long-hood coupe. A closer generation (0.25 credits) would help — send it here like last time.
+- WONDER's font: the reel uses Coolvetica *Heavy Comp*; your free pack only has regular weights, so Anton stands in.
+
+**Still blocked:** Higgsfield downloads (allow `d8j0ntlcm91z4.cloudfront.net` from a computer) — needed for the asset-heavy shots (phone, hand, flame, sofa, brain, calendar). Music decision. Kokila/Didot/Helvetica font files.
+
+**Next (pending your OK):** remaining OG shots as templates (S1b, S3–S9 need props), then our video from the templates.
