@@ -12,4 +12,5 @@ Note: Higgsfield downloads are blocked (CDN host not allowed), so tonight favour
 6. **Morning report** at the bottom of this file: scores, clips, what failed, what needs you.
 
 ## Morning report
-(filled in overnight)
+- S1 `hero_word`: full shot **0.716** (target 0.75 not yet met). Fixes: crisp big text (8x raster), edge blur from sharpness grid, thinner near-camera extrusion. Clip: out/s1_template_sbs.mp4.
+- S10 `share_card`: **0.882 — target met** (frames 0.89-0.94; card-shrink transition f968-971 weak). Clip: out/s10_template_sbs.mp4. Style fix found here: film-edge print now sits above the edge blur on every paper shot.

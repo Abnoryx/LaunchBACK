@@ -15,8 +15,8 @@ DEFAULTS = {
     'layout': {'line_y': 990, 'line_size': 112, 'a_x0': 540, 'a_x1': 126, 'panel_x': 532, 'big_y': 1080, 'big_size': 330,
                'big_hscale': 1.12, 'plate': '#E2F4F5', 'panel': '#161613', 'base': '#171513', 'big_ink': '#10130F',
                'glow': '#0A6A16'},
-    'timing': {'snap': (0, 10), 'slide': (5, 15), 'b': (8, 18), 'panel_up': (13, 23), 'panel_words': (15, 33),
-               'panel_wipe': (31, 41), 'big': (32, 47), 'plate_wipe': (39, 49), 'base_on': 44},
+    'timing': {'snap': (0, 10), 'slide': (5, 15), 'b': (8, 18), 'panel_up': (13, 23), 'panel_words': (14, 27),
+               'panel_wipe': (31, 41), 'big': (31, 45), 'plate_wipe': (39, 49), 'base_on': 44},
 }
 
 
@@ -33,7 +33,7 @@ def linear_wipe(t0, t1, angle=0, ease=(0.8, 0, 0.2, 1)):
         P('Wipe Angle', 'ADBE Linear Wipe-0002', v=angle)])
 
 
-def light_sweep_edge(color='#00FF52', direction=237, width=900, edge=0.73 * 100, thickness=7.6, center=(540, 1080)):
+def light_sweep_edge(color='#00FF52', direction=237, width=1400, edge=160, thickness=9, center=(540, 1080)):
     return P('CC Light Sweep', 'CC Light Sweep', children=[
         P('Center', 'CC Light Sweep-0001', v=list(center)), P('Direction', 'CC Light Sweep-0002', v=direction),
         P('Shape', 'CC Light Sweep-0003', v=2), P('Width', 'CC Light Sweep-0004', v=width),
@@ -62,6 +62,7 @@ def build(proj, name='word_panel', **params):
     pn = c.footage(panel_solid, T['panel_up'][0] * F, T['panel_wipe'][1] * F)
     c.transform(pn, pos=K((T['panel_up'][0] * F, [540, 2903], S.EASE['standard']), (T['panel_up'][1] * F, [540, 960])))
     c.effects(pn, linear_wipe(T['panel_wipe'][0] * F, T['panel_wipe'][1] * F, 0))
+    pw['has_track_matte'] = True; pw['track_matte_type'] = MATTE_ALPHA; pw['_matte_ref'] = pn  # words live inside the panel
 
     # ---------------- first line on the pale plate
     a = c.text('a', W['a'], 0, T['panel_up'][1] * F, sans, Lo['line_size'], '#090805', tracking=-80)
@@ -78,7 +79,15 @@ def build(proj, name='word_panel', **params):
     big = c.text('big', W['big'], T['big'][0] * F, end, big_font, Lo['big_size'], Lo['big_ink'], justify=7415, hscale=Lo['big_hscale'],
                  reveal=S.reveal_rise(T['big'][0] * F, T['big'][1] * F, dy=115, blur=0, based_on=2))
     c.transform(big, pos=[540, Lo['big_y']])
-    c.effects(big, light_sweep_edge())
+    # mint rim on the dark base (reel f185-200): outline copy fading out to the right
+    rim = c.text('big rim', W['big'], T['plate_wipe'][0] * F, end, big_font, Lo['big_size'], Lo['big_ink'], justify=7415,
+                 hscale=Lo['big_hscale'], stroke='#9BE89A', stroke_w=3)
+    c.transform(rim, pos=[540, Lo['big_y']])
+    c.effects(rim, P('Linear Wipe', 'ADBE Linear Wipe', children=[P('Transition Completion', 'ADBE Linear Wipe-0001', v=45.0),
+                                                                  P('Wipe Angle', 'ADBE Linear Wipe-0002', v=270),
+                                                                  P('Feather', 'ADBE Linear Wipe-0003', v=520)]))
+    # keep the rim above the letters: move it before 'big' in the stack
+    c.layers.remove(rim); c.layers.insert(c.layers.index(big), rim)
     plate = proj.solid(Lo['plate'], name='plate')
     pl = c.footage(plate, 0, end)
     c.effects(pl, linear_wipe(T['plate_wipe'][0] * F, T['plate_wipe'][1] * F, 0, ease='lin'))
