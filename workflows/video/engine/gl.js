@@ -123,6 +123,11 @@ const SHADERS = {
     float d = abs(dot(p-uA.xy, n)) / max(uK*0.5, 1.0); float k = uShape == 2 ? (1.0 - smoothstep(0.0, 1.0, d)) : uShape == 3 ? step(d, 1.0) : max(0.0, 1.0 - d);
     float rim = max(0.0, c.a - texture(uE, vUV).a);
     o = vec4(c.rgb + uB.rgb * k * (uSweep * c.a + uEdge * rim), c.a); }`,
+  // Wave Warp (sine): wave travels along direction uDir (deg, 0 = up), displacement perpendicular, height uH px, width uW px
+  wavewarp: `${FS_HEAD} uniform float uH, uW, uDir, uPh; void main(){ vec2 p = vUV*uRes; float an = radians(uDir);
+    vec2 d = vec2(sin(an), -cos(an)), n = vec2(cos(an), sin(an));
+    float off = uH * sin(6.2831853 * dot(p, d) / max(uW, 1.0) + uPh);
+    o = texture(uTex, (p - n*off)/uRes); }`,
   rgbtime: `${FS_HEAD} uniform sampler2D uA, uB; void main(){ vec4 c = texture(uTex, vUV), a = texture(uA, vUV), b = texture(uB, vUV);
     o = vec4(a.r, c.g, b.b, max(c.a, max(a.a, b.a))); }`,
   rgbsplit: `${FS_HEAD} uniform vec2 uOff; void main(){ vec4 c = texture(uTex, vUV); float r = texture(uTex, vUV + uOff/uRes).r; float b = texture(uTex, vUV - uOff/uRes).b; o = vec4(r, c.g, b, c.a); }`,

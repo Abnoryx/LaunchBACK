@@ -359,9 +359,11 @@ export class Engine {
       const fe = evalProp(findM(m, 'ADBE Mask Feather'), t) ?? [0, 0];
       const ex = evalProp(findM(m, 'ADBE Mask Offset'), t) ?? 0;
       maxFeather = Math.max(maxFeather, fe[0] || 0);
-      const tmp = new OffscreenCanvas(W, H), tc = tmp.getContext('2d');
-      tc.setTransform(sx, 0, 0, sy, -rx0 * sx, -ry0 * sy);
-      if (fe[0] > 0.5) tc.filter = `blur(${(fe[0] * sx) / 2}px)`;
+      // large feathers: draw sharp on a padded canvas and blur on the GPU (canvas blur clips at the canvas edge)
+      const big = fe[0] * sx > 40, P = big ? Math.ceil(fe[0] * sx * 1.2) : 0;
+      let tmp = new OffscreenCanvas(W + 2 * P, H + 2 * P), tc = tmp.getContext('2d');
+      tc.setTransform(sx, 0, 0, sy, -rx0 * sx + P, -ry0 * sy + P);
+      if (fe[0] > 0.5 && !big) tc.filter = `blur(${(fe[0] * sx) / 2}px)`;
       tc.fillStyle = `rgba(255,255,255,${op})`;
       const mp = bezPath(sh);
       if (ex < 0) { // contract: fill, then erase a stroke band
@@ -370,7 +372,19 @@ export class Engine {
         tc.fill(mp);
         if (ex > 0) { tc.lineWidth = 2 * ex; tc.lineJoin = 'round'; tc.strokeStyle = `rgba(255,255,255,${op})`; tc.stroke(mp); }
       }
-      if (m.inv) { tc.globalCompositeOperation = 'xor'; tc.setTransform(1, 0, 0, 1, 0, 0); tc.filter = 'none'; tc.fillRect(0, 0, W, H); }
+      if (big) {
+        const g = this.g, tex = g.texFromImage(tmp.transferToImageBitmap()), a = g.target(W + 2 * P, H + 2 * P);
+        g.copy(tex, a); g.deleteTex(tex);
+        const b = g.blur(a, (fe[0] * sx) / 2, (fe[1] * sy) / 2); if (b !== a) g.release(a);
+        const o = g.target(W, H); g.clear(o);
+        const ex2 = (2 * P) / W, ey2 = (2 * P) / H;
+        g.run('copy', o, {}, { uTex: b }, [[-1 - ex2, -1 - ey2, 0, 1], [1 + ex2, -1 - ey2, 0, 1], [-1 - ex2, 1 + ey2, 0, 1], [1 + ex2, 1 + ey2, 0, 1]]);
+        g.release(b);
+        const px = g.readPixels(o); g.release(o);
+        tmp = new OffscreenCanvas(W, H); tc = tmp.getContext('2d');
+        tc.putImageData(new ImageData(new Uint8ClampedArray(px.buffer), W, H), 0, 0);
+      }
+      if (m.inv) { tc.globalCompositeOperation = 'xor'; tc.setTransform(1, 0, 0, 1, 0, 0); tc.filter = 'none'; tc.fillStyle = '#fff'; tc.fillRect(0, 0, W, H); }
       const mode = m.mode || 6813;
       if (first && mode === 6814) { c.fillStyle = '#fff'; c.fillRect(0, 0, W, H); }
       c.globalCompositeOperation = mode === 6814 ? 'destination-out' : mode === 6815 ? 'destination-in' : (first ? 'source-over' : 'source-over');
@@ -392,6 +406,7 @@ export class Engine {
       else if (e.m === 'ADBE Box Blur2') pad = Math.max(pad, PM('0001', 0) * 2);
       else if (e.m === 'ADBE Drop Shadow') pad = Math.max(pad, PM('0004', 5) + PM('0005', 0) * 1.2);
       else if (e.m === 'PEDG') pad = Math.max(pad, 160);
+      else if (e.m === 'ADBE Wave Warp') pad = Math.max(pad, PM('0002', 10) * 1.2);
     }
     return Math.min(600, Math.ceil(pad * sx));
   }
@@ -512,6 +527,12 @@ export class Engine {
           // AE's direction is clockwise from vertical; the band runs along that direction
           g.run('sweep', o, { uA: [(c[0] - rect[0]) * sx, (c[1] - rect[1]) * sx, dir, 0], uB: [col[0], col[1], col[2], 1], uK: w * sx, uSweep: inten, uEdge: er ? edge : 0, uShape: shape }, { uTex: cur, uE: er || cur });
           if (er) g.release(er);
+          swap(o);
+          break;
+        }
+        case 'ADBE Wave Warp': {
+          const o = g.target(cur.w, cur.h), sp = PM('0005', 1);
+          g.run('wavewarp', o, { uH: PM('0002', 10) * sx, uW: PM('0003', 40) * sx, uDir: PM('0004', 90), uPh: -2 * Math.PI * sp * t }, { uTex: cur });
           swap(o);
           break;
         }

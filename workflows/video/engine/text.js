@@ -8,8 +8,10 @@ const FONT_MAP = [
   [/^Helvetica(Neue)?-?Bold/, () => ({ family: 'Inter Variable', weight: 700, tracking: -0.01 })],
   [/^HelveticaNow\w*-Black/, () => ({ family: 'Inter Variable', weight: 900 })],
   [/^HelveticaNow\w*-Bold/, () => ({ family: 'Inter Variable', weight: 800 })],
-  [/^Helvetica-Compressed|Coolvetica-(HeavyComp|Cram)|CoolveticaHv/, () => ({ family: 'League Gothic', weight: 400 })],
-  [/^Coolvetica/, () => ({ family: 'Archivo Narrow', weight: 700 })],
+  // Coolvetica was missing where the project was saved (AE cached fallback metrics), so lay it out with natural widths
+  [/^Helvetica-Compressed/, () => ({ family: 'League Gothic', weight: 400 })],
+  [/^Coolvetica-(HeavyComp|Cram)|CoolveticaHv/, () => ({ family: 'League Gothic', weight: 400, natural: true })],
+  [/^Coolvetica/, () => ({ family: 'Archivo Narrow', weight: 700, natural: true })],
   [/^Helvetica/, () => ({ family: 'Inter Variable', weight: 400 })],
   [/^InkFree|BradleyHand|AdobeHandwriting/, () => ({ family: 'Patrick Hand', weight: 400 })],
   // Kokila's Latin glyphs have a small x-height: scale down, width is then fitted to AE's advances
