@@ -8,6 +8,7 @@ OUT=/home/user/tpl/an/parity
 FR=$OUT/frames_$LABEL
 FT="/home/user/tpl/x/psych/The Psychology Trick/The Psychology Trick"
 mkdir -p "$FR"
+LUTS=${LUTS:-/home/user/tpl/an/parity/luts.json}; [ -f "$LUTS" ] || LUTS=""
 python3 - "$FROM" "$TO" > /tmp/parity_chunks.txt <<'EOF'
 import sys
 a,b=float(sys.argv[1]),float(sys.argv[2]); n=3; d=(b-a)/n
@@ -15,7 +16,7 @@ for i in range(n): print(f"{a+i*d:.4f} {a+(i+1)*d:.4f}")
 EOF
 while read s e; do
   (cd "$HERE" && timeout 7000 node render.mjs --project /home/user/tpl/an/json/psych.json --footage "$FT" --comp transition \
-     --from "$s" --to "$e" --fps "$FPS" --samples 1 --cache /tmp/ec-par-$s --frames-dir "$FR" > "$FR/log_$s.txt" 2>&1) &
+     --from "$s" --to "$e" --fps "$FPS" --samples 1 --modelopts "$HERE/modelopts.json" ${LUTS:+--luts "$LUTS"} --cache /tmp/ec-par-$s --frames-dir "$FR" > "$FR/log_$s.txt" 2>&1) &
 done < /tmp/parity_chunks.txt
 wait
 python3 -I "$HERE/parity.py" "$FR" /home/user/tpl/reels/r1.mp4 30 "$OUT" "$LABEL"

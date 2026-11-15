@@ -116,6 +116,13 @@ const SHADERS = {
     vec2 q = (rgb.rg*(uN-1.0) + 0.5) / vec2(uN*uN, uN);
     vec3 l0 = texture(uLut, q + vec2(b0/uN, 0.0)).rgb, l1 = texture(uLut, q + vec2(b1/uN, 0.0)).rgb;
     o = vec4(mix(rgb, mix(l0, l1, f), uK)*a, a); }`,
+  // CC Light Sweep: band across direction uA.z through uA.xy, width uK; sweep adds light inside the alpha,
+  // edge adds light on the alpha rim (uE = eroded alpha); shape 1 linear, 2 smooth, 3 sharp
+  sweep: `${FS_HEAD} uniform sampler2D uE; uniform vec4 uA, uB; uniform float uK, uSweep, uEdge; uniform int uShape;
+  void main(){ vec4 c = texture(uTex, vUV); vec2 p = vUV*uRes; float an = radians(uA.z); vec2 n = vec2(cos(an), sin(an));
+    float d = abs(dot(p-uA.xy, n)) / max(uK*0.5, 1.0); float k = uShape == 2 ? (1.0 - smoothstep(0.0, 1.0, d)) : uShape == 3 ? step(d, 1.0) : max(0.0, 1.0 - d);
+    float rim = max(0.0, c.a - texture(uE, vUV).a);
+    o = vec4(c.rgb + uB.rgb * k * (uSweep * c.a + uEdge * rim), c.a); }`,
   rgbtime: `${FS_HEAD} uniform sampler2D uA, uB; void main(){ vec4 c = texture(uTex, vUV), a = texture(uA, vUV), b = texture(uB, vUV);
     o = vec4(a.r, c.g, b.b, max(c.a, max(a.a, b.a))); }`,
   rgbsplit: `${FS_HEAD} uniform vec2 uOff; void main(){ vec4 c = texture(uTex, vUV); float r = texture(uTex, vUV + uOff/uRes).r; float b = texture(uTex, vUV - uOff/uRes).b; o = vec4(r, c.g, b, c.a); }`,

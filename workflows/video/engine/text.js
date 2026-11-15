@@ -12,7 +12,11 @@ const FONT_MAP = [
   [/^Coolvetica/, () => ({ family: 'Archivo Narrow', weight: 700 })],
   [/^Helvetica/, () => ({ family: 'Inter Variable', weight: 400 })],
   [/^InkFree|BradleyHand|AdobeHandwriting/, () => ({ family: 'Patrick Hand', weight: 400 })],
-  [/^TimesNewRoman\w*Bold|Kokila-Bold|Didot/, () => ({ family: 'Tinos', weight: 700, italic: /Italic/ })],
+  // Kokila's Latin glyphs have a small x-height: scale down, width is then fitted to AE's advances
+  // the reel renders it narrower than AE's saved layout: natural Tinos widths at 0.77x (fit on "someone" and "buy")
+  [/^Kokila/, () => ({ family: 'Tinos', weight: 700, sizeScale: 0.77, natural: true })],
+  [/^Didot/, () => ({ family: 'Bodoni Moda', weight: 700 })],
+  [/^TimesNewRoman\w*Bold/, () => ({ family: 'Tinos', weight: 700, italic: /Italic/ })],
   [/^TimesNewRoman/, () => ({ family: 'Tinos', weight: 400 })],
   [/^Anton/, () => ({ family: 'Anton', weight: 400 })],
   [/^Montserrat-(\w+)/, (m) => ({ family: 'Inter Variable', weight: W[m[1]] ?? 800 })],
@@ -181,6 +185,8 @@ export function textAnimation(layer, tComp, ctx) {
           case 'ADBE Text Position 3D': c.dx += v[0] * k; c.dy += v[1] * k; c.dz += (v[2] || 0) * k; break;
           case 'ADBE Text Scale 3D': c.sx *= 1 + (v[0] / 100 - 1) * k; c.sy *= 1 + (v[1] / 100 - 1) * k; break;
           case 'ADBE Text Rotation': c.rot += v * k; break;
+          case 'ADBE Text Rotation X': c.rx = (c.rx || 0) + v * k; break;
+          case 'ADBE Text Rotation Y': c.ry = (c.ry || 0) + v * k; break;
           case 'ADBE Text Blur': c.blur += (Array.isArray(v) ? v[0] : v) * Math.abs(k); break;
           case 'ADBE Text Fill Color': c.fill = v; c.fillAmt = Math.max(c.fillAmt, Math.min(1, k)); break;
           case 'ADBE Text Tracking Amount': c.track += v * k; break;
@@ -205,6 +211,9 @@ function drawTextAE(anim, ss) {
   const glyphs = [];
   let maxSize = anim.size;
   for (const ln of anim.lines) {
+    // AE's cached advances exclude tracking and (for point text) justification: add both here
+    const row = [];
+    let trAcc = 0, xAcc = 0;
     for (let k = 0; k < ln.e - ln.s; k++) {
       const i = ln.s + k;
       let ch = anim.text[i];
@@ -212,12 +221,22 @@ function drawTextAE(anim, ss) {
       const r = runAt(i);
       const size = r.size || anim.size, font = r.font || anim.font;
       maxSize = Math.max(maxSize, size);
-      const x0 = ln.x + (k ? ln.adv[k - 1] : 0), x1 = ln.x + (ln.adv[k] ?? ln.adv[k - 1] ?? 0);
+      const a0 = k ? ln.adv[k - 1] : 0, a1 = ln.adv[k] ?? a0;
       if (anim.caps || r.caps) ch = ch.toUpperCase();
-      const tr = ((r.tracking ?? anim.tracking) / 1000) * size;
-      glyphs.push({ c: anim.chars[i], ch, x: x0, w: Math.max(0, x1 - x0 - tr), y: ln.y - (r.bshift || 0), size, font,
+      const fm = mapFont(font);
+      let w = Math.max(0, a1 - a0);
+      if (fm.natural) { meas.font = `${fm.italic ? 'italic ' : ''}${fm.weight} ${size * (fm.sizeScale || 1)}px "${fm.family}"`; w = meas.measureText(ch).width; }
+      row.push({ c: anim.chars[i], ch, x: ln.x + xAcc + trAcc, w, y: ln.y - (r.bshift || 0), size, font,
         fill: r.fill || anim.fill, vs: r.vs ?? anim.vscale ?? 1 });
+      xAcc += w;
+      trAcc += ((r.tracking ?? anim.tracking) / 1000) * size;
     }
+    while (row.length && /\s/.test(row[row.length - 1].ch)) row.pop();
+    if (!row.length) continue;
+    const lw = row[row.length - 1].x + row[row.length - 1].w - ln.x;
+    const J = anim.justify, bw = anim.box ? anim.box[0] : 0;
+    const off = anim.box ? (J === 7415 ? (bw - lw) / 2 : J === 7414 ? bw - lw : 0) : (J === 7415 ? -lw / 2 : J === 7414 ? -lw : 0);
+    for (const gl of row) { gl.x += off; glyphs.push(gl); }
   }
   if (!glyphs.length) return null;
   let maxBlur = 0, maxD = 0;
@@ -240,7 +259,7 @@ function drawTextAE(anim, ss) {
     ctx.font = `${f.italic ? 'italic ' : ''}${f.weight} ${fs}px "${f.family}"`;
     meas.font = ctx.font;
     const nw = meas.measureText(g.ch).width;
-    const hs = nw > 0 && g.w > 0 ? Math.min(1.3, Math.max(0.75, (g.w * ss) / nw)) : 1;
+    const hs = nw > 0 && g.w > 0 ? Math.min(1.6, Math.max(0.6, (g.w * ss) / nw)) : 1;
     ctx.save();
     ctx.globalAlpha = Math.min(1, c.op);
     const col = c.fill && c.fillAmt ? g.fill.map((v, i) => v + (c.fill[i] - v) * c.fillAmt) : g.fill;
@@ -342,4 +361,20 @@ export function drawText(anim, ss = 2) {
     ctx.restore();
   }
   return { canvas: cv, ox: ox / ss, oy: oy / ss, scale: ss, fontInfo: f };
+}
+
+// One glyph rasterised for per-character 3D: canvas + baseline-centre anchor (in px at scale ss).
+export function glyphSprite(ch, fontPS, size, fill, ss) {
+  const f = mapFont(fontPS);
+  const fs = size * (f.sizeScale || 1) * ss;
+  const font = `${f.italic ? 'italic ' : ''}${f.weight} ${fs}px "${f.family}"`;
+  const meas = drawText._m || (drawText._m = document.createElement('canvas').getContext('2d'));
+  meas.font = font;
+  const w = Math.ceil(meas.measureText(ch).width) + 8, h = Math.ceil(fs * 1.5) + 8;
+  const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+  const c = cv.getContext('2d'); c.font = font; c.textBaseline = 'alphabetic';
+  c.fillStyle = `rgb(${fill.map((v) => Math.round(Math.min(1, Math.max(0, v)) * 255)).join(',')})`;
+  const ax = w / 2, ay = 4 + fs * 1.05;
+  c.fillText(ch, ax - meas.measureText(ch).width / 2, ay);
+  return { canvas: cv, ax: ax / ss, ay: ay / ss, w: w / ss, h: h / ss };
 }

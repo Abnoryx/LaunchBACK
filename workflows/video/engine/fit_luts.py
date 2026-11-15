@@ -52,7 +52,7 @@ for c in d["comps"]:
                 if r0 + 0.05 <= t < r1 - 0.05 and n < len(R):
                     e = np.asarray(Image.open(f).convert("RGB").resize((W, H), Image.BILINEAR)).astype(np.float64)
                     E.append(e.reshape(-1, 3)); Rr.append(R[n].reshape(-1, 3).astype(np.float64))
-        key = f"{c['name']}|{L['i']}"
+        key = f"{c['id']}|{L['i']}"
         if not E:
             print(key, "no frames"); continue
         E, Rr = np.concatenate(E) / 255, np.concatenate(Rr) / 255
@@ -70,7 +70,10 @@ for c in d["comps"]:
         lut = np.clip(lut, 0, 1)
         mae0 = np.abs(E - Rr).mean() * 255
         fit = np.clip(X @ A + mean[flat], 0, 1)
-        print(f"{key}: {len(E) // (W * H)} frames, mean abs diff {mae0:.1f} -> {np.abs(fit - Rr).mean() * 255:.1f}")
+        mae1 = np.abs(fit - Rr).mean() * 255
+        print(f"{key} ({c['name']}): {len(E) // (W * H)} frames, mean abs diff {mae0:.1f} -> {mae1:.1f}")
+        if mae1 > 0.8 * mae0:  # weak fit: content mismatch dominates, leave the layer ungraded for now
+            print("   skipped (fit gain under 20%)"); continue
         luts[key] = {"n": N, "data": [int(round(v * 255)) for v in lut.reshape(-1)]}
 json.dump(luts, open(out, "w"))
 print(len(luts), "luts ->", out)

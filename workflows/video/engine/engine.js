@@ -1,6 +1,6 @@
 // AE-semantics renderer: evaluates a comp tree (from the .aep dump format) at time t and composites it with WebGL.
 import { evalProp, keyValue } from './anim.js';
-import { textAnimation, drawText, mapFont, ensureFont } from './text.js';
+import { textAnimation, drawText, mapFont, ensureFont, glyphSprite } from './text.js';
 import { GL, BLEND } from './gl.js';
 import { ModelRenderer, U as MODEL_U, ANCHOR_RAW } from './gltf.js';
 
@@ -61,8 +61,8 @@ export class Engine {
     this.canvas = canvas;
     this.g = new GL(canvas);
     this.g.keep = [...new Set(this.p.comps.map((c) => c.w + 'x' + c.h))].map((k) => k.split('x').map(Number));
-    for (const f of ['Inter Variable', 'Inter Tight Variable', 'Anton', 'Tinos', 'Patrick Hand', 'League Gothic', 'Archivo Narrow'])
-      for (const w of [100, 300, 400, 500, 600, 700, 800, 900]) await document.fonts.load(`${w} 40px "${f}"`).catch(() => {});
+    for (const f of ['Inter Variable', 'Inter Tight Variable', 'Anton', 'Tinos', 'Patrick Hand', 'League Gothic', 'Archivo Narrow', 'Bodoni Moda'])
+      for (const w of [100, 300, 400, 500, 600, 700, 800, 900]) for (const st of ['', 'italic ']) await document.fonts.load(`${st}${w} 40px "${f}"`).catch(() => {});
   }
 
   // ------------------------------------------------------------ time & visibility
@@ -288,6 +288,18 @@ export class Engine {
           const sz = ev(findM(it, 'ADBE Vector Ellipse Size'), [100, 100]), ps = ev(findM(it, 'ADBE Vector Ellipse Position'), [0, 0]);
           const p = new Path2D(); p.ellipse(ps[0], ps[1], Math.abs(sz[0] / 2), Math.abs(sz[1] / 2), 0, 0, Math.PI * 2);
           paths.push(p); pts.push([localM, ps[0] - sz[0] / 2, ps[1] - sz[1] / 2], [localM, ps[0] + sz[0] / 2, ps[1] + sz[1] / 2]);
+        } else if (it.m === 'ADBE Vector Shape - Star') { // polystar: type 1 star (inner+outer), 2 polygon
+          const ty = ev(findM(it, 'ADBE Vector Star Type'), 1), n = Math.max(3, Math.round(ev(findM(it, 'ADBE Vector Star Points'), 5)));
+          const ps = ev(findM(it, 'ADBE Vector Star Position'), [0, 0]), rot = ev(findM(it, 'ADBE Vector Star Rotation'), 0);
+          const ro = ev(findM(it, 'ADBE Vector Star Outer Radius'), 100), ri = ev(findM(it, 'ADBE Vector Star Inner Radius'), 50);
+          const p = new Path2D(), k = ty === 2 ? n : 2 * n;
+          for (let j = 0; j < k; j++) {
+            const r = ty === 2 || j % 2 === 0 ? ro : ri, a = ((rot - 90) * Math.PI) / 180 + (j * 2 * Math.PI) / k;
+            const x = ps[0] + r * Math.cos(a), y = ps[1] + r * Math.sin(a);
+            if (j) p.lineTo(x, y); else p.moveTo(x, y);
+            pts.push([localM, x, y]);
+          }
+          p.closePath(); paths.push(p);
         } else if (it.m === 'ADBE Vector Shape - Group') {
           const sh = ev(findM(it, 'ADBE Vector Shape'), null);
           if (sh && sh._shape) { paths.push(bezPath(sh)); for (const v of sh.vtx) pts.push([localM, v[0], v[1]]); }
@@ -458,7 +470,7 @@ export class Engine {
         }
         case 'ADBE Color Balance (HLS)': swap(g.color(cur, 13, { uA: [PM('0001', 0), PM('0002', 0), PM('0003', 0), 0] })); break;
         case 'MB LookSuite3': { // Magic Bullet Looks: per-layer 3D LUT fitted from reel/engine pairs (luts.json)
-          const key = `${comp.name}|${L.i}`, lut = this.luts?.[key];
+          const key = `${comp.id}|${L.i}`, lut = this.luts?.[key];
           if (!lut) break;
           this._lutTex = this._lutTex || new Map();
           if (!this._lutTex.has(key)) this._lutTex.set(key, g.lut3dTex(lut.data, lut.n));
@@ -493,8 +505,14 @@ export class Engine {
         }
         case 'CC Light Sweep': {
           const c = P('Center', [(rect[0] + rect[2]) / 2, (rect[1] + rect[3]) / 2]), dir = P('Direction', 30), w = P('Width', 80);
-          const col = P('Light Color', [1, 1, 1, 1]), inten = P('Sweep Intensity', 50) / 100;
-          swap(g.color(cur, 10, { uA: [(c[0] - rect[0]) * sx, (c[1] - rect[1]) * sx, dir, 0], uB: [col[0], col[1], col[2], Math.max(0.2, inten)], uK: w * sx }));
+          const col = P('Light Color', [1, 1, 1, 1]), inten = P('Sweep Intensity', 50) / 100, edge = P('Edge Intensity', 100) / 100;
+          const thick = PM('0007', 1) * sx * 2, shape = PM('0003', 1);
+          const er = thick >= 1 && edge > 0 ? g.minimax(cur, thick, [[1, 0], [0, 1]], false) : null;
+          const o = g.target(cur.w, cur.h);
+          // AE's direction is clockwise from vertical; the band runs along that direction
+          g.run('sweep', o, { uA: [(c[0] - rect[0]) * sx, (c[1] - rect[1]) * sx, dir, 0], uB: [col[0], col[1], col[2], 1], uK: w * sx, uSweep: inten, uEdge: er ? edge : 0, uShape: shape }, { uTex: cur, uE: er || cur });
+          if (er) g.release(er);
+          swap(o);
           break;
         }
         case 'PEQCAGL': { // Quick Chromatic Aberration: radial R/B scale; edge fringe ~1.7 px per unit (fit to the reel's ~5 px at 3.0)
@@ -596,7 +614,7 @@ export class Engine {
         const [sw, sh] = it.L.type === 'TextLayer' || it.L.type === 'ShapeLayer' ? [0, 0] : this.sourceSize(it.L);
         it.z = xf(it.cam.view, xf(w.m, [sw / 2, sh / 2, 0, 1]))[2];
       });
-      run.sort((a, b) => b.z - a.z || b.L.i - a.L.i);
+      run.sort((a, b) => (Math.abs(b.z - a.z) > 2 ? b.z - a.z : 0) || b.L.i - a.L.i);
       ordered.push(...run);
     }
     for (const it of ordered) this.drawLayer(comp, it.L, it.t, out, it.cam, it.cache, { ...opts, tcL: tc });
@@ -610,7 +628,11 @@ export class Engine {
     if (op <= 0.001) return;
     const sub = L.src_id != null ? this.comps.get(L.src_id) : null;
     // collapsed 3D precomp: draw its layers into this comp with combined transforms and our camera
-    if (sub && L.collapse_transformation && !findM(L, 'ADBE Effect Parade')?.c?.length && !findM(L, 'ADBE Mask Parade')?.c?.length) {
+    if (sub && L.collapse_transformation && !findM(L, 'ADBE Mask Parade')?.c?.length) {
+      // with effects, AE renders the collapsed layers through our camera first and applies the effects in comp space
+      const hasFx = !!findM(L, 'ADBE Effect Parade')?.c?.some((e) => !e.off);
+      const realOut = out;
+      if (hasFx) { out = g.target(realOut.w, realOut.h); g.clear(out); }
       const lt = this.localTime(L, t), ltc = this.localTime(L, opts.tcL ?? t);
       const subCache = new Map();
       const base = parentM ? mm(parentM, w.m) : w.m;
@@ -627,12 +649,19 @@ export class Engine {
         this.drawLayer(sub, K, mbK ? lt : ltc, out, cam, mbK ? subCache : subCacheC, { ...opts, tcL: ltc }, base, op);
       }
       this._t = saveT;
+      if (hasFx) {
+        const fx = this.applyEffects(comp, L, t, out, [0, 0, comp.w, comp.h]);
+        const quad = [[0, 0], [comp.w, 0], [0, comp.h], [comp.w, comp.h]].map(([x, y]) => this.clip2(comp.w, comp.h, [x, y, 0, 1]));
+        g.run('layer', realOut, { uOpacity: 1, uMode: 10, uMatteMode: 0, uHasMask: 0 }, { uTex: fx, uDst: g.blank, uMatte: null, uMask: null }, quad, [g.gl.ONE, g.gl.ONE_MINUS_SRC_ALPHA]);
+        g.release(fx);
+      }
       return;
     }
     const m = parentM ? mm(parentM, w.m) : w.m;
     const is3D = w.is3D || !!parentM;
     if (L.adjustment_layer) { this.drawAdjustment(comp, L, t, out, op); return; }
     if (L.type === 'ThreeDModelLayer') { this.drawModel(comp, L, t, out, cam, m, op); return; }
+    if (L.type === 'TextLayer' && is3D && this.pathTextMask(L)) { this.drawPathText3D(comp, L, t, out, cam, m, op); return; }
     // scale hint for rasterisation of vectors/text
     let scaleHint = 1;
     if (is3D) {
@@ -700,12 +729,87 @@ export class Engine {
     g.release(tg); if (matte) g.release(matte);
   }
 
+  // the mask used by "Path Options > Path" (1-based mask index), or null
+  pathTextMask(L) {
+    const po = findM(findM(L, 'ADBE Text Properties'), 'ADBE Text Path Options');
+    const idx = po ? evalProp(findM(po, 'ADBE Text Path'), 0) : 0;
+    if (!idx) return null;
+    const masks = (findM(L, 'ADBE Mask Parade')?.c || []).filter((x) => x.m === 'ADBE Mask Atom');
+    return masks[idx - 1] || null;
+  }
+
+  // Text on a mask path with per-character 3D: each glyph is its own quad, placed at its arc length along the path,
+  // turned to the path tangent, then rotated by the animators' X/Y/Z character rotations (anchor = baseline centre).
+  drawPathText3D(comp, L, t, out, cam, m, op) {
+    const g = this.g, gl = g.gl;
+    const anim = textAnimation(L, t, this.ctxFor(comp, L));
+    const sh = evalProp(findM(this.pathTextMask(L), 'ADBE Mask Shape'), t);
+    if (!sh?._shape) return;
+    const po = findM(findM(L, 'ADBE Text Properties'), 'ADBE Text Path Options');
+    const pv = (mn, d) => { const p = findM(po, mn); return p ? evalProp(p, t) : d; };
+    const first = pv('ADBE Text First Margin', 0), rev = pv('ADBE Text Reverse Path', 0), perp = pv('ADBE Text Perpendicular To Path', 1);
+    // sample the bezier path
+    const n = sh.vtx.length, segs = sh.closed ? n : n - 1, P = [];
+    for (let i = 0; i < segs; i++) {
+      const a = sh.vtx[i], b = sh.vtx[(i + 1) % n], c1 = [a[0] + sh.out[i][0], a[1] + sh.out[i][1]], c2 = [b[0] + sh.in[(i + 1) % n][0], b[1] + sh.in[(i + 1) % n][1]];
+      for (let k = 0; k < 64; k++) {
+        const u = k / 64, v = 1 - u;
+        P.push([v * v * v * a[0] + 3 * v * v * u * c1[0] + 3 * v * u * u * c2[0] + u * u * u * b[0], v * v * v * a[1] + 3 * v * v * u * c1[1] + 3 * v * u * u * c2[1] + u * u * u * b[1]]);
+      }
+    }
+    P.push(sh.closed ? P[0] : sh.vtx[n - 1]);
+    if (rev) P.reverse();
+    const cum = [0];
+    for (let i = 1; i < P.length; i++) cum.push(cum[i - 1] + Math.hypot(P[i][0] - P[i - 1][0], P[i][1] - P[i - 1][1]));
+    const total = cum[cum.length - 1];
+    const at = (sArc) => {
+      let s0 = sh.closed ? ((sArc % total) + total) % total : Math.min(total, Math.max(0, sArc));
+      let lo = 0, hi = cum.length - 1;
+      while (hi - lo > 1) { const mid = (lo + hi) >> 1; if (cum[mid] <= s0) lo = mid; else hi = mid; }
+      const f = (s0 - cum[lo]) / Math.max(1e-6, cum[hi] - cum[lo]);
+      const p = [P[lo][0] + (P[hi][0] - P[lo][0]) * f, P[lo][1] + (P[hi][1] - P[lo][1]) * f];
+      return { p, ang: (Math.atan2(P[hi][1] - P[lo][1], P[hi][0] - P[lo][0]) * 180) / Math.PI };
+    };
+    // horizontal layout (AE's cached advances + tracking)
+    const ln = anim.lines?.[0], text = anim.text;
+    const glyphs = [];
+    let x = 0;
+    for (let i = 0; i < text.length; i++) {
+      const w = ln ? (ln.adv[i] ?? 0) - (i ? ln.adv[i - 1] : 0) : anim.size * 0.6;
+      const c = anim.chars[i];
+      if (c && c.op > 0.002 && !/\s/.test(text[i])) glyphs.push({ i, ch: text[i], cx: x + w / 2, c });
+      x += w + (anim.tracking / 1000) * anim.size;
+    }
+    const ss = Math.max(1, Math.min(4, this.ss * 2));
+    const items = [];
+    for (const gph of glyphs) {
+      const { p, ang } = at(first + gph.cx + gph.c.dx);
+      let M = mm(m, T(p[0], p[1], gph.c.dz || 0));
+      if (perp) M = mm(M, RZ(ang));
+      M = mm(M, mm(RX(gph.c.rx || 0), mm(RY(gph.c.ry || 0), RZ(gph.c.rot || 0))));
+      M = mm(M, T(0, gph.c.dy, 0));
+      const z = xf(cam.view, xf(M, [0, 0, 0, 1]))[2];
+      items.push({ gph, M, z });
+    }
+    items.sort((a, b) => b.z - a.z);
+    for (const { gph, M } of items) {
+      const col = gph.c.fill && gph.c.fillAmt ? anim.fill.map((v, k) => v + (gph.c.fill[k] - v) * gph.c.fillAmt) : anim.fill;
+      const sp = glyphSprite(gph.ch, anim.font, anim.size, col, ss);
+      const quad = [[-sp.ax, -sp.ay], [sp.w - sp.ax, -sp.ay], [-sp.ax, sp.h - sp.ay], [sp.w - sp.ax, sp.h - sp.ay]].map(([qx, qy]) => this.clip3(cam, xf(M, [qx, qy, 0, 1])));
+      if (quad.some((q) => q[3] <= 1)) continue;
+      const tex = g.texFromImage(sp.canvas), tg = g.target(sp.canvas.width, sp.canvas.height);
+      g.copy(tex, tg); g.deleteTex(tex);
+      g.run('layer', out, { uOpacity: op * Math.min(1, gph.c.op), uMode: 10, uMatteMode: 0, uHasMask: 0 }, { uTex: tg, uDst: g.blank, uMatte: null, uMask: null }, quad, [gl.ONE, gl.ONE_MINUS_SRC_ALPHA]);
+      g.release(tg);
+    }
+  }
+
   drawModel(comp, L, t, out, cam, m, op) {
     const g = this.g;
     const f = this.footage.get(L.src_id);
     if (!f || !this.models) return;
     if (this.models.w !== comp.w || this.models.h !== comp.h) { this.models.canvas.width = comp.w; this.models.canvas.height = comp.h; this.models.r.setSize(comp.w, comp.h, false); this.models.w = comp.w; this.models.h = comp.h; }
-    const cv = this.models.render(this.assetUrl(f), m, cam.zoom, comp.w, comp.h);
+    const cv = this.models.render(this.assetUrl(f), m, cam.zoom, comp.w, comp.h, this.modelOpts?.[`comp:${comp.name}`]?.env ?? 2.2);
     if (!cv) return;
     const tex = g.texFromImage(cv);
     let tg = g.target(comp.w, comp.h); g.copy(tex, tg); g.deleteTex(tex);

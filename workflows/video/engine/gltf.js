@@ -69,9 +69,10 @@ export class ModelRenderer {
 
   // aeWorld: column-major 4x4 AE world matrix of the model layer (comp space, px). zoom: comp camera zoom.
   // camView: optional AE camera view matrix (comp space) when the model comp has a camera.
-  render(url, aeWorld, zoom = 1500, compW = this.w, compH = this.h) {
+  render(url, aeWorld, zoom = 1500, compW = this.w, compH = this.h, env = 2.2) {
     const holder = this.models.get(url);
     if (!holder) return null;
+    this.scene.environmentIntensity = env;
     for (const m of this.models.values()) m.visible = false;
     holder.visible = true;
     // C: AE comp -> three  (x-W/2, -(y-H/2), -z);  F: glTF -> AE layer space U*(X,-Y,-Z)
