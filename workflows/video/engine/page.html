@@ -9,6 +9,10 @@
 @font-face{font-family:"Bodoni Moda";src:url(/nm/@fontsource/bodoni-moda/files/bodoni-moda-latin-700-italic.woff2) format("woff2");font-weight:700;font-style:italic}
 @font-face{font-family:"Bodoni Moda";src:url(/nm/@fontsource/bodoni-moda/files/bodoni-moda-latin-700-normal.woff2) format("woff2");font-weight:700;font-style:normal}
 @font-face{font-family:"Arimo";src:url(/nm/@fontsource/arimo/files/arimo-latin-700-normal.woff2) format("woff2");font-weight:700}
+@font-face{font-family:"Coolvetica Compressed";src:url(/file/home/user/tpl/fonts/coolvetica_compressed_rg.ttf)}
+@font-face{font-family:"Coolvetica Condensed";src:url(/file/home/user/tpl/fonts/coolvetica_condensed_rg.ttf)}
+@font-face{font-family:"Coolvetica Crammed";src:url(/file/home/user/tpl/fonts/coolvetica_crammed_rg.ttf)}
+@font-face{font-family:"Coolvetica";src:url(/file/home/user/tpl/fonts/coolvetica_rg.ttf)}
 @font-face{font-family:"Patrick Hand";src:url(/nm/@fontsource/patrick-hand/files/patrick-hand-latin-400-normal.woff2)}
 @font-face{font-family:"League Gothic";src:url(/nm/@fontsource/league-gothic/files/league-gothic-latin-400-normal.woff2)}
 @font-face{font-family:"Archivo Narrow";src:url(/nm/@fontsource/archivo-narrow/files/archivo-narrow-latin-700-normal.woff2);font-weight:700}
@@ -20,20 +24,39 @@ const project = await (await fetch('/project.json')).json();
 const cfg = await (await fetch('/config.json')).json();
 const cv = document.getElementById('c');
 if (cfg.blurK) setBlurK(cfg.blurK);
-const comp = project.comps.find((c) => c.name === cfg.comp);
+let comp = project.comps.find((c) => c.name === cfg.comp);
 cv.width = comp.w; cv.height = comp.h;
-const eng = new Engine(project, {
+const engOpts = {
   mbSamples: cfg.samples,
   assetUrl: (f) => (f.file ? '/asset/' + encodeURIComponent(f.file.split(/[\\/]/).pop()) : null),
   videoFrameUrl: (f, t) => (f.file ? `/vid/${f.id}/${Math.max(0, Math.round(((f.loop && f.duration) ? (t % (f.duration - 0.05)) : t) * 1000))}.jpg?name=${encodeURIComponent(f.file.split(/[\\/]/).pop())}` : null),
-});
+};
+let eng = new Engine(project, engOpts);
 eng.modelOpts = cfg.modelOpts || {};
 eng.luts = cfg.luts || {};
 await eng.init(cv);
-window.renderFrame = async (t) => {
+// server mode: swap in a new project (fitting loops), keeping the loaded page and image cache
+window.setProject = async (pj, compName) => {
+  const images = eng.images;
+  eng = new Engine(pj, engOpts); eng.modelOpts = cfg.modelOpts || {}; eng.luts = cfg.luts || {};
+  await eng.init(cv); eng.images = images;
+  comp = pj.comps.find((c) => c.name === (compName || cfg.comp));
+};
+// small RGBA frame (for scoring), scaled on a 2D canvas
+window.renderSmall = async (t, w, h) => {
+  await window.renderFrame(t, true);
+  const sm = window._sm || (window._sm = new OffscreenCanvas(w, h)); const c2 = sm.getContext('2d');
+  c2.clearRect(0, 0, w, h); c2.drawImage(cv, 0, 0, w, h);
+  const px = c2.getImageData(0, 0, w, h).data;
+  let s = ''; const CH = 0x8000;
+  for (let i = 0; i < px.length; i += CH) s += String.fromCharCode.apply(null, px.subarray(i, i + CH));
+  return btoa(s);
+};
+window.renderFrame = async (t, drawOnly) => {
   const acc = await eng.frame(comp, t);
   eng.g.run('copy', { fb: null, w: comp.w, h: comp.h }, {}, { uTex: acc });
   eng.g.release(acc);
+  if (drawOnly) return null;
   const gl = eng.g.gl, px = new Uint8Array(comp.w * comp.h * 4);
   gl.bindFramebuffer(gl.FRAMEBUFFER, null);
   gl.readPixels(0, 0, comp.w, comp.h, gl.RGBA, gl.UNSIGNED_BYTE, px);

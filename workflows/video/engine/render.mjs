@@ -67,6 +67,26 @@ await page.route('http://engine.local/**', async (route) => {
 await page.goto('http://engine.local/');
 await page.waitForFunction('window.ready === true', null, { timeout: 120000 });
 
+// --serve PORT: keep the page up and answer POST /render {project?, comp?, times:[..], w, h} with small RGBA frames
+if (args.serve) {
+  const http = await import('http');
+  const srv = http.createServer(async (req, res) => {
+    let body = '';
+    req.on('data', (c) => (body += c));
+    req.on('end', async () => {
+      try {
+        const q = JSON.parse(body || '{}');
+        if (q.project) await page.evaluate(([pj, cn]) => window.setProject(pj, cn), [q.project, q.comp]);
+        const frames = [];
+        for (const t of q.times || []) frames.push(await page.evaluate(([t, w, h]) => window.renderSmall(t, w, h), [t, q.w || 360, q.h || 640]));
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ frames }));
+      } catch (e) { res.writeHead(500); res.end(String(e && e.stack || e)); }
+    });
+  });
+  srv.listen(+args.serve, '127.0.0.1', () => console.log('serving on', args.serve));
+  await new Promise(() => {});
+}
 const n = Math.round((to - from) * fps);
 const framesDir = args['frames-dir'];
 if (framesDir) fs.mkdirSync(framesDir, { recursive: true });

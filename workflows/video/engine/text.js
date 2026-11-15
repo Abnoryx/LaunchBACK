@@ -21,6 +21,11 @@ const FONT_MAP = [
   [/^Didot/, () => ({ family: 'Bodoni Moda', weight: 700 })],
   [/^TimesNewRoman\w*Bold/, () => ({ family: 'Tinos', weight: 700, italic: /Italic/ })],
   [/^TimesNewRoman/, () => ({ family: 'Tinos', weight: 400 })],
+  // the user's free Coolvetica cuts (regular weights only)
+  [/^CoolCompressed/, () => ({ family: 'Coolvetica Compressed', weight: 400 })],
+  [/^CoolCondensed/, () => ({ family: 'Coolvetica Condensed', weight: 400 })],
+  [/^CoolCrammed/, () => ({ family: 'Coolvetica Crammed', weight: 400 })],
+  [/^CoolRegular/, () => ({ family: 'Coolvetica', weight: 400 })],
   [/^Arimo/, () => ({ family: 'Arimo', weight: 700 })],
   [/^Anton/, () => ({ family: 'Anton', weight: 400 })],
   [/^Montserrat-(\w+)/, (m) => ({ family: 'Inter Variable', weight: W[m[1]] ?? 800 })],

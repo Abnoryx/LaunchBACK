@@ -61,7 +61,7 @@ export class Engine {
     this.canvas = canvas;
     this.g = new GL(canvas);
     this.g.keep = [...new Set(this.p.comps.map((c) => c.w + 'x' + c.h))].map((k) => k.split('x').map(Number));
-    for (const f of ['Inter Variable', 'Inter Tight Variable', 'Anton', 'Tinos', 'Patrick Hand', 'League Gothic', 'Archivo Narrow', 'Bodoni Moda', 'Arimo'])
+    for (const f of ['Inter Variable', 'Inter Tight Variable', 'Anton', 'Tinos', 'Patrick Hand', 'League Gothic', 'Archivo Narrow', 'Bodoni Moda', 'Arimo', 'Coolvetica Compressed', 'Coolvetica Condensed', 'Coolvetica Crammed', 'Coolvetica'])
       for (const w of [100, 300, 400, 500, 600, 700, 800, 900]) for (const st of ['', 'italic ']) await document.fonts.load(`${st}${w} 40px "${f}"`).catch(() => {});
   }
 

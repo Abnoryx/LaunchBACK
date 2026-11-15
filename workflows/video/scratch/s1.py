@@ -1,5 +1,5 @@
 """S1 (reel f0-96): 'ever WONDER why test drive' + car + two 3D '?' marks. Written from reel measurements only."""
-import csv, os
+import csv, json, os
 from aeb import (Project, K, hexc, reveal, fx, gaussian, drop_shadow, lens_blur, minimax, qca, mask,
                  MULTIPLY, LEFT, CENTER)
 
@@ -9,6 +9,7 @@ F = 1 / 30
 OUT_T = 97 / 30  # cut at f97
 EASE = (0.8, 0, 0.2, 1)
 GREEN = '#0DBE00'
+WONDER_FONT = json.loads(os.environ.get('WONDER_FONT', '{"font": "Anton", "size": 370, "scale": [140, 163, 100]}'))
 HELV = 'Arimo'  # metric-compatible Helvetica clone (square '?' dot, same widths)
 
 
@@ -53,9 +54,11 @@ def build(car=True):
     ever = c.text('ever', 'ever', 0, OUT_T, HELV, 131, '#2F2A26', tracking=-80, three_d_layer=True,
                   reveal=reveal(0.30, 0.60, based_on=3))
     c.transform(ever, pos=[-185, 669, 671])
-    wonder = c.text('WONDER', 'WONDER', 0, OUT_T, 'Anton', 370, '#186000', hscale=1.0, three_d_layer=True,
+    wf = WONDER_FONT
+    wonder = c.text('WONDER', 'WONDER', 0, OUT_T, wf['font'], wf['size'], '#186000', three_d_layer=True,
+                    stroke='#186000' if wf.get('stroke') else None, stroke_w=wf.get('stroke', 0),
                     reveal=reveal(0.567, 0.9, based_on=1))
-    c.transform(wonder, pos=[-230, 1235, 671], scale=[140, 163, 100])
+    c.transform(wonder, pos=[-230, 1235, 671], scale=wf['scale'])
     why = c.text('why', 'why', 0, OUT_T, HELV, 78, '#FFFFFF', tracking=-80, three_d_layer=True,
                  reveal=reveal(35 * F, 45 * F, based_on=3))
     c.transform(why, pos=[524, 1110, -264])
