@@ -16,8 +16,8 @@ DEFAULTS = {
     'palette': 'original',
     'layout': {
         'line1': [105, 884], 'line1_size': 137,
-        'pill_c': [585, 969], 'pill_wh': [411, 117], 'pill_text_size': 92,
-        'with': [386, 1156], 'with_size': 68, 'accent': [525, 1158], 'accent_size': 192,
+        'pill_c': [585, 969], 'pill_wh': [411, 117], 'pill_text_size': 110,
+        'with': [386, 1156], 'with_size': 68, 'accent': [525, 1158], 'accent_size': 202,
         'watermark': [538, 198], 'watermark_size': 58,
         'fineprint': [540, 1600], 'fine_box': [560, 120], 'fine_size': 32,
         'card_c': [540, 959], 'card_wh': [886, 608],
@@ -25,7 +25,7 @@ DEFAULTS = {
         'tail': [774, 1193], 'tail_size': 110,
     },
     # comp-local frames (reel frame - 934)
-    'timing': {'line1': (0, 6), 'pill_in': 2, 'with': (12, 18), 'accent': (18, 24), 'shrink': (34, 40), 'who': 40, 'bar': (40, 46), 'tail': 46},
+    'timing': {'line1': (0, 6), 'pill_in': 2, 'with': (12, 18), 'accent': (18, 24), 'shrink': (33, 38), 'who': 40, 'bar': (40, 46), 'tail': 46},
 }
 
 
@@ -47,8 +47,10 @@ def build(proj, name='share_card', **params):
     # -------- phase 2 (on top once it starts): small card on black
     who = c.text('who', W['who'], T['who'] * F, end, sans, Lo['who_size'], '#0D0D0D', tracking=-80)
     c.transform(who, pos=Lo['who'])
-    bt = c.text('bar text', W['bar'] + ' .', T['bar'][0] * F, end, sans, Lo['bar_text_size'], '#0D0D0D', tracking=-80)
+    bt = c.text('bar text', W['bar'], T['bar'][0] * F, end, sans, Lo['bar_text_size'], '#0D0D0D', tracking=-80)
     c.transform(bt, pos=Lo['bar_text'])
+    dot = c.text('bar dot', '.', T['bar'][0] * F, end, sans, Lo['bar_text_size'], '#35FF00')
+    c.transform(dot, pos=[Lo['bar_box'][2] - 120, Lo['bar_text'][1]])
     x0, y0, x1, y1 = Lo['bar_box']
     bar = c.shape('bar', T['bar'][0] * F, end, [rect_group(x1 - x0, y1 - y0, color='#11BD00')])
     c.transform(bar, pos=[x0, (y0 + y1) / 2], anchor=[-(x1 - x0) / 2, 0],
@@ -78,7 +80,7 @@ def build(proj, name='share_card', **params):
                 box=Lo['fine_box'], leading=Lo['fine_size'] * 1.0)
     c.transform(fp, pos=[Lo['fineprint'][0] - Lo['fine_box'][0] / 2, Lo['fineprint'][1]])
 
-    l1 = c.text('line1', W['line1'], 0, t_shrink1, sans, Lo['line1_size'], '#0D0D0D', tracking=-80,
+    l1 = c.text('line1', W['line1'], 0, t_shrink1, sans, Lo['line1_size'], '#0D0D0D', tracking=-80, hscale=0.79,
                 reveal=S.word_reveal(T['line1'][0] * F, T['line1'][1] * F))
     c.transform(l1, pos=Lo['line1'])
     # pill: scale 100 -> 80 -> 100 then a decaying bounce (reel: 104.4 f940, 108.4 f942, 96.1 f950, settled f970)
@@ -91,7 +93,7 @@ def build(proj, name='share_card', **params):
     c.transform(pt, pos=[Lo['pill_c'][0], Lo['pill_c'][1] + Lo['pill_text_size'] * 0.3], scale=bounce)
     pill = c.shape('pill', 0, t_shrink1, [rect_group(pw, ph, color='#1E1E1E', round_=ph / 2)])
     c.transform(pill, pos=Lo['pill_c'], scale=bounce)
-    c.effects(pill, drop_shadow('#000000', 45, 229, 24, 28))
+    c.effects(pill, drop_shadow('#000000', 45, 229, 34, 28))
     wi = c.text('with', W['with'], 0, t_shrink1, sans, Lo['with_size'], '#0D0D0D', tracking=-80,
                 reveal=S.word_reveal(T['with'][0] * F, T['with'][1] * F))
     c.transform(wi, pos=Lo['with'])
