@@ -121,9 +121,10 @@
    ],
    "status": "draft",
    "score": {
-    "ssim_reel": 0.738,
-    "frames": 44
-   }
+    "ssim_reel": 0.723,
+    "frames": 43
+   },
+   "notes": "3D brain_side.glb, smooth hand-drawn loop"
   },
   "word_prop_pop": {
    "file": "templates/word_prop_pop.py",
