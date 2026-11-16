@@ -182,6 +182,40 @@
     "frames": 92
    },
    "weak": "bed is a different model; window shadow across the card is a flat screen-space approximation"
+  },
+  "brain_collage": {
+   "file": "templates/brain_collage.py",
+   "source": "reel S8a f713-773",
+   "slots": [
+    "amp",
+    "line",
+    "small",
+    "accent",
+    "label",
+    "ring",
+    "prop"
+   ],
+   "status": "draft",
+   "score": {
+    "ssim_reel": 0.621,
+    "frames": 61
+   },
+   "weak": "number ring angle/blur and grid fine detail; fineprint was 60 px high in the scored render (fixed since)"
+  },
+  "follow_needle": {
+   "file": "templates/follow_needle.py",
+   "source": "reel S9 f845-933",
+   "slots": [
+    "cta",
+    "accent",
+    "small",
+    "big",
+    "logo",
+    "hand",
+    "pen"
+   ],
+   "status": "rendering",
+   "notes": "wave = measured vase path (Wave Warp on shapes is ineffective in our engine)"
   }
  },
  "transitions": {
@@ -348,7 +382,10 @@
   "brain_quad.png": "four dark brain renders 2x2 (from brain_side)",
   "math_graph.png": "maths graph sheet, transparent (drawn)",
   "ruler.png": "ruler strip, transparent (drawn)",
-  "formula_board.png": "hand-drawn maths sheet (drawn, Patrick Hand)"
+  "formula_board.png": "hand-drawn maths sheet (drawn, Patrick Hand)",
+  "fist.png": "forearm + clenched fist cutout (Higgsfield)",
+  "pen.png": "black pen cutout (Higgsfield)",
+  "e_mark.png": "round single-stroke e + dot logo mark (drawn)"
  },
  "sfx": {
   "_todo": "our own whoosh/hit/riser set placed by the reel's onset rules (0-3 f before the visual)"

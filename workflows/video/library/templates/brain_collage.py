@@ -16,7 +16,7 @@ DEFAULTS = {
     'ring': '12 13 14 15 16 17 18 19 20 21 22 23 24 25',
     'watermark': 'earnera.co',
     'fineprint': 'Marketing is the process of creating, communicating, and delivering value to customers in order to build relationships and drive business growth.',
-    'prop': {'file': 'brain_top.png', 'w': 880, 'h': 1168, 'width': 430},
+    'prop': {'file': 'brain_top.png', 'w': 880, 'h': 1168, 'width': 415},
     'layout': {'amp': [205, 477, 0], 'line': [659, 477, 0], 'line_size': 98, 'line_leading': 61, 'small': [651, 1476, 0],
                'accent': [753, 1540, 0], 'card': [540, 960, 1094], 'card_color': '#28E27B', 'graph': [540, 960, 1079],
                'quad': [750, 770, 0], 'ruler': [540, 1272, 381], 'board': [332, 934, 0], 'prop': [540, 960, 0],
@@ -62,7 +62,7 @@ def build(proj, name='brain_collage', **params):
 
     S.paper_finish(proj, c, 0, end, edge_blur=0, edge_fringe=0, fringe=1.2)
     for txt, pos, size, col, font, box in ((Pm['watermark'], [541, 215], 78, '#0E5E00', serif, None),
-                                           (Pm['fineprint'], [561, 1640], 27, '#6C6C6C', S.FONTS['fine_serif'], [555, 147])):
+                                           (Pm['fineprint'], [561, 1700], 27, '#6C6C6C', S.FONTS['fine_serif'], [555, 147])):
         L = c.text(txt[:12], txt, 0, end, font, size, col, tracking=-80, justify=7415, box=box, leading=24 if box else None)
         c.transform(L, pos=pos)
     c.camera('camera', 0, end, S.solved_camera('scene 8', 713, 713 + DUR_F, offset=713))
@@ -99,7 +99,7 @@ def build(proj, name='brain_collage', **params):
     br = c.footage(proj.still(pr['file'], pr['w'], pr['h']), 0, end, three_d_layer=True)
     c.transform(br, pos=Lo['prop'], scale=K((T['pop'][0] * F, [0, 0, 100], (0.0, 0.6, 0, 1)), (T['pop'][1] * F, [psc, psc, 100])))
     c.effects(br, tint('#000000', '#FFFFFF'),
-              P('Curves', 'ADBE CurvesCustom', children=[P('Curves', 'ADBE CurvesCustom-0001', v={'_curves': 1, 'channels': {'rgb': [[0, 0], [182, 80], [255, 255]]}})]),
+              P('Curves', 'ADBE CurvesCustom', children=[P('Curves', 'ADBE CurvesCustom-0001', v={'_curves': 1, 'channels': {'rgb': [[0, 0], [182, 150], [255, 255]]}})]),
               P('BCC Halftone', 'BCC Halftone', children=[P('Cell', 'BCC Halftone-c', v=4.5), P('Ink', 'BCC Halftone-i', v=hexc('#141414')),
                                                           P('Paper', 'BCC Halftone-p', v=hexc('#F2EEEE'))]),
               drop_shadow('#000000', 50, 71, 49, 75))

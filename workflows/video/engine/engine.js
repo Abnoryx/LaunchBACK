@@ -1,6 +1,6 @@
 // AE-semantics renderer: evaluates a comp tree (from the .aep dump format) at time t and composites it with WebGL.
 import { evalProp, keyValue } from './anim.js';
-import { textAnimation, drawText, mapFont, ensureFont, glyphSprite } from './text.js';
+import { textAnimation, drawText, mapFont, ensureFont, glyphSprite, glyphAdvance } from './text.js';
 import { GL, BLEND } from './gl.js';
 import { ModelRenderer, U as MODEL_U, ANCHOR_RAW } from './gltf.js';
 
@@ -799,11 +799,14 @@ export class Engine {
     const glyphs = [];
     let x = 0;
     for (let i = 0; i < text.length; i++) {
-      const w = ln ? (ln.adv[i] ?? 0) - (i ? ln.adv[i - 1] : 0) : anim.size * 0.6;
+      const w = ln ? (ln.adv[i] ?? 0) - (i ? ln.adv[i - 1] : 0) : glyphAdvance(text[i], anim.font, anim.size);
       const c = anim.chars[i];
       if (c && c.op > 0.002 && !/\s/.test(text[i])) glyphs.push({ i, ch: text[i], cx: x + w / 2, c });
       x += w + (anim.tracking / 1000) * anim.size;
     }
+    // no cached AE advances: honour the paragraph justification about the path start (AE: centre/right on margin 0)
+    const just = L.text?.justification;
+    if (!ln && (just === 7415 || just === 7414)) { const sh0 = just === 7415 ? (total - x) / 2 : total - x; for (const gg of glyphs) gg.cx += sh0; }
     const ss = Math.max(1, Math.min(4, this.ss * 2));
     const items = [];
     for (const gph of glyphs) {

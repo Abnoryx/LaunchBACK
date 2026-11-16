@@ -382,6 +382,13 @@ export function drawText(anim, ss = 2) {
 }
 
 // One glyph rasterised for per-character 3D: canvas + baseline-centre anchor (in px at scale ss).
+export function glyphAdvance(ch, fontPS, size) {
+  const f = mapFont(fontPS);
+  const meas = drawText._m || (drawText._m = document.createElement('canvas').getContext('2d'));
+  meas.font = `${f.italic ? 'italic ' : ''}${f.weight} ${size * (f.sizeScale || 1)}px "${f.family}"`;
+  return meas.measureText(ch).width;
+}
+
 export function glyphSprite(ch, fontPS, size, fill, ss) {
   const f = mapFont(fontPS);
   const fs = size * (f.sizeScale || 1) * ss;

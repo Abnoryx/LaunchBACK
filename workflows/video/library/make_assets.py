@@ -263,6 +263,16 @@ def brain_quad(name='brain_quad.png', src='brain_side.png', S=1024):
         im.alpha_composite(b, ((i % 2) * cell + (cell - b.width) // 2, (i // 2) * cell + (cell - b.height) // 2))
     im.save(os.path.join(OUT, name))
 
+
+def e_mark(name='e_mark.png', color=(0x3E, 0xA0, 0x55), W=640, H=440):
+    """Round single-stroke lowercase 'e' with a dot after it (reel S9 logo shape), drawn 4x then downsampled."""
+    k = 4; im = Image.new('RGBA', (W * k, H * k), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
+    cx, cy, r, w = 230 * k, 230 * k, 190 * k, 44 * k
+    d.arc((cx - r, cy - r, cx + r, cy + r), 45, 360, fill=color + (255,), width=w)  # open at the lower right
+    d.line((cx - r + w // 2, cy + 10 * k, cx + r - w // 2, cy + 10 * k), fill=color + (255,), width=w)
+    d.ellipse((520 * k, 330 * k, 590 * k, 400 * k), fill=color + (255,))
+    im.resize((W, H), Image.LANCZOS).save(os.path.join(OUT, name))
+
 if __name__ == '__main__':
     film_edge()
     film_edge_dark()
