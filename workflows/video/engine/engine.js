@@ -303,7 +303,7 @@ export class Engine {
           p.closePath(); paths.push(p);
         } else if (it.m === 'ADBE Vector Shape - Group') {
           const sh = ev(findM(it, 'ADBE Vector Shape'), null);
-          if (sh && sh._shape) { paths.push(bezPath(sh)); for (const v of sh.vtx) pts.push([localM, v[0], v[1]]); }
+          if (sh && sh._shape) { const bp = bezPath(sh); bp._len = bezLen(sh); paths.push(bp); for (const v of sh.vtx) pts.push([localM, v[0], v[1]]); }
         } else if (it.m === 'ADBE Vector Graphic - Fill' || it.m === 'ADBE Vector Graphic - Stroke') {
           const col = ev(findM(it, it.m.endsWith('Fill') ? 'ADBE Vector Fill Color' : 'ADBE Vector Stroke Color'), [1, 1, 1, 1]);
           const o = ev(findM(it, it.m.endsWith('Fill') ? 'ADBE Vector Fill Opacity' : 'ADBE Vector Stroke Opacity'), 100) / 100;
@@ -330,7 +330,7 @@ export class Engine {
       if (d.stroke) {
         c.strokeStyle = css; c.lineWidth = d.w; c.lineCap = 'round'; c.lineJoin = 'round';
         if (d.trim && (d.trim.s !== 0 || d.trim.e !== 100)) { // approximate trim with dash
-          const L = 4000, s = (Math.min(d.trim.s, d.trim.e) / 100) * L, e = (Math.max(d.trim.s, d.trim.e) / 100) * L;
+          const L = d.p._len || 4000, s = (Math.min(d.trim.s, d.trim.e) / 100) * L, e = (Math.max(d.trim.s, d.trim.e) / 100) * L;
           c.setLineDash([Math.max(0.001, e - s), L * 2]); c.lineDashOffset = -s;
         }
         c.stroke(d.p);
@@ -363,7 +363,7 @@ export class Engine {
       // large feathers: draw sharp on a padded canvas and blur on the GPU (canvas blur clips at the canvas edge)
       // only when the shape runs past the layer edge (the canvas blur would clip there) and the mask isn't inverted
       const outside = sh.vtx.some((v) => v[0] < rx0 || v[1] < ry0 || v[0] > rx1 || v[1] > ry1);
-      const big = fe[0] * sx > 40 && outside && !m.inv, P = big ? Math.ceil(fe[0] * sx * 1.2) : 0;
+      const big = fe[0] > 100 && outside && !m.inv, P = big ? Math.ceil(fe[0] * sx * 1.2) : 0;
       let tmp = new OffscreenCanvas(W + 2 * P, H + 2 * P), tc = tmp.getContext('2d');
       tc.setTransform(sx, 0, 0, sy, -rx0 * sx + P, -ry0 * sy + P);
       if (fe[0] > 0.5 && !big) tc.filter = `blur(${(fe[0] * sx) / 2}px)`;
@@ -879,6 +879,22 @@ export class Engine {
     }
     return acc;
   }
+}
+
+// arc length of a bezier shape (sampled), used to place trim-path dashes
+function bezLen(sh) {
+  const n = sh.vtx.length, segs = sh.closed ? n : n - 1;
+  let L = 0;
+  for (let i = 0; i < segs; i++) {
+    const a = sh.vtx[i], b = sh.vtx[(i + 1) % n], c1 = [a[0] + sh.out[i][0], a[1] + sh.out[i][1]], c2 = [b[0] + sh.in[(i + 1) % n][0], b[1] + sh.in[(i + 1) % n][1]];
+    let px = a[0], py = a[1];
+    for (let k = 1; k <= 32; k++) {
+      const u = k / 32, v = 1 - u;
+      const x = v * v * v * a[0] + 3 * v * v * u * c1[0] + 3 * v * u * u * c2[0] + u * u * u * b[0], y = v * v * v * a[1] + 3 * v * v * u * c1[1] + 3 * v * u * u * c2[1] + u * u * u * b[1];
+      L += Math.hypot(x - px, y - py); px = x; py = y;
+    }
+  }
+  return L;
 }
 
 function bezPath(sh) {

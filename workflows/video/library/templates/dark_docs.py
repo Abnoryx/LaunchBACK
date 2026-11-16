@@ -44,6 +44,17 @@ def docs_comp(proj, end):
     return d
 
 
+def _ink_band(c, above, word, pos, size, font, in_f, rev, color='#014300'):
+    """Dark stripe through the lower-middle of the x-height (reel: Fill #014300 in a feathered band y -40..-15 per 121 px)."""
+    k = size / 121
+    L = c.text(f'{above["name"]} band', word, in_f * F, 1e9, font, size, color, tracking=-80, justify=7415, three_d_layer=True,
+               motion_blur=True, reveal=S.word_reveal(rev[0] * F, rev[1] * F))
+    c.layers.remove(L); c.layers.insert(c.layers.index(above), L)  # directly above the word
+    c.transform(L, pos=pos)
+    c.masks(L, S.mask([[-2000, -40 * k], [2000, -40 * k], [2000, -15 * k], [-2000, -15 * k]], feather=20 * k))
+    return L
+
+
 def build(proj, name='dark_docs', **params):
     Pm = merge(DEFAULTS, params)
     W, Lo, T = Pm['words'], Pm['layout'], Pm['timing']
@@ -72,12 +83,13 @@ def build(proj, name='dark_docs', **params):
     c.camera('camera', 0, end, S.solved_camera('scene 6', 636, 636 + DUR_F, offset=636))
 
     # ---- words + underline (3D)
-    a = c.text('a', W['a'], 0, end, sans, Lo['a_size'], ink, tracking=-80, three_d_layer=True, motion_blur=True,
+    a = c.text('a', W['a'], 0, end, sans, Lo['a_size'], ink, tracking=-80, justify=7415, three_d_layer=True, motion_blur=True,
                reveal=S.word_reveal(T['a'][0] * F, T['a'][1] * F))
     c.transform(a, pos=Lo['a'])
-    b = c.text('b', W['b'], 0, end, sans, Lo['b_size'], accent, tracking=-80, three_d_layer=True, motion_blur=True,
+    b = c.text('b', W['b'], 0, end, sans, Lo['b_size'], accent, tracking=-80, justify=7415, three_d_layer=True, motion_blur=True,
                reveal=S.word_reveal(T['b'][0] * F, T['b'][1] * F))
     c.transform(b, pos=Lo['b'])
+    _ink_band(c, b, W['b'], Lo['b'], Lo['b_size'], sans, 0, T['b'])
     trim = P('Trim Paths 1', 'ADBE Vector Filter - Trim', children=[
         P('Start', 'ADBE Vector Trim Start', v=0), P('End', 'ADBE Vector Trim End', keys=[(T['line'][0] * F, 0.0, S.EASE['standard']), (T['line'][1] * F, 100.0)])])
     sh = {'_shape': 1, 'closed': False, 'vtx': [[-243.7, -118.3], [319.1, -118.3]], 'in': [[0, 0], [0, 0]], 'out': [[0, 0], [0, 0]]}
@@ -87,12 +99,13 @@ def build(proj, name='dark_docs', **params):
         trim])])
     ul = c.shape('underline', T['line'][0] * F, end, [grp], three_d_layer=True, motion_blur=True)
     c.transform(ul, pos=Lo['underline'], anchor=[0, 0])
-    cw = c.text('c', W['c'], 0, end, sans, Lo['c_size'], ink, tracking=-80, three_d_layer=True, motion_blur=True,
+    cw = c.text('c', W['c'], 0, end, sans, Lo['c_size'], ink, tracking=-80, justify=7415, three_d_layer=True, motion_blur=True,
                 reveal=S.word_reveal(T['c'][0] * F, T['c'][1] * F))
     c.transform(cw, pos=Lo['c'])
-    dw = c.text('d', W['d'], 15 * F, end, sans, Lo['d_size'], accent, tracking=-80, three_d_layer=True, motion_blur=True,
+    dw = c.text('d', W['d'], 15 * F, end, sans, Lo['d_size'], accent, tracking=-80, justify=7415, three_d_layer=True, motion_blur=True,
                 reveal=S.word_reveal(T['d'][0] * F, T['d'][1] * F))
     c.transform(dw, pos=Lo['d'])
+    _ink_band(c, dw, W['d'], Lo['d'], Lo['d_size'], sans, 15, T['d'])
 
     # ---- watermark + fine print (2D), documents (collapsed 3D precomp), background
     wm = c.text('watermark', Pm['watermark'], 0, end, S.FONTS['serif_italic'], 78, '#1A4915', tracking=-80, justify=7415)
