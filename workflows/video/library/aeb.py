@@ -93,8 +93,8 @@ class Project:
         self.footage.append(f)
         return f
 
-    def video(self, file, w, h, duration, loop=1):
-        f = {'id': self.nid(), 'name': file, 'width': w, 'height': h, 'duration': duration, 'frame_rate': 30.0,
+    def video(self, file, w, h, duration, loop=1, fps=30.0):
+        f = {'id': self.nid(), 'name': file, 'width': w, 'height': h, 'duration': duration, 'frame_rate': fps,
              'has_video': True, 'source_type': 'FileSource', 'is_still': False, 'loop': loop, 'file': file}
         self.footage.append(f)
         return f

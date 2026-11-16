@@ -15,7 +15,7 @@ DEFAULTS = {
     'definition': 'The endowment effect is overvaluing things just because you own them',
     'banner': {'left_num': '19', 'left_word': 'nineteen', 'right_num': '26', 'right_word': 'twenty-six',
                'l1': 'PERCEPTIONS', 'l2': '2024 Publication 064', 'r1': '38°EAST LONGITUDE', 'r2': '38°4′24″E'},
-    'prop': {'file': 'brain_side.png', 'w': 1098, 'h': 855, 'width': 480},
+    'prop': {'model': 'brain_side.glb', 'scale': 94, 'ry': (-12.0, 12.0)},  # 3D brain, slow Y turn over the shot (OG 80 -> -83 over 12 s)
     'palette': 'original',
     'layout': {'kicker': [130, 742, 345], 'term': [373, 1407, 778], 'accent': [656, 1426, 770], 'kicker_size': 94,
                'term_size': 94, 'accent_size': 128, 'disc': [540, 960, 724], 'disc_size': 590, 'prop': [540, 955, 700],
@@ -113,10 +113,9 @@ def build(proj, name='disc_brain', **params):
     c.transform(bu, pos=[0, 0, dz], anchor=[0, 0])
     # prop (halftoned, drop shadow down-left), disc, graph paper, background
     pr = Pm['prop']
-    pf = proj.still(pr['file'], pr['w'], pr['h'])
-    pl = c.footage(pf, 0, end, three_d_layer=True)
-    sc_ = 100 * pr['width'] / pr['w']
-    c.transform(pl, pos=Lo['prop'], scale=[sc_, sc_, sc_])
+    pl = c.model(proj.model(pr['model']), 0, end)
+    sc_ = pr['scale']
+    c.transform(pl, pos=Lo['prop'], scale=[sc_, sc_, sc_], ry=K((0, pr['ry'][0], 'lin'), (end, pr['ry'][1])))
     c.effects(pl, P('BCC Halftone', 'BCC Halftone', children=[P('Cell', 'BCC Halftone-c', v=3.7), P('Ink', 'BCC Halftone-i', v=hexc('#1B1B1B')),
                                                               P('Paper', 'BCC Halftone-p', v=hexc('#E8E8E8'))]),
               drop_shadow('#000000', 45, 196, 27, 29))

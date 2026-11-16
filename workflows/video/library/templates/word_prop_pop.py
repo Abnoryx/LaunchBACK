@@ -3,7 +3,7 @@ Huge serif-italic brand word reveals in random order; a hand slides in as a fist
 out of the opening hand with a bouncy settle; a hand-drawn arrow points to a handwritten label; a 3-line sentence builds
 under it (last word big serif italic with ink band) while a grey stroke draws and erases underneath.
 2D comp pixels measured on the reel (local frame = reel frame - 249); a slow push-out camera."""
-from ..aeb import K, P, hexc, rect_group, drop_shadow, tint
+from ..aeb import K, P, hexc, rect_group, drop_shadow, tint, fx as afx
 from .. import style as S
 from .disc_brain import stroke_group
 
@@ -14,8 +14,8 @@ DEFAULTS = {
     'words': {'brand': 'Apple', 'small': 'let you', 'label': 'iphone 15', 'l1': 'use the phone', 'l2': 'before you', 'accent': 'buy'},
     'fineprint': 'Apple is a global technology company known for its innovative products like the iPhone, Mac, and ecosystem-driven design.',
     'watermark': 'earnera.co',
-    'prop': {'file': 'phone_back.png', 'w': 414, 'h': 997, 'height': 382},
-    'hand': {'fist': ('glove_fist.png', 969, 716), 'open': ('glove_open.png', 924, 544)},
+    'prop': {'model': 'phone.glb', 'scale': 75, 'ry': 165},  # 3D phone, back facing; spins a half turn as it pops
+    'hand': ('glove_open.mp4', 716, 1280, 73 / 24, 1.75),  # keyed clip: fist slides in, opens palm-up (opening at clip t ~1.75 s)
     'palette': 'original',
     'layout': {'brand': [93, 1088], 'brand_size': 388, 'small': [560, 900], 'small_size': 103, 'prop_rest': [529, 859],
                'label': [750, 690], 'label_size': 120, 'l1': [222, 1410], 'l1_size': 117, 'l2': [555, 1497], 'l2_size': 93,
@@ -49,16 +49,12 @@ def build(proj, name='word_prop_pop', **params):
     c.camera('camera', 0, end, [(t * F, 540, 960, -1050 - 59 * min(1, t / 74), 1050) for t in range(DUR_F + 1)])
 
     # hand: slides in as a fist, opens under the product (drawn above product and text)
-    hw = Lo['hand_w']
-    for k, (key, t0, t1) in enumerate((('fist', T['hand_in'][0], T['hand_open']), ('open', T['hand_open'], DUR_F))):
-        f, w, h = Pm['hand'][key]
-        L = c.footage(proj.still(f, w, h), t0 * F, t1 * F, three_d_layer=True)
-        sc = 100 * hw / w
-        if key == 'fist':
-            c.transform(L, pos=K((T['hand_in'][0] * F, [-300, Lo['hand'][1], 0], S.EASE['out']), (T['hand_in'][1] * F, [*Lo['hand'], 0])), scale=[sc, sc, sc])
-        else:
-            c.transform(L, pos=[Lo['hand'][0] + 10, Lo['hand'][1] - 30, 0], scale=[sc, sc, sc], rot=-58)
-        c.effects(L, drop_shadow('#000000', 40, 303, 11, 19))
+    hf, hw_, hh_, hdur, t_open = Pm['hand']
+    sc = 100 * Lo['hand_w'] * 1.6 / hw_
+    st = T['hand_open'] * F - t_open  # align the clip's opening with the product pop
+    L = c.footage(proj.video(hf, hw_, hh_, hdur, fps=24.0), T['hand_in'][0] * F, DUR_F * F, start=st, three_d_layer=True)
+    c.transform(L, pos=K((T['hand_in'][0] * F, [-300, Lo['hand'][1], 0], S.EASE['out']), (T['hand_in'][1] * F, [*Lo['hand'], 0])), scale=[sc, sc, sc])
+    c.effects(L, afx('ADBE Extract', 'Extract', **{'0003': 0.0, '0004': 228.0, '0006': 18.0}), drop_shadow('#000000', 40, 303, 11, 19))
     # label + arrow
     lb = c.text('label', W['label'], 0, end, 'BradleyHand', Lo['label_size'], '#232323', three_d_layer=True,
                 reveal=S.word_reveal(T['label'][0] * F, T['label'][1] * F))
@@ -69,12 +65,13 @@ def build(proj, name='word_prop_pop', **params):
     c.transform(ar, anchor=[0, 0], pos=[0, 0, 0])
     # product pop + bounce (rest top y 668; peaks -50 f285, +16 f292, -8 f300, +4 f307, settled f312)
     pr = Pm['prop']
-    psc = 100 * pr['height'] / pr['h']
+    psc = pr['scale']
     t0, t1 = T['pop']
     bounce = [(t0 * F, [px, 1171, 0], 'lin'), (t1 * F, [px, py, 0], (0.3, 0, 0.7, 1)), (36 * F, [px, py - 50, 0], (0.3, 0, 0.7, 1)),
               (43 * F, [px, py + 16, 0], (0.3, 0, 0.7, 1)), (51 * F, [px, py - 8, 0], (0.3, 0, 0.7, 1)), (58 * F, [px, py + 4, 0], (0.3, 0, 0.7, 1)), (63 * F, [px, py, 0])]
-    ph = c.footage(proj.still(pr['file'], pr['w'], pr['h']), t0 * F, end, three_d_layer=True)
-    c.transform(ph, pos=K(*bounce), scale=K((t0 * F, [0, 0, 100]), (t1 * F, [psc, psc, 100])))
+    ph = c.model(proj.model(pr['model']), t0 * F, end)
+    c.transform(ph, pos=K(*bounce), scale=K((t0 * F, [0, 0, 0]), (t1 * F, [psc, psc, psc])),
+                ry=K((t0 * F, pr['ry'] - 180.0, (0.2, 0, 0, 1)), (t0 * F + 18 * F, float(pr['ry']))))
     c.effects(ph, tint('#000000', '#C9C9C6', 100), drop_shadow('#000000', 35, 240, 58, 109))
     # words
     for key, size, col, rev, font, fx in (('small', Lo['small_size'], ink, T['small'], sans, None), ('l1', Lo['l1_size'], ink, T['l1'], sans, None),
