@@ -3,7 +3,7 @@ Huge serif-italic brand word reveals in random order; a hand slides in as a fist
 out of the opening hand with a bouncy settle; a hand-drawn arrow points to a handwritten label; a 3-line sentence builds
 under it (last word big serif italic with ink band) while a grey stroke draws and erases underneath.
 2D comp pixels measured on the reel (local frame = reel frame - 249); a slow push-out camera."""
-from ..aeb import K, P, hexc, rect_group, drop_shadow, tint, fx as afx
+from ..aeb import K, P, hexc, rect_group, drop_shadow, tint, mask, fx as afx
 from .. import style as S
 from .disc_brain import stroke_group
 
@@ -15,11 +15,11 @@ DEFAULTS = {
     'fineprint': 'Apple is a global technology company known for its innovative products like the iPhone, Mac, and ecosystem-driven design.',
     'watermark': 'earnera.co',
     'prop': {'model': 'phone.glb', 'scale': 75, 'ry': 165},  # 3D phone, back facing; spins a half turn as it pops
-    'hand': ('glove_open.mp4', 716, 1280, 73 / 24, 1.75),  # keyed clip: fist slides in, opens palm-up (opening at clip t ~1.75 s)
+    'hand': ('glove_open.mp4', 716, 1280, 121 / 24, 2.4),  # keyed clip (on black): white glove fist, opens palm-up at ~2.4 s and holds
     'palette': 'original',
     'layout': {'brand': [93, 1088], 'brand_size': 388, 'small': [560, 900], 'small_size': 103, 'prop_rest': [529, 859],
                'label': [750, 690], 'label_size': 120, 'l1': [222, 1410], 'l1_size': 117, 'l2': [555, 1497], 'l2_size': 93,
-               'accent': [477, 1560], 'accent_size': 229, 'hand': [585, 1200], 'hand_w': 380, 'paper': '#FDF9EF', 'ink': '#211F1C'},
+               'accent': [477, 1560], 'accent_size': 229, 'hand': [560, 1180], 'hand_w': 380, 'paper': '#FDF9EF', 'ink': '#211F1C'},
     'timing': {'brand': (3, 23), 'hand_in': (4, 13), 'small': (16, 30), 'pop': (28, 33), 'hand_open': 29, 'arrow': (33, 43),
                'l1': (32, 42), 'label': (40, 46), 'l2': (53, 63), 'accent': (58, 68), 'path': (33, 53, 62), 'blur_out': (87, 95)},
 }
@@ -50,11 +50,13 @@ def build(proj, name='word_prop_pop', **params):
 
     # hand: slides in as a fist, opens under the product (drawn above product and text)
     hf, hw_, hh_, hdur, t_open = Pm['hand']
-    sc = 100 * Lo['hand_w'] * 1.6 / hw_
+    sc = 64.0  # open glove ~330 px wide on screen
     st = T['hand_open'] * F - t_open  # align the clip's opening with the product pop
     L = c.footage(proj.video(hf, hw_, hh_, hdur, fps=24.0), T['hand_in'][0] * F, DUR_F * F, start=st, three_d_layer=True)
-    c.transform(L, pos=K((T['hand_in'][0] * F, [-300, Lo['hand'][1], 0], S.EASE['out']), (T['hand_in'][1] * F, [*Lo['hand'], 0])), scale=[sc, sc, sc])
-    c.effects(L, afx('ADBE Extract', 'Extract', **{'0003': 0.0, '0004': 228.0, '0006': 18.0}), drop_shadow('#000000', 40, 303, 11, 19))
+    hx, hy = Lo['hand']  # palm centre at rest; the glove rises in from below
+    c.transform(L, anchor=[320, 570, 0], pos=K((T['hand_in'][0] * F, [hx + 60, hy + 700, 0], S.EASE['out']), (T['hand_in'][1] * F, [hx, hy, 0])), scale=[sc, sc, sc])
+    c.masks(L, mask([[0, 0], [716, 0], [716, 880], [0, 880]], feather=12))  # glove only: cut at the cuff like the OG
+    c.effects(L, afx('ADBE Extract', 'Extract', **{'0003': 22.0, '0004': 255.0, '0005': 10.0}), drop_shadow('#000000', 40, 303, 11, 19))
     # label + arrow
     lb = c.text('label', W['label'], 0, end, 'BradleyHand', Lo['label_size'], '#232323', three_d_layer=True,
                 reveal=S.word_reveal(T['label'][0] * F, T['label'][1] * F))

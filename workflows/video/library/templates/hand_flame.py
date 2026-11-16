@@ -3,7 +3,7 @@ Continues the word_panel fly-through: the camera has just flown in (z0 plane x4.
 hand with a green rim grows up from the bottom holding a match; the flame pops on with a warm glow; small line reveals
 by word above it, then a big line reveals across the flame (the flame always covers the middle word); lens-blur exit.
 World coordinates for the reel's camera solve (local frame = reel frame - 200)."""
-from ..aeb import K, P, hexc, SCREEN, tint, mask, fx
+from ..aeb import K, P, hexc, SCREEN, tint, mask, fx, gaussian
 from .. import style as S
 from .word_panel import light_sweep_edge
 
@@ -15,7 +15,7 @@ DEFAULTS = {
     # animated footage (keyed in the engine like the OG): a hand closing round the flame, a flickering flame
     'hand': ('hand_grab.mp4', 716, 1280, 73 / 24), 'flame': ('flame_loop.mp4', 716, 1280, 73 / 24),
     'layout': {'small': [503, 916, 0], 'big': [550, 949, 0], 'flame': [551.7, 948, 0], 'flame_scale': 9.45,
-               'hand_pos': [553, 2410], 'hand_anchor': [358, 1280], 'hand_scale': 140, 'base': '#171513', 'glow': '#0A6A16',
+               'hand_pos': [553, 2105], 'hand_anchor': [358, 1280], 'hand_scale': 110, 'base': '#171513', 'glow': '#0A6A16',
                'hand_tint': '#1E2A1C', 'rim': '#00FF4D', 'ink_small': '#FAF6E5', 'ink_big': '#F5EDDD'},
     'timing': {'split': (0, 13), 'hand': (2, 12), 'flame': (5, 15), 'small': (6, 16), 'big': (21, 31), 'blur_out': (38, 48)},
 }
@@ -48,7 +48,11 @@ def build(proj, name='hand_flame', **params):
     ff, fw, fh, fd = Pm['flame']; fs = Lo['flame_scale']
     fl = c.footage(proj.video(ff, fw, fh, fd, fps=24.0), T['flame'][0] * F, end, start=T['flame'][0] * F, three_d_layer=True, blend=SCREEN)
     c.transform(fl, pos=Lo['flame'], scale=K((T['flame'][0] * F, [0, 0, 0], (0.333, 0, 0, 1)), (T['flame'][1] * F, [fs, fs, fs])))
-    c.effects(fl, P('Deep Glow', 'PEDG', children=[P('Exposure', 'PEDG-0002', v=0.5), P('Radius', 'PEDG-0004', v=120.0)]))
+    c.effects(fl, P('Deep Glow', 'PEDG', children=[P('Exposure', 'PEDG-0002', v=1.2), P('Radius', 'PEDG-0004', v=120.0)]))
+    # warm halo: a blurred, orange-tinted copy of the flame (the OG's Deep Glow spreads ~60-70 px round the core)
+    halo = c.footage(proj.video(ff, fw, fh, fd, fps=24.0), T['flame'][0] * F, end, start=T['flame'][0] * F, three_d_layer=True, blend=SCREEN)
+    c.transform(halo, pos=Lo['flame'], scale=K((T['flame'][0] * F, [0, 0, 0], (0.333, 0, 0, 1)), (T['flame'][1] * F, [fs * 1.15, fs * 1.15, fs * 1.15])))
+    c.effects(halo, tint('#000000', '#FF9A2E'), gaussian(45))
     big = c.text('big', W['big'], 0, end, sans, 82, Lo['ink_big'], tracking=-80, justify=7415, three_d_layer=True,
                  reveal=S.word_reveal(T['big'][0] * F, T['big'][1] * F))
     c.transform(big, anchor=[-1.6, -29.5, 0], pos=Lo['big'], scale=[50, 50, 50])
@@ -61,7 +65,7 @@ def build(proj, name='hand_flame', **params):
     c.transform(hd, anchor=Lo['hand_anchor'], pos=Lo['hand_pos'],
                 scale=K((T['hand'][0] * F, [hs * 70 / 234, hs * 70 / 234], (0.333, 0, 0, 1)), (T['hand'][1] * F, [hs, hs])))
     c.effects(hd, fx('ADBE Extract', 'Extract', **{'0003': 24.0, '0004': 255.0, '0005': 10.0}), tint('#000000', Lo['hand_tint']),
-              light_sweep_edge(Lo['rim'], direction=-119, width=900, edge=60, thickness=2, center=(250, 700)))
+              light_sweep_edge(Lo['rim'], direction=-119, width=900, edge=35, thickness=1.2, center=(250, 700)))
     # dark base + green glow lower left
     gl = c.footage(proj.solid(Lo['glow'], name='glow'), 0, end)
     c.masks(gl, mask([[-300, 1300], [-300, 2300], [700, 2300], [300, 1500]], feather=500))
