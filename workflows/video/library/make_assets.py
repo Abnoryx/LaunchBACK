@@ -48,9 +48,30 @@ def film_edge_dark(name='film_edge_dark.png', ink=(0x99, 0x83, 0x50)):
     out.save(os.path.join(OUT, name)); os.remove(os.path.join(OUT, '_fe_tmp.png'))
 
 
+def viewfinder(name='viewfinder.png'):
+    """Camera viewfinder surround (reel S6): black frame x 3-1077, y 155-1766 with a rounded window x 159-998, y 306-1588,
+    cream exposure strip on the left (x 94-136, y 446-1526), aperture scale along the bottom (x 230-760, y 1602-1635)."""
+    W, H = 1080, 1920
+    im = Image.new('RGBA', (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
+    d.rounded_rectangle((3, 155, 1077, 1766), 14, fill=(6, 6, 6, 255))
+    d.rounded_rectangle((159, 306, 998, 1588), 8, fill=(0, 0, 0, 0))
+    d.rectangle((94, 446, 136, 1526), fill=(0xAF, 0xAB, 0x9E, 255))
+    f = ImageFont.truetype(BOLD, 22)
+    nums = '30 15 8 4 2 1 2 4 8 15 30 60 125 250 500 1000 B'.split()
+    for i, t in enumerate(nums):
+        y = 456 + i * (1060 / (len(nums) - 1))
+        tw = f.getlength(t); d.text((115 - tw / 2, y - 11), t, fill=(10, 10, 10, 255), font=f)
+    d.rectangle((230, 1602, 760, 1635), fill=(0xAF, 0xAB, 0x9E, 255))
+    d.rectangle((230, 1602, 262, 1635), fill=(0x9B, 0x01, 0x05, 255)); d.rectangle((728, 1602, 760, 1635), fill=(0x9B, 0x01, 0x05, 255))
+    ap = '1.2   2   2.8   4   5.6  |  8   11   16   22'
+    d.text((280, 1606), ap, fill=(10, 10, 10, 255), font=ImageFont.truetype(BOLD, 20))
+    im.save(os.path.join(OUT, name))
+
+
 if __name__ == '__main__':
     film_edge()
     film_edge_dark()
+    viewfinder()
     print('assets ->', OUT)
 
 
