@@ -68,10 +68,51 @@ def viewfinder(name='viewfinder.png'):
     im.save(os.path.join(OUT, name))
 
 
+def chart_doc(name='chart_doc.png'):
+    """White document with a black line chart (reel S7: rising revenue curve + flat earnings line, axis numerals),
+    later tinted green and screened, so white disappears and ink glows."""
+    import math
+    W, H = 466 * 2, 300 * 2
+    im = Image.new('RGB', (W, H), 'white'); d = ImageDraw.Draw(im)
+    f = ImageFont.truetype(BOLD, 22); fs = ImageFont.truetype('/usr/share/fonts/opentype/inter/Inter-Regular.otf', 18)
+    d.text((40, 20), 'Revenue and Net Earnings', fill='black', font=f)
+    x0, y0, x1, y1 = 90, 80, W - 40, H - 70
+    for i in range(6):
+        y = y1 - (y1 - y0) * i / 5; d.line((x0, y, x1, y), fill=(200, 200, 200), width=1)
+        d.text((20, y - 10), f'{i * 20}', fill='black', font=fs)
+    for i, yr in enumerate(range(1996, 2005)):
+        x = x0 + (x1 - x0) * i / 8; d.text((x - 20, y1 + 12), str(yr), fill='black', font=fs)
+    pts = [(x0 + (x1 - x0) * t / 40, y1 - (y1 - y0) * (0.15 + 0.7 * (t / 40) ** 1.6 + 0.04 * math.sin(t * 0.9))) for t in range(41)]
+    d.line(pts, fill='black', width=7)
+    flat = [(x0 + (x1 - x0) * t / 40, y1 - (y1 - y0) * (0.12 + 0.02 * math.sin(t * 0.6))) for t in range(41)]
+    d.line(flat, fill='black', width=4)
+    d.line((x0, y0, x0, y1, x1, y1), fill='black', width=3)
+    im.save(os.path.join(OUT, name))
+
+
+def census_doc(name='census_doc.png'):
+    """White web-page style document (reel S7): big title, 'Datasets' list, 'Record Layouts' section."""
+    W, H = 1128, 893
+    im = Image.new('RGB', (W, H), 'white'); d = ImageDraw.Draw(im)
+    tf = ImageFont.truetype(BOLD, 64); hf = ImageFont.truetype(BOLD, 40); bf = ImageFont.truetype('/usr/share/fonts/opentype/inter/Inter-Regular.otf', 28)
+    d.text((40, 40), 'County Business Patterns: 2004', fill='black', font=tf)
+    d.text((40, 150), 'Data are released annually for the nation, states and counties.', fill=(60, 60, 60), font=bf)
+    d.text((40, 230), 'Datasets', fill='black', font=hf)
+    for i, t in enumerate(['U.S. totals by industry', 'State totals by industry', 'County totals by industry',
+                           'Metropolitan areas', 'ZIP code business patterns', 'Employment size class detail']):
+        d.text((70, 300 + i * 52), '•  ' + t, fill='black', font=bf)
+    d.text((40, 640), 'Record Layouts', fill='black', font=hf)
+    for i, t in enumerate(['Field names and descriptions', 'Industry codes (NAICS)', 'Geography codes']):
+        d.text((70, 710 + i * 52), '•  ' + t, fill='black', font=bf)
+    im.save(os.path.join(OUT, name))
+
+
 if __name__ == '__main__':
     film_edge()
     film_edge_dark()
     viewfinder()
+    chart_doc()
+    census_doc()
     print('assets ->', OUT)
 
 
