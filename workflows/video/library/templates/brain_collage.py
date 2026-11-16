@@ -16,7 +16,7 @@ DEFAULTS = {
     'ring': '12 13 14 15 16 17 18 19 20 21 22 23 24 25',
     'watermark': 'earnera.co',
     'fineprint': 'Marketing is the process of creating, communicating, and delivering value to customers in order to build relationships and drive business growth.',
-    'prop': {'file': 'brain_top.png', 'w': 880, 'h': 1168, 'width': 415},
+    'prop': {'model': 'brain.glb', 'scale': 90, 'rx': -90, 'rz': 180},  # 3D brain (top view); ring wraps round it
     'layout': {'amp': [205, 477, 0], 'line': [659, 477, 0], 'line_size': 98, 'line_leading': 61, 'small': [651, 1476, 0],
                'accent': [753, 1540, 0], 'card': [540, 960, 1094], 'card_color': '#28E27B', 'graph': [540, 960, 1079],
                'quad': [750, 770, 0], 'ruler': [540, 1272, 381], 'board': [332, 934, 0], 'prop': [540, 960, 0],
@@ -33,7 +33,7 @@ def merge(a, b):
     return out
 
 
-def number_ring(proj, text, dur, name='numbers'):
+def number_ring(proj, text, dur, name='numbers', split=None):
     """Precomp: digits stand up off a circular text path (X Rotation 90 per glyph); the ring is tilted back (X -78,
     orientation Z 31) and spins fast to 53 deg in 10 f, then crawls."""
     rc = proj.comp(name, dur=dur)
@@ -47,6 +47,7 @@ def number_ring(proj, text, dur, name='numbers'):
     cx, cy, r, k = -24.5, 43.6, 291.4, 160.9
     rc.masks(L, dict(mask([[cx, cy - r], [cx - r, cy], [cx, cy + r], [cx + r, cy]], inn=[[k, 0], [0, -k], [-k, 0], [0, k]],
                           outt=[[-k, 0], [0, k], [k, 0], [0, -k]]), mode=6812))
+    if split: L['depth_split'] = split
     rc.transform(L, pos=[569, 960, 0], ori=[0, 0, 31.15], rx=-78, rot=K((0, 0.0, (0.01, 0.6, 0, 1)), (10 * F, 53.0, 'lin'), (92 * F, 83.0)))
     rc.finalize()
     return rc
@@ -57,7 +58,8 @@ def build(proj, name='brain_collage', **params):
     W, Lo, T = Pm['words'], Pm['layout'], Pm['timing']
     end = DUR_F * F
     sans, serif, ink = S.FONTS['sans_bold'], S.FONTS['serif_italic'], Lo['ink']
-    ring = number_ring(proj, Pm['ring'], end, f'{name} numbers')
+    ring_near = number_ring(proj, Pm['ring'], end, f'{name} numbers near', {'pt': Lo['prop'], 'keep': 'near'})
+    ring_far = number_ring(proj, Pm['ring'], end, f'{name} numbers far', {'pt': Lo['prop'], 'keep': 'far'})
     c = proj.comp(name, dur=end, motion_blur=True)
 
     S.paper_finish(proj, c, 0, end, edge_blur=0, edge_fringe=0, fringe=1.2)
@@ -83,8 +85,8 @@ def build(proj, name='brain_collage', **params):
     c.transform(ln, pos=Lo['line'])
     amp = c.text('amp', W['amp'], 0, end, sans, 56, ink, tracking=-80, three_d_layer=True, reveal=S.word_reveal(T['amp'][0] * F, T['amp'][1] * F))
     c.transform(amp, pos=Lo['amp'])
-    # ---- number ring (collapsed precomp, blurred), above the brain
-    rl = c.precomp(ring, 0, end, three_d_layer=True, collapse_transformation=True)
+    # ---- number ring, near half (collapsed precomp, blurred): in front of the brain; the far half sits behind it
+    rl = c.precomp(ring_near, 0, end, three_d_layer=True, collapse_transformation=True)
     c.transform(rl, pos=Lo['ring'], scale=[203, 203, 203]); c.effects(rl, gaussian(22.4))
     # ---- label on the green card
     lb = c.text('label', W['label'], 0, end, 'BradleyHandITC', 58, '#000000', tracking=-80, justify=7415, three_d_layer=True)
@@ -95,14 +97,16 @@ def build(proj, name='brain_collage', **params):
                                                      [(T['arrow'][0] * F, 0.0, (0.333, 0, 0, 1)), (T['arrow'][1] * F, 100.0)])], three_d_layer=True)
     c.transform(ar, anchor=[0, 0], pos=[0, 0, az])
     # ---- the brain: pops out of the centre, darkened + halftoned
-    pr = Pm['prop']; psc = 100 * pr['width'] / pr['w']
-    br = c.footage(proj.still(pr['file'], pr['w'], pr['h']), 0, end, three_d_layer=True)
-    c.transform(br, pos=Lo['prop'], scale=K((T['pop'][0] * F, [0, 0, 100], (0.0, 0.6, 0, 1)), (T['pop'][1] * F, [psc, psc, 100])))
+    pr = Pm['prop']; psc = pr['scale']
+    br = c.model(proj.model(pr['model']), 0, end)
+    c.transform(br, pos=Lo['prop'], rx=pr['rx'], rot=pr['rz'], scale=K((T['pop'][0] * F, [0, 0, 0], (0.0, 0.6, 0, 1)), (T['pop'][1] * F, [psc, psc, psc])))
     c.effects(br, tint('#000000', '#FFFFFF'),
-              P('Curves', 'ADBE CurvesCustom', children=[P('Curves', 'ADBE CurvesCustom-0001', v={'_curves': 1, 'channels': {'rgb': [[0, 0], [182, 150], [255, 255]]}})]),
+              P('Curves', 'ADBE CurvesCustom', children=[P('Curves', 'ADBE CurvesCustom-0001', v={'_curves': 1, 'channels': {'rgb': [[0, 0], [90, 25], [170, 170], [255, 255]]}})]),
               P('BCC Halftone', 'BCC Halftone', children=[P('Cell', 'BCC Halftone-c', v=4.5), P('Ink', 'BCC Halftone-i', v=hexc('#141414')),
                                                           P('Paper', 'BCC Halftone-p', v=hexc('#F2EEEE'))]),
               drop_shadow('#000000', 50, 71, 49, 75))
+    rf = c.precomp(ring_far, 0, end, three_d_layer=True, collapse_transformation=True)
+    c.transform(rf, pos=Lo['ring'], scale=[203, 203, 203]); c.effects(rf, gaussian(22.4))
     # ---- collage behind
     fb = c.footage(proj.still('formula_board.png', 1200, 840), 0, end, three_d_layer=True, blend=MULTIPLY)
     c.transform(fb, pos=Lo['board'], scale=[51, 51, 51], rot=90)

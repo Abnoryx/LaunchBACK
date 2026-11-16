@@ -99,6 +99,13 @@ class Project:
         self.footage.append(f)
         return f
 
+    def model(self, file):
+        """A glTF/GLB model source (rendered by the engine with three.js; 1 glTF unit = 508 px at 100 %)."""
+        f = {'id': self.nid(), 'name': file, 'width': 1080, 'height': 1920, 'has_video': True,
+             'source_type': 'FileSource', 'is_still': True, 'file': file}
+        self.footage.append(f)
+        return f
+
     def solid(self, color, w=1080, h=1920, name='solid'):
         f = {'id': self.nid(), 'name': name, 'width': w, 'height': h, 'has_video': True,
              'source_type': 'SolidSource', 'is_still': True, 'color': hexc(color)[:3] if isinstance(color, str) else color}
@@ -179,6 +186,10 @@ class Comp:
     # ---- layer kinds
     def footage(self, f, inp, out, start=0.0, **kw):
         return self._layer('AVLayer', f['name'], inp, out, start, src_id=f['id'], **kw)
+
+    def model(self, f, inp, out, **kw):
+        """3D model layer (AE ThreeDModelLayer); always 3D. Scale % maps 1 glTF unit -> 5.08 px per %."""
+        return self._layer('ThreeDModelLayer', f['name'], inp, out, src_id=f['id'], three_d_layer=True, **kw)
 
     def precomp(self, c, inp, out, start=0.0, **kw):
         return self._layer('AVLayer', c.name, inp, out, start, src_id=c.id, **kw)

@@ -635,7 +635,7 @@ export class Engine {
       while (i < items.length && items[i].L.three_d_layer) run.push(items[i++]);
       run.forEach((it) => {
         const w = this.worldOf(comp, it.L, it.t, it.cache);
-        const [sw, sh] = it.L.type === 'TextLayer' || it.L.type === 'ShapeLayer' ? [0, 0] : this.sourceSize(it.L);
+        const [sw, sh] = it.L.type === 'TextLayer' || it.L.type === 'ShapeLayer' || it.L.type === 'ThreeDModelLayer' ? [0, 0] : this.sourceSize(it.L);
         it.z = xf(it.cam.view, xf(w.m, [sw / 2, sh / 2, 0, 1]))[2];
       });
       run.sort((a, b) => (Math.abs(b.z - a.z) > 2 ? b.z - a.z : 0) || b.L.i - a.L.i);
@@ -816,6 +816,9 @@ export class Engine {
       M = mm(M, mm(RX(gph.c.rx || 0), mm(RY(gph.c.ry || 0), RZ(gph.c.rot || 0))));
       M = mm(M, T(0, gph.c.dy, 0));
       const z = xf(cam.view, xf(M, [0, 0, 0, 1]))[2];
+      // depth split (ours): draw only the glyphs behind / in front of a world point, so a separate copy of the layer
+      // can sit on the other side of a 3D model in the stack (the text then wraps round the model)
+      if (L.depth_split) { const rz = xf(cam.view, [...L.depth_split.pt, 1])[2]; if ((L.depth_split.keep === 'far') !== (z > rz)) continue; }
       items.push({ gph, M, z });
     }
     items.sort((a, b) => b.z - a.z);
