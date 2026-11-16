@@ -107,14 +107,26 @@ def census_doc(name='census_doc.png'):
     im.save(os.path.join(OUT, name))
 
 
-def cutout(src, name, trim=True):
-    """Cut a studio shot out of its flat background (colour unmixing, keeps soft shadows semi-transparent), trimmed."""
+def cutout(src, name, trim=True, solid=False, tol=0.06):
+    """Cut a studio shot out of its flat background, trimmed.
+    solid=False: colour unmixing (keeps soft shadows semi-transparent; right for dark objects + contact shadows).
+    solid=True: flood-fill matte - background = near-bg pixels connected to the border, everything else opaque
+    (right for light objects on white, which unmixing would make see-through)."""
     import numpy as np
+    from scipy import ndimage
     im = np.asarray(Image.open(src).convert('RGB')).astype(np.float64) / 255
     bg = np.median(np.concatenate([im[:12].reshape(-1, 3), im[-12:].reshape(-1, 3), im[:, :12].reshape(-1, 3)]), 0)
-    a = np.max(np.maximum((bg - im) / np.maximum(bg, 1e-3), (im - bg) / np.maximum(1 - bg, 1e-3)), axis=2)
-    a = np.clip((a - 0.04) / 0.96, 0, 1)
-    col = np.clip((im - (1 - a[..., None]) * bg) / np.maximum(a[..., None], 1e-3), 0, 1)
+    if solid:
+        near = np.abs(im - bg).max(2) < tol
+        lab, _ = ndimage.label(near)
+        border = set(np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]]))) - {0}
+        bgm = np.isin(lab, list(border))
+        a = ndimage.gaussian_filter((~bgm).astype(float), 0.8)
+        col = im
+    else:
+        a = np.max(np.maximum((bg - im) / np.maximum(bg, 1e-3), (im - bg) / np.maximum(1 - bg, 1e-3)), axis=2)
+        a = np.clip((a - 0.04) / 0.96, 0, 1)
+        col = np.clip((im - (1 - a[..., None]) * bg) / np.maximum(a[..., None], 1e-3), 0, 1)
     out = Image.fromarray(np.dstack([col * 255, a * 255]).astype(np.uint8), 'RGBA')
     if trim:
         out = out.crop(out.getbbox())

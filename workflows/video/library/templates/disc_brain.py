@@ -15,10 +15,10 @@ DEFAULTS = {
     'definition': 'The endowment effect is overvaluing things just because you own them',
     'banner': {'left_num': '19', 'left_word': 'nineteen', 'right_num': '26', 'right_word': 'twenty-six',
                'l1': 'PERCEPTIONS', 'l2': '2024 Publication 064', 'r1': '38°EAST LONGITUDE', 'r2': '38°4′24″E'},
-    'prop': {'file': 'brain_side.png', 'w': 1168, 'h': 880, 'width': 417},
+    'prop': {'file': 'brain_side.png', 'w': 1098, 'h': 855, 'width': 480},
     'palette': 'original',
     'layout': {'kicker': [130, 742, 345], 'term': [373, 1407, 778], 'accent': [656, 1426, 770], 'kicker_size': 94,
-               'term_size': 94, 'accent_size': 128, 'disc': [540, 960, 724], 'disc_size': 511, 'prop': [540, 955, 700],
+               'term_size': 94, 'accent_size': 128, 'disc': [540, 960, 724], 'disc_size': 590, 'prop': [540, 955, 700],
                'graph': [536, 998, 1294], 'graph_width': 1340, 'disc_color': '#34B258', 'ink': '#0F0A09'},
     'timing': {'kicker': (0, 10), 'disc': (0, 20), 'burst': (18, 28), 'split': (17, 29), 'term': (17, 32), 'accent': (20, 30),
                'scribble': (22, 43)},
@@ -71,7 +71,7 @@ def build(proj, name='disc_brain', **params):
     k = c.text('kicker', W['kicker'], 0, end, sans, Lo['kicker_size'], ink, tracking=-80, three_d_layer=True,
                reveal=S.word_reveal(T['kicker'][0] * F, T['kicker'][1] * F))
     c.transform(k, pos=Lo['kicker'])
-    tm = c.text('term', W['term'], T['term'][0] * F, end, sans, Lo['term_size'], ink, tracking=-80, three_d_layer=True,
+    tm = c.text('term', W['term'], T['term'][0] * F, end, sans, Lo['term_size'], ink, tracking=-80, three_d_layer=True, justify=7415,
                 reveal=S.char_reveal(T['term'][0] * F, T['term'][1] * F))
     c.transform(tm, pos=Lo['term'])
     ac = c.text('accent', W['term_accent'], T['accent'][0] * F, end, serif, Lo['accent_size'], ink, tracking=-80, three_d_layer=True,
@@ -103,8 +103,9 @@ def build(proj, name='disc_brain', **params):
     c.effects(pl, P('BCC Halftone', 'BCC Halftone', children=[P('Cell', 'BCC Halftone-c', v=3.7), P('Ink', 'BCC Halftone-i', v=hexc('#1B1B1B')),
                                                               P('Paper', 'BCC Halftone-p', v=hexc('#E8E8E8'))]),
               drop_shadow('#000000', 45, 196, 27, 29))
-    dk = c.shape('disc', 0, end, [ellipse_group(1, 1, Lo['disc_color'])], three_d_layer=True)
-    c.transform(dk, pos=Lo['disc'], scale=K((T['disc'][0] * F, [0, 0, 100], (0.333, 0, 0, 1)), (T['disc'][1] * F, [Lo['disc_size'] * 100] * 2 + [100])))
+    ds = Lo['disc_size']  # draw at full size and scale 0 -> 100 (a 1 px circle scaled up rasterises soft)
+    dk = c.shape('disc', 0, end, [ellipse_group(ds, ds, Lo['disc_color'])], three_d_layer=True)
+    c.transform(dk, pos=Lo['disc'], anchor=[0, 0], scale=K((T['disc'][0] * F, [0, 0, 100], (0.333, 0, 0, 1)), (T['disc'][1] * F, [100, 100, 100])))
     gf = proj.still('graph_paper.png', 745, 745)
     gl = c.footage(gf, 0, end, three_d_layer=True, blend=MULTIPLY)
     gs = 100 * Lo['graph_width'] / 745
