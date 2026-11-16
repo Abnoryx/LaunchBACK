@@ -87,7 +87,7 @@ def build(proj, name='brain_collage', **params):
     c.transform(amp, pos=Lo['amp'])
     # ---- number ring, near half (collapsed precomp, blurred): in front of the brain; the far half sits behind it
     rl = c.precomp(ring_near, 0, end, three_d_layer=True, collapse_transformation=True)
-    c.transform(rl, pos=Lo['ring'], scale=[203, 203, 203]); c.effects(rl, gaussian(22.4))
+    c.transform(rl, pos=Lo['ring'], scale=[203, 203, 203]); c.effects(rl, gaussian(Lo.get('ring_blur', 9.0)))
     # ---- label on the green card
     lb = c.text('label', W['label'], 0, end, 'BradleyHandITC', 58, '#000000', tracking=-80, justify=7415, three_d_layer=True)
     c.transform(lb, pos=[Lo['quad'][0], Lo['quad'][1] + 5, 0])
@@ -106,7 +106,7 @@ def build(proj, name='brain_collage', **params):
                                                           P('Paper', 'BCC Halftone-p', v=hexc('#F2EEEE'))]),
               drop_shadow('#000000', 50, 71, 49, 75))
     rf = c.precomp(ring_far, 0, end, three_d_layer=True, collapse_transformation=True)
-    c.transform(rf, pos=Lo['ring'], scale=[203, 203, 203]); c.effects(rf, gaussian(22.4))
+    c.transform(rf, pos=Lo['ring'], scale=[203, 203, 203]); c.effects(rf, gaussian(Lo.get('ring_blur', 9.0)))
     # ---- collage behind
     fb = c.footage(proj.still('formula_board.png', 1200, 840), 0, end, three_d_layer=True, blend=MULTIPLY)
     c.transform(fb, pos=Lo['board'], scale=[51, 51, 51], rot=90)
