@@ -32,6 +32,16 @@ def merge(a, b):
     return out
 
 
+def smooth_handles(vtx, k=1 / 6):
+    """Catmull-Rom tangents for an open path: one smooth curve through every vertex instead of straight segments."""
+    n = len(vtx); inn, outt = [], []
+    for i in range(n):
+        a, c = vtx[max(0, i - 1)], vtx[min(n - 1, i + 1)]
+        tx, ty = (c[0] - a[0]) * k, (c[1] - a[1]) * k
+        inn.append([-tx, -ty]); outt.append([tx, ty])
+    return inn, outt
+
+
 def stroke_group(vtx, color, width, trim_keys, inn=None, outt=None):
     sh = {'_shape': 1, 'closed': False, 'vtx': vtx, 'in': inn or [[0, 0]] * len(vtx), 'out': outt or [[0, 0]] * len(vtx)}
     return P('Shape', 'ADBE Vector Group', children=[P('Contents', 'ADBE Vectors Group', children=[
@@ -79,9 +89,16 @@ def build(proj, name='disc_brain', **params):
     c.transform(ac, pos=Lo['accent'])
     # scribble: enters left of the term, sweeps under it, ends as a loose ellipse round the accent word
     ax, ay, az = Lo['accent']
-    loop = [[ax + 160 + 150 * math.cos(a), ay - 45 + 62 * math.sin(a)] for a in [i * math.pi / 4 + math.pi / 2 for i in range(9)]]
-    vtx = [[Lo['term'][0] - 40, Lo['term'][1] + 40], [ax - 60, ay + 35]] + loop
-    sc = c.shape('scribble', T['scribble'][0] * F, end, [stroke_group(vtx, '#5A1715', 6, [(T['scribble'][0] * F, 0.0, (0.6, 0, 0.3, 1)), (T['scribble'][1] * F, 100.0)])],
+    # one hand-drawn loop round the italic word: starts top-left, goes round ~1.1 turns, slight tilt, overshoots the start
+    cx, cy, rx, ry, tilt = ax + 99, ay - 22, 117, 58, -0.06
+    vtx = []
+    for i in range(19):
+        a = math.pi * 1.12 + i * (2.2 * math.pi) / 18
+        r = 1 + 0.04 * math.sin(i * 0.9)
+        x, y = rx * r * math.cos(a), ry * r * math.sin(a)
+        vtx.append([cx + x * math.cos(tilt) - y * math.sin(tilt), cy + x * math.sin(tilt) + y * math.cos(tilt)])
+    inn, outt = smooth_handles(vtx)
+    sc = c.shape('scribble', T['scribble'][0] * F, end, [stroke_group(vtx, '#6E1418', 4.5, [(T['scribble'][0] * F, 0.0, (0.6, 0, 0.3, 1)), (T['scribble'][1] * F, 100.0)], inn, outt)],
                  three_d_layer=True)
     c.transform(sc, pos=[0, 0, az], anchor=[0, 0])
     # burst lines around the disc, retracting on the beat

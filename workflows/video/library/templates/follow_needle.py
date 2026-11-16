@@ -52,6 +52,22 @@ def _wave_group(color):
         P('Fill 1', 'ADBE Vector Graphic - Fill', children=[P('Color', 'ADBE Vector Fill Color', v=hexc(color))])])])
 
 
+def _wave_comp(proj, name, dur, color, scale):
+    """The wave as its own 1080x1920 comp, so Wave Warp on the precomp layer ripples it in screen space (as the OG)."""
+    wc = proj.comp(name, dur=dur, motion_blur=True)
+    L = wc.shape('wave', 0, dur, [_wave_group(color)], motion_blur=True)
+    wc.transform(L, pos=[540, 960], scale=scale)
+    wc.finalize()
+    return wc
+
+
+def _wave_warp(height=40.0, width=2500.0, speed=1.0):
+    """OG: height 21 / width 267.5 applied in the shape's layer space (x288 % wide, x942 % tall) = ~40 px swing, ~2500 px wavelength in screen space."""
+    return P('Wave Warp', 'ADBE Wave Warp', children=[P('Wave Height', 'ADBE Wave Warp-0002', v=height), P('Wave Width', 'ADBE Wave Warp-0003', v=width),
+                                                       P('Direction', 'ADBE Wave Warp-0004', v=0.0), P('Wave Speed', 'ADBE Wave Warp-0005', v=speed),
+                                                       P('Pinning', 'ADBE Wave Warp-0006', v=8.0)])
+
+
 def _gradient(a, b):
     return P('S_Gradient', 'S_Gradient', children=[P('Start XY', 'S_Gradient-0050', v=a), P('End XY', 'S_Gradient-0051', v=b), P('Combine', 'S_Gradient-0058', v=2.0)])
 
@@ -65,8 +81,8 @@ def build(proj, name='follow_needle', **params):
 
     # ---- black wave wipe out (the white wave's shape, scaled again about the frame centre)
     b0, b1 = T['black_wave']
-    bw = c.shape('black wave', b0 * F, end, [_wave_group('#000000')], motion_blur=True)
-    c.transform(bw, pos=[540, 960], scale=K((b0 * F, [0, 790, 100], EASE), (b1 * F, [418, 790, 100])))
+    bw = c.precomp(_wave_comp(proj, f'{name} black wave', end, '#000000', K((b0 * F, [0, 790, 100], EASE), (b1 * F, [418, 790, 100]))), b0 * F, end)
+    c.effects(bw, _wave_warp())
     c.footage(proj.still('film_edge_dark.png', 1080, 1920), 0, end, blend=SCREEN)
     for txt, pos, size, col, font, box in ((Pm['watermark'], [541, 215], 78, '#2E5E2E', serif, None),
                                            (Pm['fineprint'], [561, 1700], 27, '#6C6C6C', S.FONTS['fine_serif'], [555, 147])):
@@ -96,9 +112,8 @@ def build(proj, name='follow_needle', **params):
     c.transform(nd, anchor=[0, hh / 2], pos=[px, py], scale=[hs, hs], rot=rot)
     # ---- white wave opens the middle
     w0, w1 = T['wave']
-    wv = c.shape('white wave', w0 * F, end, [_wave_group('#F4F4F2')], motion_blur=True)
-    c.transform(wv, pos=[540, 960], scale=K((w0 * F, [0, 100, 100], EASE), (w1 * F, [100, 100, 100])))
-    c.effects(wv, gaussian(8))
+    wv = c.precomp(_wave_comp(proj, f'{name} white wave', end, '#F4F4F2', K((w0 * F, [0, 100, 100], EASE), (w1 * F, [100, 100, 100]))), w0 * F, end)
+    c.effects(wv, _wave_warp(), gaussian(14))
     # ---- blurred pens in the foreground
     pf, pw, ph = Pm['pen']
     for pos, ori in Lo['pens']:
