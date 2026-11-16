@@ -14,6 +14,13 @@ Read this before any video work. Every rule below came from the user; keep it cu
 - **Library of everything**, not only shots: shot templates, transitions, camera moves, text styles and font pairings, fonts, palettes, eases, finishes (paper, film edge, grade, edge blur, fringing), assets (props, textures, overlays, 3D models), SFX and music cues. See `library/`.
 - Library grows after every video, but **only with the user's approval** (scorecard pass + a yes on a short clip).
 - **Check before rendering.** Before any real render: render key stills, compare them full-size with the reel, be critical, and fix every visual flaw first — invisible/cut-off text, wrong or missing font, wrong colour/size/position, missing elements. Use a separate critic pass as well as self-review.
+- **Examine everything twice before rendering or showing it** (user rule after the Michelin v0 flatlay): two
+  separate full passes over the shot/video — a frame strip every ~3 frames plus every cut at full frame rate — looking
+  at every detail: text readable and fully on screen, props right size/colour/position, nothing covering what
+  matters, **transitions clean** between every pair of shots (no hard jumps, no leftovers from the previous shot),
+  and **nothing that just cuts in or sits still** — every element arrives with motion (reveal, pop, slide, draw) and
+  the camera keeps moving. Fix every problem found before the render; say what was checked in the report.
+- AutoAE preset renders can't be used: their downloads carry a watermark and we don't remove watermarks.
 - Measure everything: per-shot SSIM vs reel, cut timing, sharpness, plus the style scorecard for our own videos.
 
 ## Working rules
