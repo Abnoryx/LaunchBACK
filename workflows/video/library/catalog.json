@@ -230,8 +230,13 @@
     "hand",
     "flame"
    ],
-   "status": "draft",
-   "notes": "follows word_panel (S2a); YOURS fly-through bars f203-208 not included"
+   "status": "proven",
+   "notes": "follows word_panel (S2a); YOURS fly-through bars f203-208 not included",
+   "score": {
+    "ssim_reel": 0.879,
+    "frames": 48,
+    "note": "f200-247; f248 is the cut frame (0.16)"
+   }
   }
  },
  "transitions": {
