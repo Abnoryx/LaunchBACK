@@ -156,12 +156,121 @@ def graph_paper(name='graph_paper.png', unit=63, half=5.6):
     return N
 
 
+def calendar_card(num, name=None, brand='Casper', para=None, fonts_dir='/home/user/tpl/fonts/helv'):
+    """Calendar page (reel S5): 'Day' + mattress line icon + black tabs, huge bold-oblique number (horizontally
+    condensed), navy wordmark under its right side, thick rule, 6-line condensed serif paragraph. 827x956 off-white
+    card. Layout measured on reel f485/f530 (card-local px)."""
+    W, H = 827, 956
+    im = Image.new('RGB', (W, H), (0xF5, 0xF5, 0xF2)); d = ImageDraw.Draw(im)
+    bold = os.path.join(fonts_dir, 'Helvetica-Bold.ttf'); obl = os.path.join(fonts_dir, 'Helvetica-BoldOblique.ttf')
+    if not os.path.exists(bold): bold = obl = BOLD
+    ink = (21, 21, 21)
+    d.text((77, 142), 'Day', fill=ink, font=ImageFont.truetype(bold, 104))
+    teal = (0x5A, 0xA8, 0xB0)  # mattress line icon: top face, slab, slatted base
+    d.polygon([(305, 212), (345, 148), (455, 148), (492, 212)], outline=teal, width=4)
+    d.polygon([(318, 205), (352, 156), (448, 156), (480, 205)], outline=teal, width=2)
+    d.rectangle((300, 212, 495, 236), outline=teal, width=4)
+    d.rectangle((310, 236, 485, 262), outline=teal, width=3)
+    for x in range(322, 485, 13): d.line((x, 238, x, 260), fill=teal, width=2)
+    d.rectangle((630, 38, 800, 80), fill=(10, 10, 10)); d.rectangle((615, 85, 790, 94), fill=(10, 10, 10))
+    # number: drawn big then condensed to 92 % width; 3-digit numbers a size smaller and further left
+    n = str(num); three = len(n) >= 3
+    size = 434 if three else 518
+    f = ImageFont.truetype(obl, size); bb = f.getbbox(n)
+    lay = Image.new('L', (bb[2] + 40, bb[3] + 20), 0); ImageDraw.Draw(lay).text((20, 0), n, fill=255, font=f)
+    lay = lay.resize((int(lay.width * 0.92), lay.height), Image.LANCZOS)
+    x0, top = (79, 279) if three else (137 if len(n) == 2 else 190, 292)
+    im.paste(Image.new('RGB', lay.size, ink), (x0 - int(20 * 0.92), top - bb[1]), lay)
+    d.text((568, 667), brand, fill=(0x18, 0x32, 0x4D), font=ImageFont.truetype(bold, 69))
+    d.rectangle((36, 736, 655, 750), fill=(10, 10, 10))
+    lines = para or ["Casper gives you 100 nights to sleep on their", "mattress because it's a risk-free,",
+                     "confidence-building strategy that allows your", "body enough time to properly adjust and",
+                     "ensures you're truly happy with such an", "important purchase."]
+    pf = ImageFont.truetype('/usr/share/fonts/truetype/liberation/LiberationSerif-Bold.ttf', 30)
+    for i, ln in enumerate(lines):
+        w = int(pf.getlength(ln)) + 4
+        lay = Image.new('L', (w, 36), 0); ImageDraw.Draw(lay).text((0, 0), ln, fill=255, font=pf)
+        lay = lay.resize((int(w * 0.88), 36), Image.LANCZOS)
+        im.paste(Image.new('RGB', lay.size, (25, 25, 25)), (36, 770 + i * 22), lay)
+    im.save(os.path.join(OUT, name or f'calendar_{num}.png'))
+
+HAND = os.path.join(os.path.dirname(__file__), '..', 'node_modules/@fontsource/patrick-hand/files/patrick-hand-latin-400-normal.woff')
+
+
+def math_graph(name='math_graph.png', unit=120, half=10):
+    """Big maths graph sheet (reel S8a): thin grey 1-unit grid, black axis cross with ticks, +-10 end labels.
+    Transparent background so cards behind show through between the lines."""
+    N = int(2 * half * unit + 2 * unit)
+    im = Image.new('RGBA', (N, N), (0, 0, 0, 0)); d = ImageDraw.Draw(im); c0 = N // 2
+    for k in range(-half - 1, half + 2):
+        x = c0 + k * unit
+        d.line((x, 0, x, N), fill=(0x77, 0x7D, 0x7D, 255), width=3); d.line((0, x, N, x), fill=(0x77, 0x7D, 0x7D, 255), width=3)
+    d.line((c0, 0, c0, N), fill=(20, 20, 20, 255), width=6); d.line((0, c0, N, c0), fill=(20, 20, 20, 255), width=6)
+    for k in range(-half, half + 1):
+        d.line((c0 + k * unit, c0 - 16, c0 + k * unit, c0 + 16), fill=(20, 20, 20, 255), width=5)
+        d.line((c0 - 16, c0 + k * unit, c0 + 16, c0 + k * unit), fill=(20, 20, 20, 255), width=5)
+    f = ImageFont.truetype('/usr/share/fonts/opentype/inter/Inter-Regular.otf', 52)
+    d.text((c0 - half * unit - 10, c0 + 24), '-10', fill=(20, 20, 20, 255), font=f)
+    d.text((c0 + 22, c0 - half * unit - 30), '10', fill=(20, 20, 20, 255), font=f)
+    im.save(os.path.join(OUT, name))
+
+
+def ruler(name='ruler.png', W=1280, H=640):
+    """Transparent ruler strip (reel S8a): fine black ticks, half and whole marks, numerals 0..10."""
+    im = Image.new('RGBA', (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
+    x0, x1, y = 40, W - 40, 250; step = (x1 - x0) / 100
+    f = ImageFont.truetype('/usr/share/fonts/opentype/inter/Inter-Regular.otf', 46)
+    for i in range(101):
+        x = x0 + i * step; h = 110 if i % 10 == 0 else 70 if i % 5 == 0 else 45
+        d.line((x, y, x, y + h), fill=(15, 15, 15, 255), width=3)
+        if i % 10 == 0: d.text((x - 12, y + 125), str(i // 10), fill=(15, 15, 15, 255), font=f)
+    d.line((x0, y, x1, y), fill=(15, 15, 15, 255), width=3)
+    im.save(os.path.join(OUT, name))
+
+
+def formula_board(name='formula_board.png', W=1200, H=840):
+    """Light-grey sheet of hand-drawn maths (reel S8a): trig formulas, triangles, a hatched bar chart, a parabola."""
+    im = Image.new('RGB', (W, H), (0xE4, 0xE5, 0xE5)); d = ImageDraw.Draw(im)
+    ink = (25, 25, 25); f = ImageFont.truetype(HAND, 54); s = ImageFont.truetype(HAND, 40)
+    for (x, y), t, ft in (((40, 40), 'sin x = 2 sin x cos x', f), ((40, 120), 'y = 2x² - 3x + 1', f), ((640, 40), 'V = 1/3 Bh', f),
+                          ((640, 120), 'A = ½ ab', f), ((40, 690), 'S = 6a²', f), ((360, 690), 'S = 4R²', f),
+                          ((800, 300), 'cos x', s), ((640, 200), 'x² + y² = r²', s), ((960, 610), '(x)', s)):
+        d.text((x, y), t, fill=ink, font=ft)
+    d.line((60, 470, 60, 620, 240, 620, 60, 470), fill=ink, width=5); d.text((20, 520), 'a', fill=ink, font=s); d.text((130, 625), 'b', fill=ink, font=s)
+    d.line((300, 300, 450, 220, 520, 360, 300, 300), fill=ink, width=5); d.text((380, 330), 'c', fill=ink, font=s)
+    for i, h in enumerate((90, 160, 120, 210)):
+        x = 600 + i * 70
+        d.rectangle((x, 620 - h, x + 50, 620), outline=ink, width=4)
+        for k in range(620 - h, 620, 14): d.line((x, k, x + 50, k - 14 if k - 14 > 620 - h else 620 - h), fill=ink, width=2)
+    d.line((580, 620, 900, 620), fill=ink, width=4)
+    pts = [(900 + t * 7, 600 - (t - 20) ** 2 * 0.8 + 340) for t in range(0, 41)]
+    d.line([(x, max(260, y)) for x, y in pts], fill=ink, width=5)
+    d.line((60, 230, 260, 230, 160, 380, 60, 230), fill=ink, width=4)
+    im.save(os.path.join(OUT, name))
+
+
+def brain_quad(name='brain_quad.png', src='brain_side.png', S=1024):
+    """Four small dark brain renders in a 2x2 grid on transparent (reel S8a 'brain 4.png'), from our side-view brain."""
+    import numpy as np
+    b = Image.open(os.path.join(OUT, src)).convert('RGBA')
+    a = np.asarray(b).astype(float)
+    g = a[..., :3].mean(2, keepdims=True)
+    dark = np.clip((g - 40) * 0.42 + 20, 0, 255) * np.array([0.92, 1.0, 1.0])  # slate, pale ridges
+    b = Image.fromarray(np.dstack([dark, a[..., 3:]]).astype(np.uint8), 'RGBA')
+    cell = S // 2; w = int(cell * 0.86); b = b.resize((w, int(w * b.height / b.width)), Image.LANCZOS)
+    im = Image.new('RGBA', (S, S), (0, 0, 0, 0))
+    for i in range(4):
+        im.alpha_composite(b, ((i % 2) * cell + (cell - b.width) // 2, (i // 2) * cell + (cell - b.height) // 2))
+    im.save(os.path.join(OUT, name))
+
 if __name__ == '__main__':
     film_edge()
     film_edge_dark()
     viewfinder()
     chart_doc()
     census_doc()
+    for n in (1, 10, 30, 50, 100):
+        calendar_card(n)
     print('assets ->', OUT)
 
 

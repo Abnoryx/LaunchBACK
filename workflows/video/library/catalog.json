@@ -102,7 +102,86 @@
     "d",
     "docs"
    ],
-   "status": "draft"
+   "status": "draft",
+   "score": {
+    "ssim_reel": 0.753,
+    "frames": 77
+   }
+  },
+  "disc_brain": {
+   "file": "templates/disc_brain.py",
+   "source": "reel S1b f97-140",
+   "slots": [
+    "kicker",
+    "term",
+    "term_accent",
+    "definition",
+    "banner",
+    "prop"
+   ],
+   "status": "draft",
+   "score": {
+    "ssim_reel": 0.738,
+    "frames": 44
+   }
+  },
+  "word_prop_pop": {
+   "file": "templates/word_prop_pop.py",
+   "source": "reel S3 f249-344",
+   "slots": [
+    "brand",
+    "small",
+    "label",
+    "l1",
+    "l2",
+    "accent",
+    "prop",
+    "hand"
+   ],
+   "status": "draft",
+   "score": {
+    "ssim_reel": 0.784,
+    "frames": 96
+   }
+  },
+  "brand_box": {
+   "file": "templates/brand_box.py",
+   "source": "reel S4 f345-454",
+   "slots": [
+    "brand",
+    "tagline",
+    "tags",
+    "tag_box",
+    "over",
+    "side",
+    "marker",
+    "prop"
+   ],
+   "status": "draft",
+   "score": {
+    "ssim_reel": 0.783,
+    "frames": 110
+   }
+  },
+  "calendar_flip": {
+   "file": "templates/calendar_flip.py",
+   "source": "reel S5 f455-546",
+   "slots": [
+    "pages",
+    "brand",
+    "gives",
+    "nights",
+    "end",
+    "end_small",
+    "prop"
+   ],
+   "status": "draft",
+   "notes": "page turn = per-frame clip mask + reflected dark flap (slow curl, fast sweep); window light = static multiply with lit polygons",
+   "score": {
+    "ssim_reel": 0.715,
+    "frames": 92
+   },
+   "weak": "bed is a different model; window shadow across the card is a flat screen-space approximation"
   }
  },
  "transitions": {
@@ -258,7 +337,18 @@
   "census_doc.png": {
    "made_by": "census web page document (drawn)",
    "status": "draft"
-  }
+  },
+  "calendar_1/10/30/50/100.png": "calendar pages (make_assets.calendar_card, layout measured on the reel)",
+  "bed.png": "bed cutout 1145x879 (Higgsfield, solid matte)",
+  "sofa.png": "sofa cutout (Higgsfield)",
+  "phone_back.png": "phone back cutout (Higgsfield)",
+  "glove_fist.png": "glove fist (Higgsfield)",
+  "glove_open.png": "glove open (Higgsfield)",
+  "brain_top.png": "top-view brain cutout (Higgsfield)",
+  "brain_quad.png": "four dark brain renders 2x2 (from brain_side)",
+  "math_graph.png": "maths graph sheet, transparent (drawn)",
+  "ruler.png": "ruler strip, transparent (drawn)",
+  "formula_board.png": "hand-drawn maths sheet (drawn, Patrick Hand)"
  },
  "sfx": {
   "_todo": "our own whoosh/hit/riser set placed by the reel's onset rules (0-3 f before the visual)"

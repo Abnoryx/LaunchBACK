@@ -4,6 +4,7 @@ import { evalProp, exprOf, textBounceAmount } from './anim.js';
 // Licensed-free substitutes for the fonts used in the reference projects.
 const FONT_MAP = [
   // the user's real font files (Kokila is the Regular cut: bold/italic are synthesised by the browser)
+  [/^HelvReal-BoldOblique/, () => ({ family: 'Helvetica Real', weight: 700, italic: true })],
   [/^HelvReal-Bold/, () => ({ family: 'Helvetica Real', weight: 700 })],
   [/^KokilaReal/, () => ({ family: 'Kokila Real', weight: 400, embolden: 0.018, tracking: 0.025 })],  // Regular cut: controlled embolden instead of the browser's smudgy fake bold
   [/^GFSDidot/, () => ({ family: 'GFS Didot', weight: 700 })],
