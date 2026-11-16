@@ -13,14 +13,14 @@ DEFAULTS = {
     'words': {'brand': 'IKEA', 'tagline': 'Good Stuff !!', 'tags': 'soft sofa\ntop rated\nlovely bed', 'tag_box': 'invites you to',
               'over': 'Sit', 'side': 'touch', 'marker': 'imagine'},
     'fineprint': 'IKEA is a global home furnishings company known for affordable, flat-pack furniture and modern Scandinavian design.',
-    'prop': {'file': 'sofa.png', 'w': 1002, 'h': 985, 'width': 480},
+    'prop': {'file': 'sofa.png', 'w': 1002, 'h': 985, 'width': 330},
     'palette': 'original',
     'layout': {'brand': [540, 969], 'brand_size': 317, 'box': [540, 949, 774, 278], 'tagline': [193, 1136], 'tagline_size': 43,
-               'dots': [150, 140], 'tags': [160, 150], 'prop': [516, 1080, -40], 'tag_box': [540, 722, 387, 73],
+               'dots': [150, 140], 'tags': [160, 150], 'prop': [516, 1080, 0], 'tag_box': [540, 722, 387, 73],
                'over': [245, 1013], 'side': [794, 983], 'marker': [858, 948, 573, 170], 'paper': '#F4F4F4'},
     'timing': {'box_split': (0, 5), 'box_widen': (5, 22), 'brand_out': (6, 16), 'brand_fill': (10, 50), 'decode': (0, 46),
                'prop_rise': (0, 20), 'prop_out': (50, 65), 'tag_box': (21, 31), 'over': (33, 43), 'side': (52, 62),
-               'marker': (75, 85), 'wipe': (97, 109)},
+               'marker': (75, 85), 'wipe': (95, 109)},
 }
 
 
@@ -51,8 +51,12 @@ def build(proj, name='brand_box', **params):
     # ---- end wipe: black bar grows from the marker box
     mx, my, mw, mh = Lo['marker']
     w0, w1 = T['wipe']
-    wipe = c.shape('wipe', w0 * F, end, [rect_group(mw, 222, color='#000000')], three_d_layer=True)
-    c.transform(wipe, pos=[mx, my, 0], scale=K((w0 * F, [0, 0, 100], (0.8, 0, 0.2, 1)), ((w0 + 7) * F, [131, 100, 100]), ((w1 - 3) * F, [193, 100, 100], 'lin'), (w1 * F, [193, 900, 100])))
+    # white box grows inside the marker, flips to black over 3 frames, then the bar grows to fill the frame
+    wgrp = P('Rect', 'ADBE Vector Group', children=[P('Contents', 'ADBE Vectors Group', children=[
+        P('Rectangle Path 1', 'ADBE Vector Shape - Rect', children=[P('Size', 'ADBE Vector Rect Size', v=[mw, 130])]),
+        P('Fill 1', 'ADBE Vector Graphic - Fill', children=[P('Color', 'ADBE Vector Fill Color', keys=[((w1 - 7) * F, hexc('#FFFFFF')), ((w1 - 5) * F, hexc('#000000'))])])])])
+    wipe = c.shape('wipe', w0 * F, end, [wgrp], three_d_layer=True)
+    c.transform(wipe, pos=[mx, my, 0], scale=K((w0 * F, [0, 0, 100], (0.8, 0, 0.2, 1)), ((w0 + 8) * F, [90, 90, 100]), ((w1 - 6) * F, [90, 90, 100], 'lin'), ((w1 - 5) * F, [193, 170, 100], 'lin'), (w1 * F, [193, 1500, 100])))
     S.lens_blur_in(c, 0, 5, 50)
     S.paper_finish(proj, c, 0, end, edge_blur=8)
     sl = c.adjustment('scanlines', 0, end); c.effects(sl, P('S_ScanLines', 'S_ScanLines', children=[P('Lines Angle', 'S_ScanLines-0052', v=35)]))
