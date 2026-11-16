@@ -222,7 +222,7 @@ class Comp:
 
 
 # ---------------------------------------------------------------- text animators
-def reveal(t0, t1, based_on=3, ease=(0.8, 0, 0.2, 1), opacity=0, blur=10, dy=0, ease_high=47, ease_low=100, shape=2, scale=None):
+def reveal(t0, t1, based_on=3, ease=(0.8, 0, 0.2, 1), opacity=0, blur=10, dy=0, ease_high=47, ease_low=100, shape=2, scale=None, random_seed=None):
     """AE-style range-selector reveal: offset -100 -> 100 between t0 and t1 (comp time).
     based_on: 1 characters, 2 characters excl. spaces, 3 words, 4 lines. shape 2 = ramp up."""
     props = [P('Opacity', 'ADBE Text Opacity', v=opacity)]
@@ -233,7 +233,8 @@ def reveal(t0, t1, based_on=3, ease=(0.8, 0, 0.2, 1), opacity=0, blur=10, dy=0, 
         P('Offset', 'ADBE Text Percent Offset', keys=[(t0, -100.0, ease), (t1, 100.0)]),
         P('Advanced', 'ADBE Text Range Advanced', children=[
             P('Based On', 'ADBE Text Range Type2', v=based_on), P('Shape', 'ADBE Text Range Shape', v=shape),
-            P('Ease High', 'ADBE Text Levels Max Ease', v=ease_high), P('Ease Low', 'ADBE Text Levels Min Ease', v=ease_low)])])
+            P('Ease High', 'ADBE Text Levels Max Ease', v=ease_high), P('Ease Low', 'ADBE Text Levels Min Ease', v=ease_low)]
+            + ([P('Randomize Order', 'ADBE Text Randomize Order', v=1), P('Random Seed', 'ADBE Text Random Seed', v=random_seed)] if random_seed is not None else []))])
     return P('Animator 1', 'ADBE Text Animator', children=[
         P('Selectors', 'ADBE Text Selectors', children=[sel]), P('Properties', 'ADBE Text Animator Properties', children=props)])
 

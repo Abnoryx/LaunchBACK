@@ -44,10 +44,10 @@ def docs_comp(proj, end):
     return d
 
 
-def _ink_band(c, above, word, pos, size, font, in_f, rev, color='#014300'):
+def _ink_band(c, above, word, pos, size, font, in_f, rev, color='#014300', justify=7415):
     """Dark stripe through the lower-middle of the x-height (reel: Fill #014300 in a feathered band y -40..-15 per 121 px)."""
     k = size / 121
-    L = c.text(f'{above["name"]} band', word, in_f * F, 1e9, font, size, color, tracking=-80, justify=7415, three_d_layer=True,
+    L = c.text(f'{above["name"]} band', word, in_f * F, 1e9, font, size, color, tracking=-80, justify=justify, three_d_layer=True,
                motion_blur=True, reveal=S.word_reveal(rev[0] * F, rev[1] * F))
     c.layers.remove(L); c.layers.insert(c.layers.index(above), L)  # directly above the word
     c.transform(L, pos=pos)
