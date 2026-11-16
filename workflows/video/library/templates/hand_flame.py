@@ -13,7 +13,9 @@ DUR_F = 49
 DEFAULTS = {
     'words': {'small': 'don’t wanna', 'big': 'Let it Go'},
     # animated footage (keyed in the engine like the OG): a hand closing round the flame, a flickering flame
-    'hand': ('hand_rim_grab.mp4', 716, 1280, [300, 307], 73 / 24), 'flame': ('flame_loop.mp4', 716, 1280, 73 / 24),
+    'hand': {'poses': [('hand_rim_open.png', 752, 1344, [330, 330]), ('hand_rim_mid.png', 752, 1344, [316, 322]), ('hand_rim_pinch.png', 752, 1344, [300, 330])],
+             'times': [10, 14]},  # pose switches (local frames)
+    'flame': ('flame_loop.mp4', 716, 1280, 73 / 24),
     'layout': {'small': [503, 916, 0], 'big': [550, 949, 0], 'flame': [551.7, 948, 0], 'flame_scale': 9.45,
                'hand_pos': [585, 1075], 'hand_anchor': [0, 0], 'hand_scale': 90, 'base': '#171513', 'glow': '#0A6A16',
                'hand_tint': '#1E2A1C', 'rim': '#00FF4D', 'ink_small': '#FAF6E5', 'ink_big': '#F5EDDD'},
@@ -61,13 +63,14 @@ def build(proj, name='hand_flame', **params):
     c.transform(sm, pos=Lo['small'], scale=[50, 50, 50])
     # hand: grows up from the bottom, dark with a green rim
     # dark rim-lit hand (generated from the OG frame): 2D like the OG, grows up from the bottom, anchored at the pinch
-    hf, hw, hh, anc, hdur = Pm['hand']; hs = Lo['hand_scale']
-    # animated: the rim-lit hand rises and pinches up at the flame (Kling clip from the reference-matched still);
-    # SCREEN over the dark base so its black body and background drop out, only the green rim reads (like the OG)
-    hd = c.footage(proj.video(hf, hw, hh, hdur, fps=24.0), T['hand'][0] * F, end, start=T['hand'][0] * F, motion_blur=True, blend=SCREEN)
-    c.transform(hd, anchor=anc, pos=Lo['hand_pos'],
-                scale=K((T['hand'][0] * F, [hs * 70 / 234, hs * 70 / 234], (0.333, 0, 0, 1)), (T['hand'][1] * F, [hs, hs])))
-    c.effects(hd, P('Curves', 'ADBE CurvesCustom', children=[P('Curves', 'ADBE CurvesCustom-0001', v={'_curves': 1, 'channels': {'rgb': [[0, 0], [90, 20], [255, 210]]}})]))
+    # graphic rim-lit hand as pose frames (reference-matched stills, like the OG's flat dark hand + rim): reaching
+    # open -> closing -> pinched on the flame, while it grows up from the bottom; SCREEN so the black drops out
+    hs = Lo['hand_scale']; poses = Pm['hand']['poses']; pt = Pm['hand']['times']
+    grow = K((T['hand'][0] * F, [hs * 70 / 234, hs * 70 / 234], (0.333, 0, 0, 1)), (T['hand'][1] * F, [hs, hs]))
+    edges = [T['hand'][0]] + list(pt) + [DUR_F]
+    for i, (hf, hw, hh, anc) in enumerate(poses):
+        hd = c.footage(proj.still(hf, hw, hh), edges[i] * F, edges[i + 1] * F, motion_blur=True, blend=SCREEN)
+        c.transform(hd, anchor=anc, pos=Lo['hand_pos'], scale=grow)
     # dark base + green glow lower left
     gl = c.footage(proj.solid(Lo['glow'], name='glow'), 0, end)
     c.masks(gl, mask([[-300, 1300], [-300, 2300], [700, 2300], [300, 1500]], feather=500))

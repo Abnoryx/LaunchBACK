@@ -15,7 +15,9 @@ DEFAULTS = {
     'fineprint': 'Apple is a global technology company known for its innovative products like the iPhone, Mac, and ecosystem-driven design.',
     'watermark': 'earnera.co',
     'prop': {'model': 'iphone15.glb', 'scale': 470, 'ry': 38},  # real iPhone 15 Pro Max model (CC-BY-4.0, polyman on Sketchfab); back facing, half-spin on the pop
-    'hand': {'fist': ('glove_cut_fist.png', 776, 994), 'open': ('glove_cut_open.png', 966, 961)},  # paper cut-outs (Higgsfield, ref = OG frames)
+    # paper cut-out glove poses (Higgsfield, ref = OG frames): file, w, h, rot, dx, dy, width as a fraction of hand_w
+    'hand': {'poses': [('glove_cut_fist.png', 776, 994, 18, -40, 0, 0.75), ('glove_cut_half.png', 1102, 1195, 8, -10, -15, 0.95),
+                       ('glove_cut_near.png', 981, 981, 2, 5, -25, 1.0), ('glove_cut_open.png', 966, 961, 0, 10, -30, 1.05)]},
     'palette': 'original',
     'layout': {'brand': [93, 1088], 'brand_size': 388, 'small': [560, 900], 'small_size': 103, 'prop_rest': [529, 859],
                'label': [750, 690], 'label_size': 120, 'l1': [222, 1410], 'l1_size': 117, 'l2': [555, 1497], 'l2_size': 93,
@@ -50,16 +52,26 @@ def build(proj, name='word_prop_pop', **params):
 
     # hand: slides in as a fist, opens under the product (drawn above product and text)
     # paper cut-out glove (generated from the OG frames): fist slides in, cuts to the open hand under the product
-    (ff, fw, fh), (of, ow, oh) = Pm['hand']['fist'], Pm['hand']['open']
+    # paper cut-out glove animated like stop-motion: fist slides in and wobbles, then snaps open through two
+    # in-between poses (2 f each) and lands on the open pose with an overshoot; a slight idle wobble after
     hx, hy = Lo['hand']
-    fist = c.footage(proj.still(ff, fw, fh), T['hand_in'][0] * F, T['hand_open'] * F, three_d_layer=True, motion_blur=True)
-    sf = 100 * Lo['hand_w'] / fw * 0.75
-    c.transform(fist, pos=K((T['hand_in'][0] * F, [hx - 520, hy + 60, 0], S.EASE['out']), (T['hand_in'][1] * F, [hx - 40, hy, 0])), scale=[sf, sf, sf], rot=18)
-    c.effects(fist, drop_shadow('#000000', 40, 303, 11, 19))
-    op = c.footage(proj.still(of, ow, oh), T['hand_open'] * F, DUR_F * F, three_d_layer=True)
-    so = 100 * Lo['hand_w'] / ow * 1.05
-    c.transform(op, pos=[hx + 10, hy - 30, 0], scale=[so, so, so])
-    c.effects(op, drop_shadow('#000000', 40, 303, 11, 19))
+    poses = Pm['hand']['poses']                      # [(file, w, h, rot, dx, dy, width_frac)], fist first, open last
+    o0 = T['hand_open']
+    times = [T['hand_in'][0]] + [o0 + 2 * i for i in range(len(poses) - 1)] + [DUR_F]
+    for i, (pf, pw, ph, prot, dx, dy, wf) in enumerate(poses):
+        a, b = times[i] * F, times[i + 1] * F
+        L = c.footage(proj.still(pf, pw, ph), a, b, three_d_layer=True, motion_blur=True)
+        sc = 100 * Lo['hand_w'] * wf / pw
+        if i == 0:
+            pos = K((a, [hx - 520, hy + 60, 0], S.EASE['out']), (T['hand_in'][1] * F, [hx + dx, hy + dy, 0]))
+            rot = K((a, prot - 14.0, S.EASE['out']), (T['hand_in'][1] * F, prot + 4.0, (0.4, 0, 0.6, 1)), ((T['hand_in'][1] + 5) * F, prot - 2.0, (0.4, 0, 0.6, 1)), ((T['hand_in'][1] + 10) * F, prot))
+            c.transform(L, pos=pos, scale=[sc, sc, sc], rot=rot)
+        elif i == len(poses) - 1:
+            c.transform(L, pos=[hx + dx, hy + dy, 0], scale=K((a, [sc * 1.08] * 3, (0.3, 0, 0.6, 1)), (a + 4 * F, [sc] * 3)),
+                        rot=K((a, prot - 4.0, (0.4, 0, 0.6, 1)), (a + 6 * F, prot + 1.5, (0.4, 0, 0.6, 1)), (a + 14 * F, prot - 0.8, (0.4, 0, 0.6, 1)), (a + 24 * F, prot)))
+        else:
+            c.transform(L, pos=[hx + dx, hy + dy, 0], scale=[sc, sc, sc], rot=prot)
+        c.effects(L, drop_shadow('#000000', 40, 303, 11, 19))
     # label + arrow
     lb = c.text('label', W['label'], 0, end, 'BradleyHand', Lo['label_size'], '#232323', three_d_layer=True,
                 reveal=S.word_reveal(T['label'][0] * F, T['label'][1] * F))
