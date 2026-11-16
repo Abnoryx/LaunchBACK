@@ -216,6 +216,18 @@
    ],
    "status": "rendering",
    "notes": "wave = measured vase path (Wave Warp on shapes is ineffective in our engine)"
+  },
+  "hand_flame": {
+   "file": "templates/hand_flame.py",
+   "source": "reel S2b f200-248",
+   "slots": [
+    "small",
+    "big",
+    "hand",
+    "flame"
+   ],
+   "status": "draft",
+   "notes": "follows word_panel (S2a); YOURS fly-through bars f203-208 not included"
   }
  },
  "transitions": {
@@ -385,7 +397,9 @@
   "formula_board.png": "hand-drawn maths sheet (drawn, Patrick Hand)",
   "fist.png": "forearm + clenched fist cutout (Higgsfield)",
   "pen.png": "black pen cutout (Higgsfield)",
-  "e_mark.png": "round single-stroke e + dot logo mark (drawn)"
+  "e_mark.png": "round single-stroke e + dot logo mark (drawn)",
+  "hand_match.png": "hand holding an upright matchstick, cutout (Higgsfield)",
+  "flame.png": "match flame on black, use SCREEN (Higgsfield)"
  },
  "sfx": {
   "_todo": "our own whoosh/hit/riser set placed by the reel's onset rules (0-3 f before the visual)"
