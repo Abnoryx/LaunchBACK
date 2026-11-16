@@ -5,6 +5,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 
 export const U = 508;
 export const ANCHOR_RAW = 552960; // AE stores model anchors as px * 552960 / U
@@ -25,6 +26,7 @@ export class ModelRenderer {
     this.scene.environmentIntensity = 2.2; // calibrated: phone back panel ~#9D9D9D after the scene's Tint/Curves
     this.models = new Map();
     this.loader = new GLTFLoader();
+    const draco = new DRACOLoader(); draco.setDecoderPath('/nm/three/examples/jsm/libs/draco/gltf/'); this.loader.setDRACOLoader(draco); // Draco-compressed models (e.g. the iPhone)
     this.w = w; this.h = h;
   }
 
@@ -40,6 +42,11 @@ export class ModelRenderer {
     holder.visible = false;
     this.scene.add(holder);
     if (opts.screenTexture) await this.applyScreen(root, opts.screenTexture);
+    // glTF animations (e.g. a rigged hand opening/closing) play by layer time
+    if (gltf.animations?.length) {
+      holder.userData.mixer = new THREE.AnimationMixer(root);
+      for (const clip of gltf.animations) { const a = holder.userData.mixer.clipAction(clip); a.clampWhenFinished = true; a.setLoop(THREE.LoopOnce); a.play(); }
+    }
     this.models.set(url, holder);
     return holder;
   }
@@ -69,12 +76,13 @@ export class ModelRenderer {
 
   // aeWorld: column-major 4x4 AE world matrix of the model layer (comp space, px). zoom: comp camera zoom.
   // camView: optional AE camera view matrix (comp space) when the model comp has a camera.
-  render(url, aeWorld, zoom = 1500, compW = this.w, compH = this.h, env = 2.2) {
+  render(url, aeWorld, zoom = 1500, compW = this.w, compH = this.h, env = 2.2, time = 0) {
     const holder = this.models.get(url);
     if (!holder) return null;
     this.scene.environmentIntensity = env;
     for (const m of this.models.values()) m.visible = false;
     holder.visible = true;
+    if (holder.userData.mixer) holder.userData.mixer.setTime(Math.max(0, time));
     // C: AE comp -> three  (x-W/2, -(y-H/2), -z);  F: glTF -> AE layer space U*(X,-Y,-Z)
     const C = new THREE.Matrix4().set(1, 0, 0, -compW / 2, 0, -1, 0, compH / 2, 0, 0, -1, 0, 0, 0, 0, 1);
     const M = new THREE.Matrix4().fromArray(aeWorld);

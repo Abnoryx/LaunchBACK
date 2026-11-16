@@ -13,7 +13,7 @@ DEFAULTS = {
     'words': {'brand': 'IKEA', 'tagline': 'Good Stuff !!', 'tags': 'soft sofa\ntop rated\nlovely bed', 'tag_box': 'invites you to',
               'over': 'Sit', 'side': 'touch', 'marker': 'imagine'},
     'fineprint': 'IKEA is a global home furnishings company known for affordable, flat-pack furniture and modern Scandinavian design.',
-    'prop': {'model': 'sofa.glb', 'scale': 150, 'ry0': 35, 'rx': 8},  # 3D sofa: turns in Y (a flat card would squash)
+    'prop': {'model': 'sofa.glb', 'scale': 132, 'ry0': 35, 'rx': 8},  # 3D sofa: turns in Y (a flat card would squash)
     'palette': 'original',
     'layout': {'brand': [540, 969], 'brand_size': 317, 'box': [540, 949, 774, 278], 'tagline': [193, 1136], 'tagline_size': 43,
                'dots': [150, 140], 'tags': [160, 150], 'prop': [516, 1080, 0], 'tag_box': [540, 722, 387, 73],

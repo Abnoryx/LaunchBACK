@@ -16,7 +16,7 @@ DEFAULTS = {
     'ring': '12 13 14 15 16 17 18 19 20 21 22 23 24 25',
     'watermark': 'earnera.co',
     'fineprint': 'Marketing is the process of creating, communicating, and delivering value to customers in order to build relationships and drive business growth.',
-    'prop': {'model': 'brain.glb', 'scale': 90, 'rx': -90, 'rz': 180},  # 3D brain (top view); ring wraps round it
+    'prop': {'model': 'brain.glb', 'scale': 116, 'rx': -90, 'rz': 180},  # 3D brain (top view); ring wraps round it
     'layout': {'amp': [205, 477, 0], 'line': [659, 477, 0], 'line_size': 98, 'line_leading': 61, 'small': [651, 1476, 0],
                'accent': [753, 1540, 0], 'card': [540, 960, 1094], 'card_color': '#28E27B', 'graph': [540, 960, 1079],
                'quad': [750, 770, 0], 'ruler': [540, 1272, 381], 'board': [332, 934, 0], 'prop': [540, 960, 0],

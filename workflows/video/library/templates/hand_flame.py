@@ -13,9 +13,9 @@ DUR_F = 49
 DEFAULTS = {
     'words': {'small': 'don’t wanna', 'big': 'Let it Go'},
     # animated footage (keyed in the engine like the OG): a hand closing round the flame, a flickering flame
-    'hand': ('hand_grab.mp4', 716, 1280, 73 / 24), 'flame': ('flame_loop.mp4', 716, 1280, 73 / 24),
+    'hand': 'hand_reach.glb', 'flame': ('flame_loop.mp4', 716, 1280, 73 / 24),
     'layout': {'small': [503, 916, 0], 'big': [550, 949, 0], 'flame': [551.7, 948, 0], 'flame_scale': 9.45,
-               'hand_pos': [553, 2105], 'hand_anchor': [358, 1280], 'hand_scale': 110, 'base': '#171513', 'glow': '#0A6A16',
+               'hand_pos': [565, 1893, 823], 'hand_anchor': [0, 0], 'hand_scale': 80, 'base': '#171513', 'glow': '#0A6A16',
                'hand_tint': '#1E2A1C', 'rim': '#00FF4D', 'ink_small': '#FAF6E5', 'ink_big': '#F5EDDD'},
     'timing': {'split': (0, 13), 'hand': (2, 12), 'flame': (5, 15), 'small': (6, 16), 'big': (21, 31), 'blur_out': (38, 48)},
 }
@@ -60,12 +60,14 @@ def build(proj, name='hand_flame', **params):
                 reveal=S.word_reveal(T['small'][0] * F, T['small'][1] * F))
     c.transform(sm, pos=Lo['small'], scale=[50, 50, 50])
     # hand: grows up from the bottom, dark with a green rim
-    hf, hw, hh, hdur = Pm['hand']; hs = Lo['hand_scale']
-    hd = c.footage(proj.video(hf, hw, hh, hdur, fps=24.0), T['hand'][0] * F, end, start=T['hand'][0] * F, motion_blur=True)
-    c.transform(hd, anchor=Lo['hand_anchor'], pos=Lo['hand_pos'],
-                scale=K((T['hand'][0] * F, [hs * 70 / 234, hs * 70 / 234], (0.333, 0, 0, 1)), (T['hand'][1] * F, [hs, hs])))
-    c.effects(hd, fx('ADBE Extract', 'Extract', **{'0003': 24.0, '0004': 255.0, '0005': 10.0}), tint('#000000', Lo['hand_tint']),
-              light_sweep_edge(Lo['rim'], direction=-119, width=900, edge=35, thickness=1.2, center=(250, 700)))
+    # 3D rigged hand (make_hand.py): dark silhouette, thin green rim; reaches up and closes round the flame. It sits
+    # at z 823, where this camera (z -227, zoom 1050) shows world px 1:1, so its position reads as screen px.
+    hm = Pm['hand']; hs = Lo['hand_scale']
+    hd = c.model(proj.model(hm), T['hand'][0] * F, end, start=T['hand'][0] * F, motion_blur=True)
+    hd['model_env'] = 0.12  # nearly unlit: a dark silhouette; the green rim is self-lit
+    c.transform(hd, pos=Lo['hand_pos'], rot=-8, ry=18,
+                scale=K((T['hand'][0] * F, [hs * 70 / 234] * 3, (0.333, 0, 0, 1)), (T['hand'][1] * F, [hs] * 3)))
+    c.effects(hd, light_sweep_edge(Lo['rim'], direction=-119, width=900, edge=35, thickness=1.2, center=(250, 700)))
     # dark base + green glow lower left
     gl = c.footage(proj.solid(Lo['glow'], name='glow'), 0, end)
     c.masks(gl, mask([[-300, 1300], [-300, 2300], [700, 2300], [300, 1500]], feather=500))

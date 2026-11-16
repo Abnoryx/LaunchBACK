@@ -839,7 +839,10 @@ export class Engine {
     const f = this.footage.get(L.src_id);
     if (!f || !this.models) return;
     if (this.models.w !== comp.w || this.models.h !== comp.h) { this.models.canvas.width = comp.w; this.models.canvas.height = comp.h; this.models.r.setSize(comp.w, comp.h, false); this.models.w = comp.w; this.models.h = comp.h; }
-    const cv = this.models.render(this.assetUrl(f), m, cam.zoom, comp.w, comp.h, this.modelOpts?.[`comp:${comp.name}`]?.env ?? 2.2);
+    // the model renderer always looks from AE's default camera; re-express the layer in the active camera's frame
+    // (default camera = T(W/2, H/2, -zoom)) so models follow camera moves like every other 3D layer
+    const mc = mm(T(comp.w / 2, comp.h / 2, -cam.zoom), mm(cam.view, m));
+    const cv = this.models.render(this.assetUrl(f), mc, cam.zoom, comp.w, comp.h, L.model_env ?? this.modelOpts?.[`comp:${comp.name}`]?.env ?? 2.2, t - (L.start_time || 0));  // model_env: per-layer light level
     if (!cv) return;
     const tex = g.texFromImage(cv);
     let tg = g.target(comp.w, comp.h); g.copy(tex, tg); g.deleteTex(tex);
