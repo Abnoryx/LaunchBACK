@@ -107,6 +107,43 @@ def census_doc(name='census_doc.png'):
     im.save(os.path.join(OUT, name))
 
 
+def cutout(src, name, trim=True):
+    """Cut a studio shot out of its flat background (colour unmixing, keeps soft shadows semi-transparent), trimmed."""
+    import numpy as np
+    im = np.asarray(Image.open(src).convert('RGB')).astype(np.float64) / 255
+    bg = np.median(np.concatenate([im[:12].reshape(-1, 3), im[-12:].reshape(-1, 3), im[:, :12].reshape(-1, 3)]), 0)
+    a = np.max(np.maximum((bg - im) / np.maximum(bg, 1e-3), (im - bg) / np.maximum(1 - bg, 1e-3)), axis=2)
+    a = np.clip((a - 0.04) / 0.96, 0, 1)
+    col = np.clip((im - (1 - a[..., None]) * bg) / np.maximum(a[..., None], 1e-3), 0, 1)
+    out = Image.fromarray(np.dstack([col * 255, a * 255]).astype(np.uint8), 'RGBA')
+    if trim:
+        out = out.crop(out.getbbox())
+    out.save(os.path.join(OUT, name))
+    return out.size
+
+
+def graph_paper(name='graph_paper.png', unit=63, half=5.6):
+    """Graph paper (reel S1b): 1-unit grid, axis cross with ticks and +-5 labels, edges fading out."""
+    import numpy as np
+    N = int(2 * half * unit) + 40
+    im = Image.new('L', (N, N), 255); d = ImageDraw.Draw(im); c0 = N // 2
+    for k in range(-6, 7):
+        x = c0 + k * unit
+        d.line((x, 0, x, N), fill=170, width=2); d.line((0, x, N, x), fill=170, width=2)
+    d.line((c0, 0, c0, N), fill=110, width=4); d.line((0, c0, N, c0), fill=110, width=4)
+    for k in range(-5, 6):
+        d.line((c0 + k * unit, c0 - 10, c0 + k * unit, c0 + 10), fill=90, width=3); d.line((c0 - 10, c0 + k * unit, c0 + 10, c0 + k * unit), fill=90, width=3)
+    f = ImageFont.truetype('/usr/share/fonts/opentype/inter/Inter-Regular.otf', 26)
+    for t, (x, y) in (('-5', (c0 - 5 * unit - 26, c0 + 14)), ('5', (c0 + 5 * unit + 6, c0 + 14)), ('5', (c0 + 14, c0 - 5 * unit - 16)), ('-5', (c0 + 14, c0 + 5 * unit - 16))):
+        d.text((x, y), t, fill=90, font=f)
+    a = np.asarray(im).astype(float)
+    yy, xx = np.mgrid[0:N, 0:N] / N
+    edge = np.clip(np.minimum.reduce([xx, 1 - xx, yy, 1 - yy]) / 0.12, 0, 1)  # feathered edges
+    ink = (255 - a) * edge
+    Image.fromarray((255 - ink).astype(np.uint8)).convert('RGB').save(os.path.join(OUT, name))
+    return N
+
+
 if __name__ == '__main__':
     film_edge()
     film_edge_dark()

@@ -57,6 +57,52 @@
     "frames": 60
    },
    "weak": "f181-184 black gap between the two wipes (0.5-0.8)"
+  },
+  "flythrough_words": {
+   "file": "templates/flythrough_words.py",
+   "source": "reel S8b f774-844",
+   "slots": [
+    "a",
+    "b",
+    "c_small",
+    "c_accent"
+   ],
+   "status": "proven",
+   "score": {
+    "ssim_reel": 0.907,
+    "frames": 71
+   }
+  },
+  "statement_flip": {
+   "file": "templates/statement_flip.py",
+   "source": "reel S6 f547-635",
+   "slots": [
+    "line",
+    "accent",
+    "small",
+    "big",
+    "scan"
+   ],
+   "status": "draft",
+   "score": {
+    "ssim_reel": 0.681,
+    "paper_half": 0.929,
+    "scan_half": 0.281,
+    "frames": 89
+   },
+   "weak": "scan half: our MRI is a different scan (texture cannot match); layout/motion match"
+  },
+  "dark_docs": {
+   "file": "templates/dark_docs.py",
+   "source": "reel S7 f636-712",
+   "slots": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "docs"
+   ],
+   "status": "draft"
   }
  },
  "transitions": {
@@ -191,6 +237,26 @@
   "film_edge_dark.png": {
    "made_by": "make_assets.film_edge_dark",
    "use": "screen overlay on dark shots (amber marks)",
+   "status": "draft"
+  },
+  "viewfinder.png": {
+   "made_by": "camera viewfinder surround (drawn)",
+   "status": "draft"
+  },
+  "mri_a.png": {
+   "made_by": "coronal MRI (Higgsfield)",
+   "status": "draft"
+  },
+  "mri_b.png": {
+   "made_by": "coronal MRI alt (Higgsfield)",
+   "status": "draft"
+  },
+  "chart_doc.png": {
+   "made_by": "line chart document (drawn)",
+   "status": "draft"
+  },
+  "census_doc.png": {
+   "made_by": "census web page document (drawn)",
    "status": "draft"
   }
  },
