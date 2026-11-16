@@ -16,8 +16,8 @@ DEFAULTS = {
     'watermark': 'earnera.co',
     'prop': {'model': 'iphone15.glb', 'scale': 470, 'ry': 38},  # real iPhone 15 Pro Max model (CC-BY-4.0, polyman on Sketchfab); back facing, half-spin on the pop
     # paper cut-out glove poses (Higgsfield, ref = OG frames): file, w, h, rot, dx, dy, width as a fraction of hand_w
-    'hand': {'poses': [('glove_cut_fist.png', 776, 994, 18, -40, 0, 0.75), ('glove_cut_half.png', 1102, 1195, 8, -10, -15, 0.95),
-                       ('glove_cut_near.png', 981, 981, 2, 5, -25, 1.0), ('glove_cut_open.png', 966, 961, 0, 10, -30, 1.05)]},
+    'hand': {'poses': [('glove_cut_fist.png', 776, 994, 18, -40, 0, 0.75), ('glove_cut_half.png', 811, 955, 8, -10, -15, 0.8),
+                       ('glove_cut_near.png', 885, 935, 2, 5, -25, 0.95), ('glove_cut_open.png', 966, 961, 0, 10, -30, 1.05)]},
     'palette': 'original',
     'layout': {'brand': [93, 1088], 'brand_size': 388, 'small': [560, 900], 'small_size': 103, 'prop_rest': [529, 859],
                'label': [750, 690], 'label_size': 120, 'l1': [222, 1410], 'l1_size': 117, 'l2': [555, 1497], 'l2_size': 93,
