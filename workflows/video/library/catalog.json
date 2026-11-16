@@ -141,10 +141,10 @@
    ],
    "status": "draft",
    "score": {
-    "ssim_reel": 0.777,
+    "ssim_reel": 0.781,
     "frames": 95
    },
-   "notes": "3D phone (phone.glb); keyed glove clip glove_open.mp4"
+   "notes": "real iPhone 15 Pro Max (CC-BY-4.0 polyman); paper cut-out glove fist/open generated from OG frames"
   },
   "brand_box": {
    "file": "templates/brand_box.py",
@@ -161,7 +161,7 @@
    ],
    "status": "draft",
    "score": {
-    "ssim_reel": 0.769,
+    "ssim_reel": 0.779,
     "frames": 109
    },
    "notes": "3D sofa model (sofa.glb) turns in Y"
@@ -235,9 +235,9 @@
     "flame"
    ],
    "status": "proven",
-   "notes": "keyed clips hand_grab.mp4 + flame_loop.mp4 (Kling)",
+   "notes": "rim-lit hand clip hand_rim_grab.mp4 (SCREEN), flame_loop.mp4 + warm halo",
    "score": {
-    "ssim_reel": 0.872,
+    "ssim_reel": 0.835,
     "frames": 48
    }
   }
@@ -423,7 +423,8 @@
   "brain.glb": "top-view brain (S8a)",
   "brain_side.glb": "full brain side view (S1b)",
   "sofa.glb": "mustard single sofa bed (S4)",
-  "phone.glb": "generic phone, triple camera (S3)"
+  "phone.glb": "generic phone, triple camera (S3)",
+  "iphone15.glb": "Apple iPhone 15 Pro Max Black by polyman (Sketchfab), CC-BY-4.0 - credit required"
  },
  "footage": {
   "hand_grab.mp4": "pale hand closing round something, on black (S2b)",
