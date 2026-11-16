@@ -13,11 +13,11 @@ DEFAULTS = {
     'watermark': 'earnera.co',
     'fineprint': 'Marketing is the process of creating, communicating, and delivering value to customers in order to build relationships and drive business growth.',
     'palette': 'original',
-    'scan': ['mri_a.png', 'mri_b.png'],
+    'scan': ['mri_a.png'],  # one slice + tiny shifts: the reel's gif frames barely change, so the RGB split only fringes edges
     'layout': {'line': [544.2, 971.5], 'line_size': 95, 'accent': [564.7, 1073.5], 'accent_size': 195,
                'small': [270, 885], 'small_size': 116, 'small_hscale': 0.649, 'big': [262, 1010], 'big_size': 116, 'big_hscale': 1.14,
-               'scan_c': [580, 999], 'scan_size': 1725},
-    'timing': {'line': (2, 33), 'accent': (27, 45), 'flash': (51, 53), 'cut': 55, 'small': (55, 65), 'big': (60, 70), 'blur_out': (78, 88)},
+               'scan_c': [580, 975], 'scan_size': 1280},
+    'timing': {'line': (0, 22), 'accent': (27, 45), 'flash': (51, 53), 'cut': 55, 'small': (55, 65), 'big': (60, 70), 'blur_out': (78, 88)},
 }
 
 
@@ -43,8 +43,8 @@ def build(proj, name='statement_flip', **params):
     for k, (t0, t1, col_wm, col_fp, fy) in enumerate(((2 * F, cut, '#169200', '#000000', 1600), (cut, end, '#363636', '#777777', 1760))):
         wm = c.text(f'watermark {k}', Pm['watermark'], t0, t1, serif, 78, col_wm, tracking=-80, justify=7415)
         c.transform(wm, pos=[541.5, 199.9])
-        fp = c.text(f'fineprint {k}', Pm['fineprint'], t0, t1, serif, 34, col_fp, justify=7415, box=[560, 120], leading=30, hscale=1.14)
-        c.transform(fp, pos=[540 - 280, fy])
+        fp = c.text(f'fineprint {k}', Pm['fineprint'], t0, t1, serif, 34, col_fp, justify=7415, box=[560, 120], leading=30)
+        c.transform(fp, pos=[540, fy])  # centred box text is laid out around its origin
 
     # ---- second half (dark): words over the scan, viewfinder, temporal RGB split on the scan only
     sm = c.text('small', W['small'], cut, end, sans, Lo['small_size'], '#FFFFFF', tracking=-80, hscale=Lo['small_hscale'],
@@ -65,7 +65,7 @@ def build(proj, name='statement_flip', **params):
     while t < DUR_F:
         t1 = min(DUR_F, t + (3 if k % 3 != 2 else 2))
         L = c.footage(stills[k % len(stills)], t * F, t1 * F)
-        jx, jy, js = ((k * 37) % 9 - 4) * 2, ((k * 53) % 7 - 3) * 2, 1 + ((k * 29) % 5 - 2) * 0.006
+        jx, jy, js = ((k * 37) % 5 - 2) * 1.5, ((k * 53) % 5 - 2) * 1.5, 1 + ((k * 29) % 5 - 2) * 0.003
         c.transform(L, pos=[Lo['scan_c'][0] + jx, Lo['scan_c'][1] + jy], scale=[sc * js, sc * js])
         t, k = t1, k + 1
     black = proj.solid('#010101', name='black'); c.footage(black, cut, end)
