@@ -3,6 +3,10 @@ import { evalProp, exprOf, textBounceAmount } from './anim.js';
 
 // Licensed-free substitutes for the fonts used in the reference projects.
 const FONT_MAP = [
+  // the user's real font files (Kokila is the Regular cut: bold/italic are synthesised by the browser)
+  [/^HelvReal-Bold/, () => ({ family: 'Helvetica Real', weight: 700 })],
+  [/^KokilaReal/, () => ({ family: 'Kokila Real', weight: 400, embolden: 0.018, tracking: 0.025 })],  // Regular cut: controlled embolden instead of the browser's smudgy fake bold
+  [/^GFSDidot/, () => ({ family: 'GFS Didot', weight: 700 })],
   // Inter Tight at 0.975x matches SF Pro Display's set width (calibrated on "Solutions" in the 7th-reel render).
   [/^SFPro(Display|Text|Rounded)-(\w+)/, (m) => ({ family: 'Inter Tight Variable', weight: W[m[2]] ?? 500, sizeScale: 0.975 })],
   [/^Helvetica(Neue)?-?Bold/, () => ({ family: 'Inter Variable', weight: 700, tracking: -0.01 })],
@@ -370,6 +374,7 @@ export function drawText(anim, ss = 2) {
       if (c.sx !== 1 || c.sy !== 1 || hsA !== 1 || vsA !== 1) ctx.scale(c.sx * hsA, c.sy * vsA); }
     if (anim.stroke && anim.strokeWidth > 0) { ctx.lineJoin = 'round'; ctx.strokeStyle = css(anim.stroke); ctx.lineWidth = anim.strokeWidth * ss; if (anim.strokeOver) { ctx.fillText(g.ch, -(g.nw ?? g.w) / 2, 0); ctx.strokeText(g.ch, -(g.nw ?? g.w) / 2, 0); } else { ctx.strokeText(g.ch, -(g.nw ?? g.w) / 2, 0); ctx.fillText(g.ch, -(g.nw ?? g.w) / 2, 0); } }
     else ctx.fillText(g.ch, -(g.nw ?? g.w) / 2, 0);
+    if (f.embolden) { ctx.lineJoin = 'round'; ctx.strokeStyle = ctx.fillStyle; ctx.lineWidth = size * ss * f.embolden; ctx.strokeText(g.ch, -(g.nw ?? g.w) / 2, 0); }
     ctx.restore();
   }
   return { canvas: cv, ox: ox / ss, oy: oy / ss, scale: ss, fontInfo: f };

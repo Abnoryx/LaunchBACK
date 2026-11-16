@@ -16,7 +16,7 @@ PALETTES = {
 # ---------------------------------------------------------------- fonts (role -> engine font name)
 # Arimo = metric-compatible Helvetica; Anton scored best for Coolvetica HeavyComp (user's free Coolvetica lacks Heavy cuts);
 # CoolCondensed = the user's Coolvetica Condensed (the reel's SHARE pill).
-FONTS = {'sans_bold': 'Arimo', 'hero_condensed': 'Anton', 'pill': 'CoolCondensed', 'serif_italic': 'Kokila-BoldItalic',
+FONTS = {'sans_bold': 'HelvReal-Bold', 'hero_condensed': 'Anton', 'pill': 'CoolCondensed', 'serif_italic': 'KokilaReal-BoldItalic',
          'didot_italic': 'DidotLTPro-BoldItalic', 'hand': 'BradleyHand', 'fine_serif': 'TimesNewRomanPSMT'}
 
 # ---------------------------------------------------------------- eases (cubic-bezier, from the reel's motion analysis)
