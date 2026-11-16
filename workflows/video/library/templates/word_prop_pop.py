@@ -15,11 +15,11 @@ DEFAULTS = {
     'fineprint': 'Apple is a global technology company known for its innovative products like the iPhone, Mac, and ecosystem-driven design.',
     'watermark': 'earnera.co',
     'prop': {'model': 'iphone15.glb', 'scale': 470, 'ry': 38},  # real iPhone 15 Pro Max model (CC-BY-4.0, polyman on Sketchfab); back facing, half-spin on the pop
-    'hand': ('glove_hand.glb', 48.0, 1.1, -28.0),  # 3D cartoon glove (make_hand.py): model, scale %, open time in its clip, tilt
+    'hand': {'fist': ('glove_cut_fist.png', 776, 994), 'open': ('glove_cut_open.png', 966, 961)},  # paper cut-outs (Higgsfield, ref = OG frames)
     'palette': 'original',
     'layout': {'brand': [93, 1088], 'brand_size': 388, 'small': [560, 900], 'small_size': 103, 'prop_rest': [529, 859],
                'label': [750, 690], 'label_size': 120, 'l1': [222, 1410], 'l1_size': 117, 'l2': [555, 1497], 'l2_size': 93,
-               'accent': [477, 1560], 'accent_size': 229, 'hand': [585, 1410], 'hand_w': 380, 'paper': '#FDF9EF', 'ink': '#211F1C'},
+               'accent': [477, 1560], 'accent_size': 229, 'hand': [585, 1200], 'hand_w': 380, 'paper': '#FDF9EF', 'ink': '#211F1C'},
     'timing': {'brand': (3, 23), 'hand_in': (4, 13), 'small': (16, 30), 'pop': (28, 33), 'hand_open': 29, 'arrow': (33, 43),
                'l1': (32, 42), 'label': (40, 46), 'l2': (53, 63), 'accent': (58, 68), 'path': (33, 53, 62), 'blur_out': (87, 95)},
 }
@@ -49,13 +49,17 @@ def build(proj, name='word_prop_pop', **params):
     c.camera('camera', 0, end, [(t * F, 540, 960, -1050 - 59 * min(1, t / 74), 1050) for t in range(DUR_F + 1)])
 
     # hand: slides in as a fist, opens under the product (drawn above product and text)
-    hm, hsc, t_open, tilt = Pm['hand']
-    st = T['hand_open'] * F - t_open  # align the glove's opening with the product pop
-    L = c.model(proj.model(hm), T['hand_in'][0] * F, DUR_F * F, start=st, motion_blur=True)
-    hx, hy = Lo['hand']  # palm centre at rest; the glove rises in from below, tilted, and straightens as it opens
-    c.transform(L, pos=K((T['hand_in'][0] * F, [hx + 120, hy + 700, 0], S.EASE['out']), (T['hand_in'][1] * F, [hx, hy, 0])),
-                scale=[hsc, hsc, hsc], rot=K((T['hand_in'][0] * F, tilt, 'lin'), ((T['hand_open'] - 2) * F, tilt, S.EASE['out']), ((T['hand_open'] + 6) * F, -8.0)))
-    c.effects(L, drop_shadow('#000000', 40, 303, 11, 19))
+    # paper cut-out glove (generated from the OG frames): fist slides in, cuts to the open hand under the product
+    (ff, fw, fh), (of, ow, oh) = Pm['hand']['fist'], Pm['hand']['open']
+    hx, hy = Lo['hand']
+    fist = c.footage(proj.still(ff, fw, fh), T['hand_in'][0] * F, T['hand_open'] * F, three_d_layer=True, motion_blur=True)
+    sf = 100 * Lo['hand_w'] / fw * 0.75
+    c.transform(fist, pos=K((T['hand_in'][0] * F, [hx - 520, hy + 60, 0], S.EASE['out']), (T['hand_in'][1] * F, [hx - 40, hy, 0])), scale=[sf, sf, sf], rot=18)
+    c.effects(fist, drop_shadow('#000000', 40, 303, 11, 19))
+    op = c.footage(proj.still(of, ow, oh), T['hand_open'] * F, DUR_F * F, three_d_layer=True)
+    so = 100 * Lo['hand_w'] / ow * 1.05
+    c.transform(op, pos=[hx + 10, hy - 30, 0], scale=[so, so, so])
+    c.effects(op, drop_shadow('#000000', 40, 303, 11, 19))
     # label + arrow
     lb = c.text('label', W['label'], 0, end, 'BradleyHand', Lo['label_size'], '#232323', three_d_layer=True,
                 reveal=S.word_reveal(T['label'][0] * F, T['label'][1] * F))
