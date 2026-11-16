@@ -53,7 +53,7 @@ SHOTS = [
     ('S16', 'statement_flip', dict(words={'line': 'Michelin never sold', 'accent': 'information', 'small': 'they built', 'big': 'demand'},
                                    watermark=WM, fineprint=FINE, scan=['m_france.png'])),
     ('S17', 'flythrough_words', dict(words={'a': 'and collected', 'b': 'it', 'c_small': 'somewhere', 'c_accent': 'else.'})),
-    ('S18', None, None),   # AutoAE flatlay preset (user renders) — placeholder
+    ('S18', 'desk_flatlay', dict()),   # our own flatlay (replaces the AutoAE render)
     ('S19', 'brain_collage', dict(words={'amp': '', 'line': 'Most creators\nhave a guide', 'small': 'and no', 'accent': 'tyres.', 'label': 'Audience'},
                                   ring='10K 50K 120K 300K 1M 2M 5M 10K 50K 120K', watermark=WM, fineprint=FINE,
                                   prop={'model': 'm_book.glb', 'scale': 110, 'rx': 0, 'rz': 0}, quad=('m_book.png', 713, 1108, 26), prop_plain=True)),
