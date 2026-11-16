@@ -89,7 +89,7 @@ def build(proj, name='word_prop_pop', **params):
     ph = c.model(proj.model(pr['model']), t0 * F, end)
     c.transform(ph, pos=K(*bounce), scale=K((t0 * F, [0, 0, 0]), (t1 * F, [psc, psc, psc])),
                 ry=K((t0 * F, pr['ry'] - 180.0, (0.2, 0, 0, 1)), (t0 * F + 18 * F, float(pr['ry']))))
-    c.effects(ph, tint('#000000', '#C9C9C6', 100), drop_shadow('#000000', 35, 240, 58, 109))
+    c.effects(ph, *([tint('#000000', '#C9C9C6', 100)] if Pm.get('prop_tint', True) else []), drop_shadow('#000000', 35, 240, 58, 109))
     # words
     for key, size, col, rev, font, fx in (('small', Lo['small_size'], ink, T['small'], sans, None), ('l1', Lo['l1_size'], ink, T['l1'], sans, None),
                                           ('l2', Lo['l2_size'], ink, T['l2'], sans, None)):

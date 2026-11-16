@@ -14,21 +14,22 @@ WM = ' '
 RED = '#E10600'
 
 SHOTS = [
-    ('S1', 'hero_word', dict(words={'kicker': 'a tyre company', 'hero': 'POWER', 'q1': 'over', 'q2': 'chefs', 'sub1': 'has more', 'sub2': 'power'},
-                             mark='★', prop={'file': 'm_tyre.png', 'w': 705, 'h': 1006, 'scale': 75})),
+    ('S1', 'hero_word', dict(words={'kicker': 'a tyre company', 'hero': 'POWER', 'q1': 'over', 'q2': 'chefs', 'sub1': 'has more', 'sub2': ' '},
+                             mark='★', prop={'file': 'm_tyre.png', 'w': 705, 'h': 1006, 'scale': 75},
+                             layout={'hero': [-20, 1218, 671], 'hero_scale': [124, 150, 100]})),
     ('S2', 'disc_brain', dict(words={'kicker': 'than any', 'term': 'food critic', 'term_accent': 'alive.'},
                               definition=FINE[:96],
                               banner={'left_num': '19', 'left_word': 'nineteen', 'right_num': '00', 'right_word': 'hundred',
                                       'l1': 'THE GUIDE', 'l2': '1900 Edition 001', 'r1': 'FRANCE', 'r2': '46°N 2°E'},
-                              prop={'model': 'm_cloche.glb', 'scale': 150, 'ry': (-20.0, 20.0)})),
+                              prop={'model': 'm_cloche.glb', 'scale': 95, 'ry': (-20.0, 20.0)})),
     ('S3', 'calendar_flip', dict(pages=[1897, 1898, 1899, 1900, 1900], words={'brand': 'Michelin', 'gives': 'sells', 'nights': 'tyres.', 'end': '1900', 'end_small': 'France'},
-                                 layout={'bg': '#5A1210', 'flap': '#200606'})),
+                                 layout={'bg': '#5A1210', 'flap': '#200606'}, prop={'file': 'm_tyre.png', 'w': 705, 'h': 1006, 'width': 220})),
     ('S4', 'statement_flip', dict(words={'line': 'Problem: almost', 'accent': 'nobody', 'small': 'owns a', 'big': 'car.'},
                                   watermark=WM, fineprint=FINE, scan=['m_france.png'])),
     ('S5', 'word_panel', dict(words={'a': 'A tyre', 'b': 'business', 'panel': 'needs', 'big': 'MOVE'})),
     ('S6', 'dark_docs', dict(words={'a': 'They had', 'b': 'no ad', 'c': 'budget', 'd': 'at all.'}, watermark=WM, fineprint=FINE)),
     ('S7', 'word_prop_pop', dict(words={'brand': 'map.', 'small': 'They had a', 'label': 'the guide', 'l1': 'So they made', 'l2': 'a free', 'accent': 'guide'},
-                                 fineprint=FINE, watermark=WM, prop={'model': 'm_book.glb', 'scale': 120, 'ry': 25})),
+                                 fineprint=FINE, watermark=WM, prop={'model': 'm_book.glb', 'scale': 120, 'ry': 25}, prop_tint=False)),
     ('S8', 'share_card', dict(words={'line1': 'So they gave', 'pill': 'ONE', 'with': 'away', 'accent': 'free.', 'who': 'for', 'bar': 'every', 'tail': 'driver'},
                               watermark=WM, fineprint=FINE)),
     ('S9', 'brand_box', dict(words={'brand': 'GUIDE', 'tagline': 'Where to...', 'tags': 'fill up\nsleep\neat', 'tag_box': 'where to',
@@ -51,9 +52,9 @@ SHOTS = [
     ('S18', None, None),   # AutoAE flatlay preset (user renders) — placeholder
     ('S19', 'brain_collage', dict(words={'amp': '', 'line': 'Most creators\nhave a guide', 'small': 'and no', 'accent': 'tyres.', 'label': 'Audience'},
                                   ring='10K 50K 120K 300K 1M 2M 5M 10K 50K 120K', watermark=WM, fineprint=FINE,
-                                  prop={'model': 'm_book.glb', 'scale': 110, 'rx': 0, 'rz': 0}, quad=('m_book.png', 713, 1108, 26))),
-    ('S20', 'follow_needle', dict(words={'cta': 'That gap', 'accent': 'is what', 'small': 'I work\non', 'big': 'Launch'},
-                                  watermark=WM, fineprint=FINE)),
+                                  prop={'model': 'm_book.glb', 'scale': 110, 'rx': 0, 'rz': 0}, quad=('m_book.png', 713, 1108, 26), prop_plain=True)),
+    ('S20', 'follow_needle', dict(words={'cta': 'That gap', 'accent': 'is what', 'small': 'I work', 'big': 'on.'},
+                                  watermark=WM, fineprint=FINE, logo=('blank.png', 4, 4))),
     ('LOGO', 'logo_reveal', dict(bg='#000000')),
 ]
 

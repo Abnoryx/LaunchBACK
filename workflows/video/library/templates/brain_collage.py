@@ -100,10 +100,10 @@ def build(proj, name='brain_collage', **params):
     pr = Pm['prop']; psc = pr['scale']
     br = c.model(proj.model(pr['model']), 0, end)
     c.transform(br, pos=Lo['prop'], rx=pr['rx'], rot=pr['rz'], scale=K((T['pop'][0] * F, [0, 0, 0], (0.0, 0.6, 0, 1)), (T['pop'][1] * F, [psc, psc, psc])))
-    c.effects(br, tint('#000000', '#FFFFFF'),
+    c.effects(br, *([] if Pm.get('prop_plain') else [tint('#000000', '#FFFFFF')]),
               P('Curves', 'ADBE CurvesCustom', children=[P('Curves', 'ADBE CurvesCustom-0001', v={'_curves': 1, 'channels': {'rgb': [[0, 0], [90, 25], [170, 170], [255, 255]]}})]),
-              P('BCC Halftone', 'BCC Halftone', children=[P('Cell', 'BCC Halftone-c', v=4.5), P('Ink', 'BCC Halftone-i', v=hexc('#141414')),
-                                                          P('Paper', 'BCC Halftone-p', v=hexc('#F2EEEE'))]),
+              *([] if Pm.get('prop_plain') else [P('BCC Halftone', 'BCC Halftone', children=[P('Cell', 'BCC Halftone-c', v=4.5), P('Ink', 'BCC Halftone-i', v=hexc('#141414')),
+                                                          P('Paper', 'BCC Halftone-p', v=hexc('#F2EEEE'))])]),
               drop_shadow('#000000', 50, 71, 49, 75))
     rf = c.precomp(ring_far, 0, end, three_d_layer=True, collapse_transformation=True)
     c.transform(rf, pos=Lo['ring'], scale=[203, 203, 203]); c.effects(rf, gaussian(Lo.get('ring_blur', 9.0)))

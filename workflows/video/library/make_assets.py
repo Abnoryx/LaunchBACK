@@ -156,7 +156,7 @@ def graph_paper(name='graph_paper.png', unit=63, half=5.6):
     return N
 
 
-def calendar_card(num, name=None, brand='Casper', para=None, fonts_dir='/home/user/tpl/fonts/helv'):
+def calendar_card(num, name=None, brand='Casper', para=None, fonts_dir='/home/user/tpl/fonts/helv', label='Day', icon=True):
     """Calendar page (reel S5): 'Day' + mattress line icon + black tabs, huge bold-oblique number (horizontally
     condensed), navy wordmark under its right side, thick rule, 6-line condensed serif paragraph. 827x956 off-white
     card. Layout measured on reel f485/f530 (card-local px)."""
@@ -165,23 +165,24 @@ def calendar_card(num, name=None, brand='Casper', para=None, fonts_dir='/home/us
     bold = os.path.join(fonts_dir, 'Helvetica-Bold.ttf'); obl = os.path.join(fonts_dir, 'Helvetica-BoldOblique.ttf')
     if not os.path.exists(bold): bold = obl = BOLD
     ink = (21, 21, 21)
-    d.text((77, 142), 'Day', fill=ink, font=ImageFont.truetype(bold, 104))
-    teal = (0x5A, 0xA8, 0xB0)  # mattress line icon: top face, slab, slatted base
-    d.polygon([(305, 212), (345, 148), (455, 148), (492, 212)], outline=teal, width=4)
-    d.polygon([(318, 205), (352, 156), (448, 156), (480, 205)], outline=teal, width=2)
-    d.rectangle((300, 212, 495, 236), outline=teal, width=4)
-    d.rectangle((310, 236, 485, 262), outline=teal, width=3)
-    for x in range(322, 485, 13): d.line((x, 238, x, 260), fill=teal, width=2)
+    d.text((77, 142), label, fill=ink, font=ImageFont.truetype(bold, 104))
+    if icon:
+        teal = (0x5A, 0xA8, 0xB0)  # mattress line icon: top face, slab, slatted base
+        d.polygon([(305, 212), (345, 148), (455, 148), (492, 212)], outline=teal, width=4)
+        d.polygon([(318, 205), (352, 156), (448, 156), (480, 205)], outline=teal, width=2)
+        d.rectangle((300, 212, 495, 236), outline=teal, width=4)
+        d.rectangle((310, 236, 485, 262), outline=teal, width=3)
+        for x in range(322, 485, 13): d.line((x, 238, x, 260), fill=teal, width=2)
     d.rectangle((630, 38, 800, 80), fill=(10, 10, 10)); d.rectangle((615, 85, 790, 94), fill=(10, 10, 10))
     # number: drawn big then condensed to 92 % width; 3-digit numbers a size smaller and further left
     n = str(num); three = len(n) >= 3
-    size = 434 if three else 518
+    size = 330 if len(n) >= 4 else 434 if three else 518  # 4-digit years fit the card width
     f = ImageFont.truetype(obl, size); bb = f.getbbox(n)
     lay = Image.new('L', (bb[2] + 40, bb[3] + 20), 0); ImageDraw.Draw(lay).text((20, 0), n, fill=255, font=f)
     lay = lay.resize((int(lay.width * 0.92), lay.height), Image.LANCZOS)
     x0, top = (79, 279) if three else (137 if len(n) == 2 else 190, 292)
     im.paste(Image.new('RGB', lay.size, ink), (x0 - int(20 * 0.92), top - bb[1]), lay)
-    d.text((568, 667), brand, fill=(0x18, 0x32, 0x4D), font=ImageFont.truetype(bold, 69))
+    bf = ImageFont.truetype(bold, 69); d.text((min(568, 800 - bf.getlength(brand)), 667), brand, fill=(0x18, 0x32, 0x4D), font=bf)
     d.rectangle((36, 736, 655, 750), fill=(10, 10, 10))
     lines = para or ["Casper gives you 100 nights to sleep on their", "mattress because it's a risk-free,",
                      "confidence-building strategy that allows your", "body enough time to properly adjust and",
