@@ -140,9 +140,10 @@
    ],
    "status": "draft",
    "score": {
-    "ssim_reel": 0.784,
-    "frames": 96
-   }
+    "ssim_reel": 0.777,
+    "frames": 95
+   },
+   "notes": "3D phone (phone.glb); keyed glove clip glove_open.mp4"
   },
   "brand_box": {
    "file": "templates/brand_box.py",
@@ -159,9 +160,10 @@
    ],
    "status": "draft",
    "score": {
-    "ssim_reel": 0.783,
-    "frames": 110
-   }
+    "ssim_reel": 0.769,
+    "frames": 109
+   },
+   "notes": "3D sofa model (sofa.glb) turns in Y"
   },
   "calendar_flip": {
    "file": "templates/calendar_flip.py",
@@ -197,10 +199,11 @@
    ],
    "status": "draft",
    "score": {
-    "ssim_reel": 0.621,
-    "frames": 61
+    "ssim_reel": 0.599,
+    "frames": 60
    },
-   "weak": "number ring angle/blur and grid fine detail; fineprint was 60 px high in the scored render (fixed since)"
+   "weak": "number ring angle/blur and grid fine detail; fineprint was 60 px high in the scored render (fixed since)",
+   "notes": "3D brain.glb; number ring depth-split so it wraps round the brain"
   },
   "follow_needle": {
    "file": "templates/follow_needle.py",
@@ -215,10 +218,10 @@
     "pen"
    ],
    "status": "draft",
-   "notes": "wave = measured vase path (Wave Warp on shapes is ineffective in our engine)",
+   "notes": "wave precomp + travelling Wave Warp",
    "score": {
-    "ssim_reel": 0.744,
-    "frames": 89
+    "ssim_reel": 0.719,
+    "frames": 88
    }
   },
   "hand_flame": {
@@ -231,11 +234,10 @@
     "flame"
    ],
    "status": "proven",
-   "notes": "follows word_panel (S2a); YOURS fly-through bars f203-208 not included",
+   "notes": "keyed clips hand_grab.mp4 + flame_loop.mp4 (Kling)",
    "score": {
-    "ssim_reel": 0.879,
-    "frames": 48,
-    "note": "f200-247; f248 is the cut frame (0.16)"
+    "ssim_reel": 0.872,
+    "frames": 48
    }
   }
  },
@@ -415,5 +417,16 @@
  },
  "music": {
   "_todo": "user decision pending; bed 12 dB under VO, no ducking"
+ },
+ "models": {
+  "brain.glb": "top-view brain (S8a)",
+  "brain_side.glb": "full brain side view (S1b)",
+  "sofa.glb": "mustard single sofa bed (S4)",
+  "phone.glb": "generic phone, triple camera (S3)"
+ },
+ "footage": {
+  "hand_grab.mp4": "pale hand closing round something, on black (S2b)",
+  "flame_loop.mp4": "flickering match flame on black (S2b)",
+  "glove_open.mp4": "white glove fist opens palm-up, on black (S3)"
  }
 }

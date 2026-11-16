@@ -15,7 +15,7 @@ DEFAULTS = {
     'definition': 'The endowment effect is overvaluing things just because you own them',
     'banner': {'left_num': '19', 'left_word': 'nineteen', 'right_num': '26', 'right_word': 'twenty-six',
                'l1': 'PERCEPTIONS', 'l2': '2024 Publication 064', 'r1': '38°EAST LONGITUDE', 'r2': '38°4′24″E'},
-    'prop': {'model': 'brain_side.glb', 'scale': 94, 'ry': (-12.0, 12.0)},  # 3D brain, slow Y turn over the shot (OG 80 -> -83 over 12 s)
+    'prop': {'model': 'brain_side.glb', 'scale': 170, 'ry': (-12.0, 12.0)},  # 3D brain, slow Y turn over the shot (OG 80 -> -83 over 12 s)
     'palette': 'original',
     'layout': {'kicker': [130, 742, 345], 'term': [373, 1407, 778], 'accent': [656, 1426, 770], 'kicker_size': 94,
                'term_size': 94, 'accent_size': 128, 'disc': [540, 960, 724], 'disc_size': 590, 'prop': [540, 955, 700],
