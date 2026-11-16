@@ -13,7 +13,7 @@ DEFAULTS = {
     'words': {'brand': 'IKEA', 'tagline': 'Good Stuff !!', 'tags': 'soft sofa\ntop rated\nlovely bed', 'tag_box': 'invites you to',
               'over': 'Sit', 'side': 'touch', 'marker': 'imagine'},
     'fineprint': 'IKEA is a global home furnishings company known for affordable, flat-pack furniture and modern Scandinavian design.',
-    'prop': {'file': 'sofa.png', 'w': 1002, 'h': 985, 'width': 330},
+    'prop': {'model': 'sofa.glb', 'scale': 150, 'ry0': 35, 'rx': 8},  # 3D sofa: turns in Y (a flat card would squash)
     'palette': 'original',
     'layout': {'brand': [540, 969], 'brand_size': 317, 'box': [540, 949, 774, 278], 'tagline': [193, 1136], 'tagline_size': 43,
                'dots': [150, 140], 'tags': [160, 150], 'prop': [516, 1080, 0], 'tag_box': [540, 722, 387, 73],
@@ -83,13 +83,14 @@ def build(proj, name='brand_box', **params):
     bx = c.shape('tag box', T['tag_box'][0] * F, end, [rect_group(tw, th, color='#36AE4A')], three_d_layer=True)
     c.transform(bx, pos=[tx - tw / 2, ty, 0], anchor=[-tw / 2, 0], scale=K((T['tag_box'][0] * F, [0, 100, 100], (0.124, 0, 0, 1)), (T['tag_box'][1] * F, [100, 100, 100])))
     # ---- product: rises spinning into place, spins out
-    pr = Pm['prop']; psc = 100 * pr['width'] / pr['w']
+    pr = Pm['prop']; psc = pr['scale']
     px, py, pz = Lo['prop']
-    sofa = c.footage(proj.still(pr['file'], pr['w'], pr['h']), 0, end, three_d_layer=True)
+    sofa = c.model(proj.model(pr['model']), 0, end)
     r0, r1 = T['prop_rise']; o0, o1 = T['prop_out']
     c.transform(sofa, pos=K((r0 * F, [531, 1439 + 100, pz], (0.33, 0, 0, 1)), (r1 * F, [px, py, pz])), scale=[psc, psc, psc],
-                ry=K((r0 * F, -83.0, (0.17, 0, 0, 1)), (r1 * F, 0.0), (o0 * F, 0.0, (0.18, 0, 0, 1)), (o1 * F, -91.0)))
-    c.effects(sofa, drop_shadow('#000000', 30, 329, 12, 18))
+                rx=pr['rx'], ry=K((r0 * F, pr['ry0'] - 83.0, (0.17, 0, 0, 1)), (r1 * F, pr['ry0']), (o0 * F, pr['ry0'], (0.18, 0, 0, 1)), (o1 * F, pr['ry0'] - 91.0)))
+    c.effects(sofa, P('Curves', 'ADBE CurvesCustom', children=[P('Curves', 'ADBE CurvesCustom-0001', v={'_curves': 1, 'channels': {'rgb': [[0, 0], [128, 92], [255, 238]]}})]),
+              drop_shadow('#000000', 30, 329, 12, 18))
     # ---- tagline decode, dots, tag list + rule
     tg = c.text('tagline', W['tagline'], 0, end, sans, Lo['tagline_size'], '#848484', tracking=-40, three_d_layer=True,
                 reveal=decode_animator(T['decode'][0] * F, T['decode'][1] * F))
