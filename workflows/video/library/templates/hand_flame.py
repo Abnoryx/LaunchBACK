@@ -13,10 +13,10 @@ DUR_F = 49
 DEFAULTS = {
     'words': {'small': 'don’t wanna', 'big': 'Let it Go'},
     'hand': ('hand_match.png', 752, 1344), 'flame': ('flame.png', 752, 1344),
-    'layout': {'small': [503, 916, 0], 'big': [550, 949, 0], 'flame': [551.7, 940, 0], 'flame_scale': 4.4,
-               'hand_pos': [553, 1890], 'hand_anchor': [376, 1344], 'hand_scale': 76, 'base': '#171513', 'glow': '#0A6A16',
-               'hand_tint': '#273F23', 'rim': '#00FF4D', 'ink_small': '#FAF6E5', 'ink_big': '#F5EDDD'},
-    'timing': {'split': (0, 13), 'hand': (2, 12), 'flame': (5, 15), 'small': (6, 16), 'big': (23, 33), 'blur_out': (38, 48)},
+    'layout': {'small': [503, 916, 0], 'big': [550, 949, 0], 'flame': [551.7, 948, 0], 'flame_scale': 9,
+               'hand_pos': [553, 1990], 'hand_anchor': [376, 1344], 'hand_scale': 76, 'base': '#171513', 'glow': '#0A6A16',
+               'hand_tint': '#1E2A1C', 'rim': '#00FF4D', 'ink_small': '#FAF6E5', 'ink_big': '#F5EDDD'},
+    'timing': {'split': (0, 13), 'hand': (2, 12), 'flame': (5, 15), 'small': (6, 16), 'big': (21, 31), 'blur_out': (38, 48)},
 }
 
 
@@ -60,7 +60,7 @@ def build(proj, name='hand_flame', **params):
     c.transform(hd, anchor=Lo['hand_anchor'], pos=Lo['hand_pos'],
                 scale=K((T['hand'][0] * F, [hs * 70 / 234, hs * 70 / 234], (0.333, 0, 0, 1)), (T['hand'][1] * F, [hs, hs])))
     c.effects(hd, tint('#000000', Lo['hand_tint']),
-              light_sweep_edge(Lo['rim'], direction=-119, width=900, edge=120, thickness=4, center=(250, 700)))
+              light_sweep_edge(Lo['rim'], direction=-119, width=900, edge=60, thickness=2, center=(250, 700)))
     # dark base + green glow lower left
     gl = c.footage(proj.solid(Lo['glow'], name='glow'), 0, end)
     c.masks(gl, mask([[-300, 1300], [-300, 2300], [700, 2300], [300, 1500]], feather=500))

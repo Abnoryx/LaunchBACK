@@ -214,8 +214,12 @@
     "hand",
     "pen"
    ],
-   "status": "rendering",
-   "notes": "wave = measured vase path (Wave Warp on shapes is ineffective in our engine)"
+   "status": "draft",
+   "notes": "wave = measured vase path (Wave Warp on shapes is ineffective in our engine)",
+   "score": {
+    "ssim_reel": 0.744,
+    "frames": 89
+   }
   },
   "hand_flame": {
    "file": "templates/hand_flame.py",
