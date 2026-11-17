@@ -116,9 +116,9 @@ def build(proj, name='disc_brain', **params):
     pl = c.model(proj.model(pr['model']), 0, end)
     sc_ = pr['scale']
     c.transform(pl, pos=Lo['prop'], scale=[sc_, sc_, sc_], ry=K((0, pr['ry'][0], 'lin'), (end, pr['ry'][1])))
-    c.effects(pl, P('BCC Halftone', 'BCC Halftone', children=[P('Cell', 'BCC Halftone-c', v=3.7), P('Ink', 'BCC Halftone-i', v=hexc('#1B1B1B')),
-                                                              P('Paper', 'BCC Halftone-p', v=hexc('#E8E8E8'))]),
-              drop_shadow('#000000', 45, 196, 27, 29))
+    ht = P('BCC Halftone', 'BCC Halftone', children=[P('Cell', 'BCC Halftone-c', v=3.7), P('Ink', 'BCC Halftone-i', v=hexc('#1B1B1B')),
+                                                     P('Paper', 'BCC Halftone-p', v=hexc('#E8E8E8'))])
+    c.effects(pl, *([] if Pm.get('prop_plain') else [ht]), drop_shadow('#000000', 45, 196, 27, 29))
     ds = Lo['disc_size']  # draw at full size and scale 0 -> 100 (a 1 px circle scaled up rasterises soft)
     dk = c.shape('disc', 0, end, [ellipse_group(ds, ds, Lo['disc_color'])], three_d_layer=True)
     c.transform(dk, pos=Lo['disc'], anchor=[0, 0], scale=K((T['disc'][0] * F, [0, 0, 100], (0.333, 0, 0, 1)), (T['disc'][1] * F, [100, 100, 100])))

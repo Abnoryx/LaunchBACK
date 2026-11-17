@@ -85,7 +85,7 @@ def build(proj, name='brand_box', **params):
     # ---- product: rises spinning into place, spins out
     pr = Pm['prop']; psc = pr['scale']
     px, py, pz = Lo['prop']
-    sofa = c.model(proj.model(pr['model']), 0, end)
+    sofa = c.model(proj.model(pr['model']), 0, (T['prop_out'][1] + 1) * F if Pm.get('swaps') else end)  # gone once twisted out when swapping
     r0, r1 = T['prop_rise']; o0, o1 = T['prop_out']
     c.transform(sofa, pos=K((r0 * F, [531, 1439 + 100, pz], (0.33, 0, 0, 1)), (r1 * F, [px, py, pz])), scale=[psc, psc, psc],
                 rx=pr['rx'], ry=K((r0 * F, pr['ry0'] - 83.0, (0.17, 0, 0, 1)), (r1 * F, pr['ry0']), (o0 * F, pr['ry0'], (0.18, 0, 0, 1)), (o1 * F, pr['ry0'] - 91.0)))
