@@ -81,7 +81,7 @@ def build(proj, name='statement_flip', **params):
                 reveal=S.reveal_rise(T['line'][0] * F, T['line'][1] * F, dy=50, blur=30))
     c.transform(ln, pos=[*Lo['line'], 0])
     ac = c.text('accent', W['accent'], 0, cut, serif, Lo['accent_size'], '#0A9C28', tracking=-80, justify=7415, three_d_layer=True,
-                reveal=S.word_reveal(T['accent'][0] * F, T['accent'][1] * F))
+                reveal=(S.reveal_rise(T['accent'][0] * F, T['accent'][1] * F, dy=70, blur=14, based_on=1) if Pm.get('accent_rise') else S.word_reveal(T['accent'][0] * F, T['accent'][1] * F)))
     c.transform(ac, pos=[*Lo['accent'], 0])
     S.paper(proj, c, 0, cut, '#FDFDFD')
     c.finalize()

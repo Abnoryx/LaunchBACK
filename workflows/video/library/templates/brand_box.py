@@ -91,6 +91,16 @@ def build(proj, name='brand_box', **params):
                 rx=pr['rx'], ry=K((r0 * F, pr['ry0'] - 83.0, (0.17, 0, 0, 1)), (r1 * F, pr['ry0']), (o0 * F, pr['ry0'], (0.18, 0, 0, 1)), (o1 * F, pr['ry0'] - 91.0)))
     c.effects(sofa, P('Curves', 'ADBE CurvesCustom', children=[P('Curves', 'ADBE CurvesCustom-0001', v={'_curves': 1, 'channels': {'rgb': [[0, 0], [128, 92], [255, 238]]}})]),
               drop_shadow('#000000', 30, 329, 12, 18))
+    sw = Pm.get('swaps') or []   # [(('model', file, scale) | ('still', file, w, h, scale), t_in, t_out)] ; twist 90 -> 0 -> -90
+    for kind, t_in, t_out in sw:
+        s0, s1 = t_in; e0, e1 = t_out if t_out else (DUR_F + 10, DUR_F + 20)
+        if kind[0] == 'model':
+            L = c.model(proj.model(kind[1]), s0 * F, end); ssc = kind[2]
+        else:
+            L = c.footage(proj.still(kind[1], kind[2], kind[3]), s0 * F, end, three_d_layer=True); ssc = kind[4]
+        c.transform(L, pos=[px, py, pz], scale=K((s0 * F, [ssc * 0.8] * 3, (0.2, 0, 0, 1)), (s1 * F, [ssc] * 3)),
+                    ry=K((s0 * F, 95.0, (0.17, 0, 0, 1)), (s1 * F, 0.0), (e0 * F, 0.0, (0.18, 0, 0, 1)), (e1 * F, -95.0)))
+        c.effects(L, drop_shadow('#000000', 30, 329, 12, 18))
     # ---- tagline decode, dots, tag list + rule
     tg = c.text('tagline', W['tagline'], 0, end, sans, Lo['tagline_size'], '#848484', tracking=-40, three_d_layer=True,
                 reveal=decode_animator(T['decode'][0] * F, T['decode'][1] * F))

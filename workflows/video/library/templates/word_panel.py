@@ -73,7 +73,7 @@ def build(proj, name='word_panel', **params):
                 scale=K((0, [220, 220], S.EASE['snap']), (T['snap'][1] * F, [100, 100])))
     b = c.text('b', W['b'], 0, T['panel_up'][1] * F, sans, Lo['line_size'], '#090805', tracking=-80,
                reveal=S.word_reveal(T['b'][0] * F, T['b'][1] * F))
-    c.transform(b, pos=[Lo['a_x1'] + Lo['line_size'] * 2.62, y])
+    c.transform(b, pos=[Lo.get('b_x', Lo['a_x1'] + Lo['line_size'] * 2.62), y])
 
     # ---------------- big word: rises per letter on the plate, then rim-lit outline on the dark base
     big = c.text('big', W['big'], T['big'][0] * F, end, big_font, Lo['big_size'], Lo['big_ink'], justify=7415, hscale=Lo['big_hscale'],

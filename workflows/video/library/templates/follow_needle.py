@@ -99,7 +99,8 @@ def build(proj, name='follow_needle', **params):
     c.transform(sm, pos=Lo['small'], scale=[142, 142, 142])
     # ---- arm swings in about the shoulder (off screen left), gripping a vertical needle
     a0, a1 = T['arm']
-    hf, hw, hh = Pm['hand']; hs = Lo['hand_scale']; px, py = Lo['hand_pivot']
+    if Pm['hand'] is None: a0 = 10 ** 6  # no arm/needle
+    hf, hw, hh = Pm['hand'] or ('blank.png', 4, 4); hs = Lo['hand_scale']; px, py = Lo['hand_pivot']
     rot = K((a0 * F, -50.0, EASE), (a1 * F, 0.0))
     arm = c.footage(proj.still(hf, hw, hh), a0 * F, end, motion_blur=True)
     c.transform(arm, anchor=[0, hh / 2], pos=[px, py], scale=[hs, hs], rot=rot)
@@ -116,9 +117,11 @@ def build(proj, name='follow_needle', **params):
     c.effects(wv, _wave_warp(), gaussian(14))
     # ---- blurred pens in the foreground
     pf, pw, ph = Pm['pen']
-    for pos, ori in Lo['pens']:
-        L = c.footage(proj.still(pf, pw, ph), 0, end, three_d_layer=True)
-        c.transform(L, pos=pos, scale=[55, 55, 55], ori=[0, 0, ori])
+    for pen in Lo['pens']:
+        pos, ori = pen[0], pen[1]
+        f3, sc3 = (pen[2], pen[3]) if len(pen) > 2 else ((pf, pw, ph), 55)
+        L = c.footage(proj.still(*f3), 0, end, three_d_layer=True)
+        c.transform(L, pos=pos, scale=[sc3, sc3, sc3], ori=[0, 0, ori])
         c.effects(L, P('Curves', 'ADBE CurvesCustom', children=[P('Curves', 'ADBE CurvesCustom-0001', v={'_curves': 1, 'channels': {'rgb': [[0, 0], [182, 92], [255, 178]]}})]),
                   gaussian(42.1))
     # ---- accent word: rises in per word, dark band through the lower x-height
