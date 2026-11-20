@@ -40,6 +40,19 @@ The agent reads numbers and tables; it looks at images only for the final judgem
     → repeat. Cheap previews make this affordable.
 11. **Scorecard**: cut error (frames), keyframe time error, ease match, camera error, text box overlap, SSIM per shot.
 
+## Upgrades over the basic pipeline (v2 of this plan)
+- **Fit by rendering, not just by measuring.** Our engine draws this style exactly, so the real extractor is the fit
+  loop: guess the shot from the measurements, render it, compare to the reel, adjust, repeat. The measurements in
+  stages 1–8 are only the starting guess. This beats any measuring tool on its own.
+- **Recognise before measuring.** First classify each shot against our archetypes (the 40 from r2–r6 + our
+  templates); then only a handful of parameters need fitting. Unknown shots fall back to the generic pipeline.
+- **Free perfect training data.** Render thousands of random shots from our own templates (known keys, eases,
+  fonts, cuts) to test and tune every stage, and to train small classifiers (shot type, transition, ease) on CPU.
+- **Best source copy.** Fetch the highest-quality upload; compression smears small text and ease detail.
+- **One cheap approval step.** The user signs off the breakdown storyboard before any build.
+- **Every reel makes it smarter.** Each approved breakdown adds to the archetype library and the ease/transition stats.
+- Limits that stay: AI imagery and 3D props are regenerated as ours, never extracted; taste is judged by the user.
+
 ## Validation (why r1 matters)
 r1 has the real AE project, so it is **ground truth**: run the extractor on r1.mp4 alone and compare against the
 project's real cuts, keyframes, eases and camera. Targets: cuts exact; keyframe times within 1 frame; ease class
