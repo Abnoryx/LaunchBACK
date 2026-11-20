@@ -102,20 +102,23 @@ def build(proj, name='brand_box', **params):
             pos = K((r0 * F, [531, 1439 + 100, pz], curves[0]), (r1 * F, [px, py, pz]))
             ry = [(r0 * F, ry0 - 83.0, curves[1]), (r1 * F, ry0, 'lin')]
             rest0 = r1
-            sc = [psc, psc, psc]
+            sc = [(0, [psc] * 3, 'lin')]
+            ssc = psc
         else:              # arrives from edge-on (90 deg) and settles: continues the outgoing spin
-            pos = [px, py, pz]
+            sp = (Pm.get('swap_pos') or [None] * len(sw))[k - 1]
+            pos = [sp[0], sp[1], pz] if sp else [px, py, pz]   # later props can sit where the camera has panned to
             ry = [(h_in * F, ry0 + 90.0, e_in), ((h_in + hd) * F, ry0, 'lin')]
             rest0 = h_in + hd
-            sc = K((h_in * F, [ssc * 0.86] * 3, e_in), ((h_in + hd) * F, [ssc] * 3))
+            sc = [(h_in * F, [ssc * 0.35] * 3, e_in), ((h_in + hd) * F, [ssc] * 3, 'lin')]
         if h_out is not None:   # leaves edge-on at the handoff, accelerating (no overlap: next prop starts that frame)
             ry_rest = ry0 - idle * (h_out - hd - rest0) / 30.0
             ry += [((h_out - hd) * F, ry_rest, keep(e_out)), (h_out * F, ry_rest - 90.0)]
+            sc += [((h_out - hd) * F, [ssc] * 3, keep(e_out)), (h_out * F, [ssc * 0.35] * 3)]  # shrinks into the handoff
         elif h_in is None and not sw:  # no swaps: original spin-out
             ry += [(o0 * F, ry0, curves[2]), (o1 * F, ry0 - 91.0)]
         else:
             ry += [(end, ry0 - idle * (end / F - rest0) / 30.0)]
-        c.transform(L, pos=pos, scale=sc if h_in is not None else [psc, psc, psc], rx=pr['rx'] if kind[0] == 'model' and k == 0 else None, ry=K(*ry))
+        c.transform(L, pos=pos, scale=K(*sc) if len(sc) > 1 else sc[0][1], rx=pr['rx'] if kind[0] == 'model' and k == 0 else None, ry=K(*ry))
         fxs = [drop_shadow('#000000', 30, 329, 12, 18)]
         if k == 0:
             fxs.insert(0, P('Curves', 'ADBE CurvesCustom', children=[P('Curves', 'ADBE CurvesCustom-0001', v={'_curves': 1, 'channels': {'rgb': [[0, 0], [128, 92], [255, 238]]}})]))
