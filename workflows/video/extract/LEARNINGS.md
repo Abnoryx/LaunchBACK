@@ -15,5 +15,11 @@ Rules here override defaults in the code until they are folded into it.
 - Timing and eases come from tracking + fitting, never from a VLM (Animation2Code: VLMs get timing wrong).
 
 ## Log
-- 2026-11-20 r1 (first run, ground truth from the AE project): see runs/r1/score.json. Cuts recall 11/11 (one 2 f
-  early), precision ~0.6 (extras are sub-beats + S6 flashes). Ease benchmark 100 % @0.3 px, 97 % @1 px, 89 % @2 px.
+- 2026-11-20 r1 (first run, ground truth from the AE project; baseline stored in extract/baseline.json):
+  cuts recall 1.0, precision 0.61 (extras = S2 sub-beats, S6 invert flashes); transition tags 0.73; camera error
+  median 0.28 px (4.5 px on moving frames, p90 5.8 px); zoom 0.2 %. Ease benchmark 100 % @0.3 px, 97 % @1 px,
+  89 % @2 px. Runtime: measure 14 s, OCR ~10 min on a busy CPU (shared with a render).
+- OCR text: exact-text linking split one word into many tracks (WONDER/VONDER/NONDER misreads) -> link by place +
+  fuzzy text, name by the most common reading, treat ~5 px box jitter as noise. 902 -> 578 tracks.
+- Next fixes (known): word moves are in screen space (subtract the camera to get layer motion); cut precision
+  (classify sub-beats vs cuts); text reveal style (blur-in / per-letter) not measured yet.
