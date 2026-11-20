@@ -14,7 +14,8 @@ const comp = project.comps.find((c) => c.name === args.comp);
 const fps = +(args.fps || comp.fps);
 const from = +(args.from || 0), to = +(args.to || comp.dur);
 const samples = +(args.samples || 8);
-const preview = !!args.preview;   // --preview 1: no 2x supersampling, output scaled to 360 px wide (fast checks)
+const preview = !!args.preview;   // --preview 1|<width>: no 2x supersampling, output scaled to 360 px (or <width>) wide
+const PW = preview && +args.preview > 1 ? +args.preview : 360;
 const cacheDir = args.cache || '/tmp/engine-cache';
 fs.mkdirSync(cacheDir, { recursive: true });
 
@@ -91,7 +92,7 @@ if (args.serve) {
 const n = Math.round((to - from) * fps);
 const framesDir = args['frames-dir'];
 if (framesDir) fs.mkdirSync(framesDir, { recursive: true });
-const OW = preview ? 360 : comp.w, OH = preview ? Math.round(comp.h * 360 / comp.w) : comp.h;
+const OW = preview ? PW : comp.w, OH = preview ? Math.round(comp.h * PW / comp.w) : comp.h;
 const ff = args.out ? spawn('ffmpeg', ['-v', 'error', '-y', '-f', 'rawvideo', '-pix_fmt', 'rgba', '-s', `${OW}x${OH}`, '-r', String(fps), '-i', '-', '-c:v', 'libx264', '-crf', '14', '-tune', 'grain', '-pix_fmt', 'yuv420p', args.out], { stdio: ['pipe', 'inherit', 'inherit'] }) : null;
 const t0 = Date.now();
 for (let k = 0; k < n; k++) {

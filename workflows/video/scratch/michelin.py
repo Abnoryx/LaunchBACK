@@ -4,6 +4,7 @@ lengths (the VO will retime them later). S18 is a placeholder until the user's A
 usage: python3 michelin.py  -> scratch/michelin_tpl.json (comps 'MICHELIN' + one per shot)"""
 import importlib, json, os, sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
+from library import aeb
 from library.aeb import Project
 from library import style as S, palette_swap
 
@@ -38,7 +39,8 @@ SHOTS = [
     ('S9', 'brand_box', dict(words={'brand': 'GUIDE', 'tagline': 'Where to...', 'tags': 'fill up\nsleep\neat', 'tag_box': 'where to',
                                     'over': 'fill', 'side': 'sleep', 'marker': 'eat'},
                              fineprint=FINE, prop={'model': 'm_pump.glb', 'scale': 110, 'ry0': 25, 'rx': 6}, layout={'prop': [500, 1130, 0]},
-                             swaps=[(('still', 'bed.png', 1145, 879, 34, 0.0), 50), (('model', 'm_cloche.glb', 62, 0.0), 73)], swap_pos=[[760, 1150], [880, 1150]])),
+                             swaps=[(('still', 'bed.png', 1145, 879, 34, 0.0), 50), (('model', 'm_cloche.glb', 62, 0.0), 73)], swap_pos=[[760, 1150], [880, 1150]],
+                             swap_ease=(S.QUAD_IN, S.QUAD_OUT), idle_turn=8.0)),
     ('S10', 'brain_collage', dict(words={'amp': '&', 'line': 'France started\ndriving', 'small': 'to places', 'accent': 'unknown', 'label': 'Route'},
                                   ring='ROADS  FUEL  HOTELS  FOOD  ROADS  FUEL  HOTELS  FOOD', watermark=WM, fineprint=FINE,
                                   prop={'model': 'm_tyre.glb', 'scale': 95, 'rx': 0, 'rz': 0}, quad=('m_map.png', 1168, 878, 30))),
@@ -74,6 +76,7 @@ SHOTS = [
 
 def build():
     p = Project()
+    aeb.EASE_OVERRIDE = S.QUAD_OUT   # user pick (S9 A/B/C): quad-out on every bezier ease, matched handoffs
     master_parts, t = [], 0.0
     for name, tpl, params in SHOTS:
         if tpl is None:
@@ -89,6 +92,7 @@ def build():
             dur = mod.DUR_F * F
         master_parts.append((c, t, dur))
         t += dur
+    aeb.EASE_OVERRIDE = None
     m = p.comp('MICHELIN', dur=t)
     for c, t0, dur in reversed(master_parts):   # later shots lower in the stack; each plays only in its slot
         L = m.precomp(c, t0, t0 + dur, start=t0)
