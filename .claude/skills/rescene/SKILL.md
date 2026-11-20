@@ -1,6 +1,6 @@
 ---
 name: rescene
-description: Reverse-engineer a short-form motion-graphics reel (Instagram/TikTok/After Effects style: kinetic text, camera pushes and whips, 3D props, flashy transitions) from the video alone and rebuild it from scratch as parameterised templates in our WebGL engine. Use this whenever the user gives or names a reel/video and wants it broken down, measured, copied in style, "extracted", "rebuilt", turned into templates, or asks for the cuts, transitions, eases, camera moves, fonts or text timing of a video — even if they don't say "rescene". Also use it to improve the extractor itself (it learns from every run).
+description: "Reverse-engineer a short-form motion-graphics reel (Instagram/TikTok/After Effects style: kinetic text, camera pushes and whips, 3D props, flashy transitions) from the video alone and rebuild it from scratch as parameterised templates in our WebGL engine. Use this whenever the user gives or names a reel/video and wants it broken down, measured, copied in style, 'extracted', 'rebuilt', turned into templates, or asks for the cuts, transitions, eases, camera moves, fonts or text timing of a video — even if they don't say 'rescene'. Also use it to improve the extractor itself (it learns from every run)."
 ---
 
 # /rescene — reel in, breakdown out, rebuilt from scratch, smarter every run
