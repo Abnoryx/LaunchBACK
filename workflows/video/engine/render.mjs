@@ -92,7 +92,7 @@ if (args.serve) {
 const n = Math.round((to - from) * fps);
 const framesDir = args['frames-dir'];
 if (framesDir) fs.mkdirSync(framesDir, { recursive: true });
-const OW = preview ? PW : comp.w, OH = preview ? Math.round(comp.h * PW / comp.w) : comp.h;
+const OW = preview ? PW : comp.w, OH = preview ? 2 * Math.round(comp.h * PW / comp.w / 2) : comp.h;   // even for x264
 const ff = args.out ? spawn('ffmpeg', ['-v', 'error', '-y', '-f', 'rawvideo', '-pix_fmt', 'rgba', '-s', `${OW}x${OH}`, '-r', String(fps), '-i', '-', '-c:v', 'libx264', '-crf', '14', '-tune', 'grain', '-pix_fmt', 'yuv420p', args.out], { stdio: ['pipe', 'inherit', 'inherit'] }) : null;
 const t0 = Date.now();
 for (let k = 0; k < n; k++) {
