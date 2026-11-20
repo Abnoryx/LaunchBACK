@@ -52,7 +52,8 @@ window.setProject = async (pj, compName) => {
 window.renderSmall = async (t, w, h) => {
   await window.renderFrame(t, true);
   const sm = window._sm || (window._sm = new OffscreenCanvas(w, h)); const c2 = sm.getContext('2d');
-  c2.clearRect(0, 0, w, h); c2.drawImage(cv, 0, 0, w, h);
+  c2.setTransform(1, 0, 0, -1, 0, h);   // the GL canvas is stored bottom-up (readPixels order): flip like the full path
+  c2.clearRect(0, 0, w, h); c2.drawImage(cv, 0, 0, w, h); c2.setTransform(1, 0, 0, 1, 0, 0);
   const px = c2.getImageData(0, 0, w, h).data;
   let s = ''; const CH = 0x8000;
   for (let i = 0; i < px.length; i += CH) s += String.fromCharCode.apply(null, px.subarray(i, i + CH));
