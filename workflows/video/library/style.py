@@ -35,6 +35,8 @@ TEXT = {
 
 QUAD_OUT = (1 / 3, 2 / 3, 2 / 3, 1)   # exact easeOutQuad as a cubic bezier: starts at 2x average speed, lands at zero
 QUAD_IN = (1 / 3, 0, 2 / 3, 1 / 3)    # mirror: leaves at zero, ends at 2x average speed (hands off to a QUAD_OUT)
+CUBIC_OUT = (1 / 3, 1, 2 / 3, 1)      # exact easeOutCubic: starts at 3x average speed (more punch than quad)
+CUBIC_IN = (1 / 3, 0, 2 / 3, 0)       # mirror: ends at 3x average speed (hands off to a CUBIC_OUT)
 
 
 def word_reveal(t0, t1, **kw):

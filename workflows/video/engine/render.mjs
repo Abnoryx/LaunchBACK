@@ -14,6 +14,7 @@ const comp = project.comps.find((c) => c.name === args.comp);
 const fps = +(args.fps || comp.fps);
 const from = +(args.from || 0), to = +(args.to || comp.dur);
 const samples = +(args.samples || 8);
+const preview = !!args.preview;   // --preview 1: no 2x supersampling, output scaled to 360 px wide (fast checks)
 const cacheDir = args.cache || '/tmp/engine-cache';
 fs.mkdirSync(cacheDir, { recursive: true });
 
@@ -34,7 +35,7 @@ await page.route('http://engine.local/**', async (route) => {
   try {
     if (p === '/') return route.fulfill({ path: path.join(HERE, 'page.html') });
     if (p === '/project.json') return route.fulfill({ body: JSON.stringify(project), contentType: 'application/json' });
-    if (p === '/config.json') return route.fulfill({ body: JSON.stringify({ comp: args.comp, samples, blurK: args.blurk ? +args.blurk : undefined, modelOpts: args.modelopts ? JSON.parse(fs.readFileSync(args.modelopts)) : {}, luts: args.luts ? JSON.parse(fs.readFileSync(args.luts)) : {} }), contentType: 'application/json' });
+    if (p === '/config.json') return route.fulfill({ body: JSON.stringify({ comp: args.comp, samples, supersample: preview ? 1 : undefined, blurK: args.blurk ? +args.blurk : undefined, modelOpts: args.modelopts ? JSON.parse(fs.readFileSync(args.modelopts)) : {}, luts: args.luts ? JSON.parse(fs.readFileSync(args.luts)) : {} }), contentType: 'application/json' });
     if (p.startsWith('/engine/')) return route.fulfill({ path: path.join(HERE, p.slice(8)), contentType: MIME[path.extname(p)] });
     if (p.startsWith('/nm/')) return route.fulfill({ path: path.join(HERE, '..', 'node_modules', p.slice(4)), contentType: MIME[path.extname(p)] || undefined });
     if (p.startsWith('/file/')) return route.fulfill({ path: p.slice(5) });
@@ -90,17 +91,18 @@ if (args.serve) {
 const n = Math.round((to - from) * fps);
 const framesDir = args['frames-dir'];
 if (framesDir) fs.mkdirSync(framesDir, { recursive: true });
-const ff = args.out ? spawn('ffmpeg', ['-v', 'error', '-y', '-f', 'rawvideo', '-pix_fmt', 'rgba', '-s', `${comp.w}x${comp.h}`, '-r', String(fps), '-i', '-', '-c:v', 'libx264', '-crf', '14', '-tune', 'grain', '-pix_fmt', 'yuv420p', args.out], { stdio: ['pipe', 'inherit', 'inherit'] }) : null;
+const OW = preview ? 360 : comp.w, OH = preview ? Math.round(comp.h * 360 / comp.w) : comp.h;
+const ff = args.out ? spawn('ffmpeg', ['-v', 'error', '-y', '-f', 'rawvideo', '-pix_fmt', 'rgba', '-s', `${OW}x${OH}`, '-r', String(fps), '-i', '-', '-c:v', 'libx264', '-crf', '14', '-tune', 'grain', '-pix_fmt', 'yuv420p', args.out], { stdio: ['pipe', 'inherit', 'inherit'] }) : null;
 const t0 = Date.now();
 for (let k = 0; k < n; k++) {
   const t = from + k / fps;
-  const b64 = await page.evaluate((t) => window.renderFrame(t), t);
+  const b64 = preview ? await page.evaluate(([t, w, h]) => window.renderSmall(t, w, h), [t, OW, OH]) : await page.evaluate((t) => window.renderFrame(t), t);
   const buf = Buffer.from(b64, 'base64');
   if (ff) await new Promise((r) => (ff.stdin.write(buf) ? r() : ff.stdin.once('drain', r)));
   if (framesDir && (args.every ? k % +args.every === 0 : true)) {
     const raw = path.join(framesDir, `f${String(Math.round(t * comp.fps)).padStart(5, '0')}.rgba`);
     fs.writeFileSync(raw, buf);
-    execFileSync('convert', ['-size', `${comp.w}x${comp.h}`, '-depth', '8', 'rgba:' + raw, raw.replace('.rgba', '.png')]);
+    execFileSync('convert', ['-size', `${OW}x${OH}`, '-depth', '8', 'rgba:' + raw, raw.replace('.rgba', '.png')]);
     fs.unlinkSync(raw);
   }
   if (k % 10 === 0) console.log(`frame ${k + 1}/${n} t=${t.toFixed(3)} ${((Date.now() - t0) / (k + 1) / 1000).toFixed(2)}s/frame`);

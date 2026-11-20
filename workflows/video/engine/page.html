@@ -33,6 +33,7 @@ let comp = project.comps.find((c) => c.name === cfg.comp);
 cv.width = comp.w; cv.height = comp.h;
 const engOpts = {
   mbSamples: cfg.samples,
+  ...(cfg.supersample ? { supersample: cfg.supersample } : {}),
   assetUrl: (f) => (f.file ? '/asset/' + encodeURIComponent(f.file.split(/[\\/]/).pop()) : null),
   videoFrameUrl: (f, t) => (f.file ? `/vid/${f.id}/${Math.max(0, Math.round(((f.loop && f.duration) ? (t % (f.duration - 0.05)) : t) * 1000))}.jpg?name=${encodeURIComponent(f.file.split(/[\\/]/).pop())}` : null),
 };
