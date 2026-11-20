@@ -3,7 +3,7 @@ Box splits from a bar and widens; outline brand letters gather in, fill letters 
 decodes; blinking dots + tag list; the product rises spinning into place; tag box 'invites you to'; serif-italic words over
 and beside the brand while the camera pushes and pans; a marker box with a word + neon dot; black bar wipe out.
 World coordinates for the reel's camera solve (local frame = reel frame - 345)."""
-from ..aeb import K, P, hexc, rect_group, drop_shadow, MULTIPLY
+from ..aeb import K, P, hexc, rect_group, drop_shadow, MULTIPLY, keep
 from .. import style as S
 
 F = S.F
@@ -85,22 +85,41 @@ def build(proj, name='brand_box', **params):
     # ---- product: rises spinning into place, spins out
     pr = Pm['prop']; psc = pr['scale']
     px, py, pz = Lo['prop']
-    sofa = c.model(proj.model(pr['model']), 0, (T['prop_out'][1] + 1) * F if Pm.get('swaps') else end)  # gone once twisted out when swapping
     r0, r1 = T['prop_rise']; o0, o1 = T['prop_out']
-    c.transform(sofa, pos=K((r0 * F, [531, 1439 + 100, pz], (0.33, 0, 0, 1)), (r1 * F, [px, py, pz])), scale=[psc, psc, psc],
-                rx=pr['rx'], ry=K((r0 * F, pr['ry0'] - 83.0, (0.17, 0, 0, 1)), (r1 * F, pr['ry0']), (o0 * F, pr['ry0'], (0.18, 0, 0, 1)), (o1 * F, pr['ry0'] - 91.0)))
-    c.effects(sofa, P('Curves', 'ADBE CurvesCustom', children=[P('Curves', 'ADBE CurvesCustom-0001', v={'_curves': 1, 'channels': {'rgb': [[0, 0], [128, 92], [255, 238]]}})]),
-              drop_shadow('#000000', 30, 329, 12, 18))
-    sw = Pm.get('swaps') or []   # [(('model', file, scale) | ('still', file, w, h, scale), t_in, t_out)] ; twist 90 -> 0 -> -90
-    for kind, t_in, t_out in sw:
-        s0, s1 = t_in; e0, e1 = t_out if t_out else (DUR_F + 10, DUR_F + 20)
+    sw = Pm.get('swaps') or []      # [(('model', file, scale, ry0) | ('still', file, w, h, scale, ry0), handoff_frame)]
+    hd = Pm.get('swap_d', 6)        # frames each side of a handoff
+    e_out, e_in = Pm.get('swap_ease', ((0.6, 0, 0.9, 0.5), (0.1, 0.5, 0.4, 1)))  # matched 5x-average speed at the handoff
+    idle = Pm.get('idle_turn', 0.0) # degrees per second of slow turn while resting (0 = still)
+    curves = Pm.get('swap_curves', [(0.33, 0, 0, 1), (0.17, 0, 0, 1), (0.18, 0, 0, 1)])  # rise-pos, rise-spin, out-spin
+    chain = [(('model', pr['model'], psc, pr['ry0']), None)] + sw
+    for k, (kind, h_in) in enumerate(chain):
+        h_out = chain[k + 1][1] if k + 1 < len(chain) else None
         if kind[0] == 'model':
-            L = c.model(proj.model(kind[1]), s0 * F, end); ssc = kind[2]
+            L = c.model(proj.model(kind[1]), (h_in if h_in else 0) * F, (h_out * F) if h_out else end); ssc, ry0 = kind[2], kind[3]
         else:
-            L = c.footage(proj.still(kind[1], kind[2], kind[3]), s0 * F, end, three_d_layer=True); ssc = kind[4]
-        c.transform(L, pos=[px, py, pz], scale=K((s0 * F, [ssc * 0.8] * 3, (0.2, 0, 0, 1)), (s1 * F, [ssc] * 3)),
-                    ry=K((s0 * F, 95.0, (0.17, 0, 0, 1)), (s1 * F, 0.0), (e0 * F, 0.0, (0.18, 0, 0, 1)), (e1 * F, -95.0)))
-        c.effects(L, drop_shadow('#000000', 30, 329, 12, 18))
+            L = c.footage(proj.still(kind[1], kind[2], kind[3]), h_in * F, (h_out * F) if h_out else end, three_d_layer=True); ssc, ry0 = kind[4], kind[5]
+        if h_in is None:   # the first prop rises spinning into place (template's original move)
+            pos = K((r0 * F, [531, 1439 + 100, pz], curves[0]), (r1 * F, [px, py, pz]))
+            ry = [(r0 * F, ry0 - 83.0, curves[1]), (r1 * F, ry0, 'lin')]
+            rest0 = r1
+            sc = [psc, psc, psc]
+        else:              # arrives from edge-on (90 deg) and settles: continues the outgoing spin
+            pos = [px, py, pz]
+            ry = [(h_in * F, ry0 + 90.0, e_in), ((h_in + hd) * F, ry0, 'lin')]
+            rest0 = h_in + hd
+            sc = K((h_in * F, [ssc * 0.86] * 3, e_in), ((h_in + hd) * F, [ssc] * 3))
+        if h_out is not None:   # leaves edge-on at the handoff, accelerating (no overlap: next prop starts that frame)
+            ry_rest = ry0 - idle * (h_out - hd - rest0) / 30.0
+            ry += [((h_out - hd) * F, ry_rest, keep(e_out)), (h_out * F, ry_rest - 90.0)]
+        elif h_in is None and not sw:  # no swaps: original spin-out
+            ry += [(o0 * F, ry0, curves[2]), (o1 * F, ry0 - 91.0)]
+        else:
+            ry += [(end, ry0 - idle * (end / F - rest0) / 30.0)]
+        c.transform(L, pos=pos, scale=sc if h_in is not None else [psc, psc, psc], rx=pr['rx'] if kind[0] == 'model' and k == 0 else None, ry=K(*ry))
+        fxs = [drop_shadow('#000000', 30, 329, 12, 18)]
+        if k == 0:
+            fxs.insert(0, P('Curves', 'ADBE CurvesCustom', children=[P('Curves', 'ADBE CurvesCustom-0001', v={'_curves': 1, 'channels': {'rgb': [[0, 0], [128, 92], [255, 238]]}})]))
+        c.effects(L, *fxs)
     # ---- tagline decode, dots, tag list + rule
     tg = c.text('tagline', W['tagline'], 0, end, sans, Lo['tagline_size'], '#848484', tracking=-40, three_d_layer=True,
                 reveal=decode_animator(T['decode'][0] * F, T['decode'][1] * F))

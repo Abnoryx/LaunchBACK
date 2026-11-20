@@ -27,8 +27,18 @@ def _speed(dv, dt, slope):
     return slope * dv / dt if dt > 0 else 0.0
 
 
+EASE_OVERRIDE = None   # e.g. QUAD_OUT: every bezier ease in the comps built while set becomes this curve
+
+
+def keep(e):
+    """Mark an ease so EASE_OVERRIDE leaves it alone (deliberate ease-ins on handoffs)."""
+    return ('keep',) + tuple(e)
+
+
 def build_keys(keys):
     keys = [k if len(k) == 3 else (k[0], k[1], 'lin') for k in keys]
+    keys = [(t, v, e[1:] if isinstance(e, tuple) and e and e[0] == 'keep' else (EASE_OVERRIDE if EASE_OVERRIDE and isinstance(e, tuple) else e))
+            for t, v, e in keys]
     out = []
     for i, (t, v, e) in enumerate(keys):
         dims = len(v) if isinstance(v, (list, tuple)) else 1
