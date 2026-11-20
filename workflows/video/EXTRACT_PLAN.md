@@ -50,6 +50,11 @@ The agent reads numbers and tables; it looks at images only for the final judgem
   fonts, cuts) to test and tune every stage, and to train small classifiers (shot type, transition, ease) on CPU.
 - **Best source copy.** Fetch the highest-quality upload; compression smears small text and ease detail.
 - **One cheap approval step.** The user signs off the breakdown storyboard before any build.
+- **Self-improving by design (user ask).** Every /rescene run writes a run log (`extract/runs/<reel>/`: breakdown,
+  fit scores, what the user corrected). After each run: (1) user corrections become test cases + labelled data;
+  (2) approved shots join the archetype library with their measured eases/timings as priors; (3) a `LEARNINGS.md`
+  the skill reads first gets the new rules (what failed, fixes, thresholds); (4) the r1 ground-truth benchmark +
+  past runs are re-scored so a change can't make it worse; (5) small classifiers retrain on everything collected.
 - **Every reel makes it smarter.** Each approved breakdown adds to the archetype library and the ease/transition stats.
 - Limits that stay: AI imagery and 3D props are regenerated as ours, never extracted; taste is judged by the user.
 
