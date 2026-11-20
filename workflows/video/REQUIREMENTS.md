@@ -20,6 +20,9 @@ Read this before any video work. Every rule below came from the user; keep it cu
   matters, **transitions clean** between every pair of shots (no hard jumps, no leftovers from the previous shot),
   and **nothing that just cuts in or sits still** — every element arrives with motion (reveal, pop, slide, draw) and
   the camera keeps moving. Fix every problem found before the render; say what was checked in the report.
+- **Save anything important where it can't be lost.** The container is temporary: finished renders, side-by-sides,
+  contact sheets, scene JSONs and generated assets go into git (force-add past .gitignore if needed, or Git LFS for
+  big files) and/or get sent to the user right away. Never leave the only copy in the scratchpad or `out/`.
 - AutoAE preset renders can't be used: their downloads carry a watermark and we don't remove watermarks.
 - Measure everything: per-shot SSIM vs reel, cut timing, sharpness, plus the style scorecard for our own videos.
 
