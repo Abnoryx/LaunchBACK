@@ -36,3 +36,11 @@ Rules here override defaults in the code until they are folded into it.
   v2 0.555 (3/23 pass). Measured camera keys at shot ends are whip/flash, not camera: clamp and skip the last 4
   frames. Auto hero-font guess (big = serif) was wrong for this reel: pick fonts per reel. With only the video (no
   project files) and our own props, SSIM is capped by prop/layout differences: score layout/timing, not pixels.
+
+## 2026-11-21 — Route A step 1: .aep dumper (extract/aep_dump.py)
+- The original dump script was never saved; rebuilt on py_aep 0.19. Same format the engine reads. Psych re-dump renders
+  identical to the old dump (8 sample frames, mean abs diff <= 0.002).
+- Gains over the old dumps: text layout (per-glyph advances) for projects whose old dump lacked it (sells: 110 layers),
+  mixed-style text runs, box text position, spatial tangents (in_st/out_st, used by anim.js), gradients, markers, curves.
+- Layers py_aep can't decode `enabled` for are dumped as disabled (same as before: engine needs enabled === true).
+  Earlier note (stop): such a layer can be the one actually rendered — check against the mp4 when a shot is missing.
