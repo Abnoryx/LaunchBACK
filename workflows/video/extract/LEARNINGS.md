@@ -23,3 +23,8 @@ Rules here override defaults in the code until they are folded into it.
   fuzzy text, name by the most common reading, treat ~5 px box jitter as noise. 902 -> 578 tracks.
 - Next fixes (known): word moves are in screen space (subtract the camera to get layer motion); cut precision
   (classify sub-beats vs cuts); text reveal style (blur-in / per-letter) not measured yet.
+- 2026-11-21 zeigarnik (first run, 25 shots; user said "you figure it out", so I checked the frames myself):
+  a blur-to-white dissolve (485-492) fired a cut at its onset and another after the white peak (499) -> one real cut
+  at the white peak (493). Saved as corrections.json. Fix to do: when a short segment is a monotonic ramp to
+  white/black, merge it into the cut at the ramp's peak. Short 0.5-0.8 s shots (568, 933, 1217) are real: keep them.
+  Camera keys at the first 1-3 frames of a shot that opens with a whip are transition motion, not camera: drop them.
