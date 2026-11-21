@@ -720,9 +720,22 @@ export class Engine {
       run.forEach((it) => {
         const w = this.worldOf(comp, it.L, it.t, it.cache);
         const [sw, sh] = it.L.type === 'TextLayer' || it.L.type === 'ShapeLayer' || it.L.type === 'ThreeDModelLayer' ? [0, 0] : this.sourceSize(it.L);
-        it.z = xf(it.cam.view, xf(w.m, [sw / 2, sh / 2, 0, 1]))[2];
+        const c = xf(it.cam.view, xf(w.m, [sw / 2, sh / 2, 0, 1])), q = xf(it.cam.view, xf(w.m, [sw / 2, sh / 2, 1, 1]));
+        it.z = c[2]; it.p = c.slice(0, 3);
+        const n = [q[0] - c[0], q[1] - c[1], q[2] - c[2]], ln = Math.hypot(...n) || 1; it.n = n.map((v) => v / ln);
       });
-      run.sort((a, b) => (Math.abs(b.z - a.z) > 2 ? b.z - a.z : 0) || b.L.i - a.L.i);
+      // Parallel layers (text floating on a tilted card): order by offset along the shared normal, not by centre depth;
+      // coplanar ones keep layer order (AE). Other pairs: centre depth, far first.
+      const dot = (u, v) => u[0] * v[0] + u[1] * v[1] + u[2] * v[2];
+      const cmp = (a, b) => {
+        if (Math.abs(dot(a.n, b.n)) > 0.999) {
+          const n = dot(a.n, a.p) > 0 ? a.n.map((v) => -v) : a.n;   // a's normal pointing at the camera (view origin)
+          const s = dot(n, [b.p[0] - a.p[0], b.p[1] - a.p[1], b.p[2] - a.p[2]]);
+          return Math.abs(s) < 2 ? 0 : -Math.sign(s);
+        }
+        return Math.abs(b.z - a.z) > 2 ? b.z - a.z : 0;
+      };
+      run.sort((a, b) => cmp(a, b) || b.L.i - a.L.i);
       ordered.push(...run);
     }
     for (const it of ordered) this.drawLayer(comp, it.L, it.t, out, it.cam, it.cache, { ...opts, tcL: tc });

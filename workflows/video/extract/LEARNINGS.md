@@ -66,3 +66,7 @@ Rules here override defaults in the code until they are folded into it.
 - Templates: 23 private JSONs (13 MB); shot 1 template renders pixel-identical to the full project. Accent = hue band
   100–170 (green family, measured from non-default colours); apply() rotates that band to the new hue. Images/footage
   keep their own colours (logos, UI screenshots) — tell the user when the accent lives in pictures.
+
+## 2026-11-21 — engine: 3D sort for parallel layers (Sells shot 18)
+- Text floating 16 px in front of a tilting card vanished: sorting by centre depth put it behind the card. Parallel
+  layers are now ordered by their offset along the shared normal (coplanar = layer order). r1: no frame changed.
