@@ -57,9 +57,15 @@ sh = lambda c: subprocess.run(c, shell=True, capture_output=True, text=True)
 if GPU:   # NVIDIA GL/Vulkan user-space drivers matching the host driver, so Chrome's WebGL runs on the T4
     v = sh('nvidia-smi --query-gpu=driver_version --format=csv,noheader').stdout.split()[0].split('.')[0]
     sh(f'apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq libnvidia-gl-{v} libvulkan1')
-tgz = glob.glob('/kaggle/input/**/inputs.tgz', recursive=True)[0]
-os.makedirs('/tmp/job', exist_ok=True); os.makedirs('/kaggle/working/out', exist_ok=True)
-tarfile.open(tgz).extractall('/tmp/job'); os.chdir('/tmp/job'); os.environ['OUT'] = '/kaggle/working/out'
+import shutil
+os.makedirs('/kaggle/working/out', exist_ok=True); os.environ['OUT'] = '/kaggle/working/out'
+tgz = glob.glob('/kaggle/input/**/inputs.tgz', recursive=True)
+if tgz: os.makedirs('/tmp/job', exist_ok=True); tarfile.open(tgz[0]).extractall('/tmp/job')
+else:   # Kaggle unpacks big archives itself: copy the unpacked tree (it is read-only)
+    print('inputs:', sh('find /kaggle/input -maxdepth 4 | head -20').stdout)
+    root = sorted(glob.glob('/kaggle/input/**/render.json', recursive=True) + glob.glob('/kaggle/input/**/measure.json', recursive=True))[0]
+    shutil.copytree(os.path.dirname(root), '/tmp/job')
+os.chdir('/tmp/job')
 # ---- job ----
 '''
 
