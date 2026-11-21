@@ -6,6 +6,9 @@ const FONT_MAP = [
   // the user's real font files (Kokila is the Regular cut: bold/italic are synthesised by the browser)
   [/^HelvReal-BoldOblique/, () => ({ family: 'Helvetica Real', weight: 700, italic: true })],
   [/^HelvReal-Bold/, () => ({ family: 'Helvetica Real', weight: 700 })],
+  [/^HelvReal-Oblique/, () => ({ family: 'Helvetica Real', weight: 400, italic: true })],   // regular cut, browser slant
+  [/^Sacramento/, () => ({ family: 'Sacramento', weight: 400 })],
+  [/^Allura/, () => ({ family: 'Allura', weight: 400 })],
   [/^KokilaReal/, () => ({ family: 'Kokila Real', weight: 400, embolden: 0.018, tracking: 0.025 })],  // Regular cut: controlled embolden instead of the browser's smudgy fake bold
   [/^GFSDidot/, () => ({ family: 'GFS Didot', weight: 700 })],
   // Inter Tight at 0.975x matches SF Pro Display's set width (calibrated on "Solutions" in the 7th-reel render).

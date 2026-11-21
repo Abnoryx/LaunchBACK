@@ -3,7 +3,9 @@
 #               "extra": ["--samples", "1"], "out": "name.mp4", "crf": 17}
 import json, time
 cfg = json.load(open('render.json'))
-sh('apt-get install -y -qq nodejs npm ffmpeg')
+subprocess.run([sys.executable, '-m', 'pip', 'install', '-q', 'nodejs-wheel-binaries>=22,<23'], check=True)   # apt's node 18 is too old for playwright
+import nodejs_wheel; os.environ['PATH'] = os.path.dirname(nodejs_wheel.__file__) + '/bin:' + os.environ['PATH']
+print('node', sh('node -v').stdout.strip(), sh('which ffmpeg || apt-get install -y -qq ffmpeg').stdout.strip())
 os.makedirs('/home/user/tpl', exist_ok=True)
 if os.path.isdir('video/tplfonts') and not os.path.exists('/home/user/tpl/fonts'): os.symlink(os.path.abspath('video/tplfonts'), '/home/user/tpl/fonts')
 os.chdir('video'); r = sh('npm ci --silent && npx playwright install --with-deps chromium'); print('setup', r.returncode, r.stderr[-300:])
