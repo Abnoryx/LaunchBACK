@@ -22,7 +22,7 @@ Writes `extract/runs/<name>/`: `info.json`, `frames.npy` (BT.709 analysis stack,
 (signals, cuts, transitions, camera), `ocr.json`, `breakdown.json`, `storyboard.jpg`, and `score.json` when ground
 truth exists (`extract/gt/<name>.json`). Stages are cached; delete a file to redo that stage.
 Typical CPU cost for a 30–60 s reel: ingest ~5 s, measure ~15 s, OCR several minutes (the slow part).
-Heavy stages (OCR, future GPU models) and every render run on the user's Kaggle GPU (REQUIREMENTS.md rule; runner: `workflows/video/kaggle/`).
+Heavy stages (OCR, future GPU models) and every render run on the user's Kaggle GPU (REQUIREMENTS.md rule; runner: `workflows/video/kgl/run.py`).
 
 What each stage gives (and why it's done this way):
 - **Cuts + transitions** (`measure.py`): histogram jump *and* the shots either side must differ, so snap zooms and
