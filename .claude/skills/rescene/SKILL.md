@@ -1,14 +1,21 @@
 ---
 name: rescene
-description: "Reverse-engineer a short-form motion-graphics reel (Instagram/TikTok/After Effects style: kinetic text, camera pushes and whips, 3D props, flashy transitions) from the video alone and rebuild it from scratch as parameterised templates in our WebGL engine. Use this whenever the user gives or names a reel/video and wants it broken down, measured, copied in style, 'extracted', 'rebuilt', turned into templates, or asks for the cuts, transitions, eases, camera moves, fonts or text timing of a video — even if they don't say 'rescene'. Also use it to improve the extractor itself (it learns from every run)."
+description: "Reverse-engineer a short-form motion-graphics reel (Instagram/TikTok/After Effects style: kinetic text, camera pushes and whips, 3D props, flashy transitions) and rebuild it as parameterised per-shot templates in our WebGL engine — from its After Effects .aep project when we own it (exact copy, all assets harvested), else from the video alone. Use this whenever the user gives or names a reel/video or an .aep/template project and wants it broken down, measured, copied in style, 'extracted', 'rebuilt', turned into templates, or asks for the cuts, transitions, eases, camera moves, fonts or text timing of a video — even if they don't say 'rescene'. Also use it to improve the extractor itself (it learns from every run)."
 ---
 
-# /rescene — reel in, breakdown out, rebuilt from scratch, smarter every run
+# /rescene — reel (+ .aep) in, per-shot templates out, smarter every run
+
+**Pick the route first:**
+- **Route A — .aep route** (default whenever we have the project, e.g. Earn Edits): exact scenes, all assets,
+  one template per shot, scored against the mp4. See "Route A" below. **Not built yet** — say so, and offer to build it.
+- **Route B — video-only route** (reels we don't own): steps 0–5 below. Measure, never copy their pixels.
 
 Code: `workflows/video/extract/` (Python, CPU). Plan + research: `workflows/video/EXTRACT_PLAN.md`,
 `workflows/video/reports/Reel reverse engineering methods.md`. Standing video rules: `workflows/video/REQUIREMENTS.md`
-(read it first; they apply here too — one job at a time, check twice, save outputs to git, their reels are
-reference only: measure, never copy their pixels/assets into our videos).
+(read it first; they apply here too — one job at a time, check twice, save outputs to git). Earn Edits .aep scenes
+may be used exactly (user has permission); other reels are reference only. Their files never go into git.
+
+## Route B — video only
 
 ## 0. Read what earlier runs learned
 Read `workflows/video/extract/LEARNINGS.md` before anything else. It holds the rules found the hard way (thresholds,
@@ -66,12 +73,46 @@ to fitting; report the scores to the user. Then follow REQUIREMENTS.md: check tw
 4. **Grow the priors**: approved shots go into the template catalog with their measured eases and timings.
 5. Commit `extract/` changes, `runs/<name>/` (breakdown, storyboard, score, corrections — not frames.npy) and push.
 
+## Route A — .aep route (PLANNED, not built — build in this order, one step per job)
+Input: `<project>.aep` (+ its footage folder) and the posted mp4. Output: `library/templates/<project>/<shot>` per shot,
+assets in `/home/user/tpl/lib/<project>/`, scores per shot. Read LEARNINGS.md first, as in Route B.
+
+1. **Dump** (`extract/aep_dump.py`, from the one-off py_aep scripts in `tpl/an/research/*/` — `aep_text.py`,
+   `aep_3d.py`, `runs*.py`). Everything the engine reads: comps, precomps, layers, parenting, keyframes + eases,
+   expressions, effects, masks/mattes, mixed-style text runs, fonts, 3D layers, cameras, lights, markers, audio layers.
+   → check: re-dump psych, diff vs `tpl/an/json/psych.json`, r1 render still SSIM ≥ 0.86.
+2. **Coverage report before any render** (cheap): list every effect match-name, expression and layer feature in the
+   dump; flag what the engine doesn't support yet (`engine.js` effect switch). Gaps get fixed in the engine first —
+   one fix serves every project. Saves wasted Kaggle renders.
+3. **Harvest assets** into `/home/user/tpl/lib/<project>/` with `manifest.json` (path, sha1, type, used-by shots).
+   Missing footage/fonts are listed for the user — never silently substituted. Then refresh the Kaggle backup
+   (`kgl.tpl_backup`) so nothing lives only in the container.
+4. **Split into shots** from the project's own structure (top comp's layer in/out points + precomp boundaries),
+   cross-checked against the mp4 cut detector (Route B measure). Mismatch > 1 frame → the mp4 was trimmed/retimed:
+   find the offset/stretch by aligning cut times, store it as the shot's time map.
+5. **Templates.** Each shot → a self-contained template that reproduces the scene exactly. Auto-expose as params:
+   text layers (string, font, size), fills matching the accent colour, image/footage layers (props), global time
+   scale; everything else locked. Precomps reused across shots become one shared template. Catalog entry gets the
+   features Route B measures (world, camera move, transition, word count, props) so it can be matched later.
+   → check: template filled with the original content == dumped shot, pixel-identical render.
+6. **Render + score on Kaggle** (`kgl.render`), then `engine/parity.py` vs the mp4 using the time map. Bar: 0.92 on
+   paper/text, 0.85 on asset-heavy. Below the bar = engine gap → fix in engine, log in LEARNINGS, never a per-shot hack.
+   Check twice (REQUIREMENTS.md) before showing anything.
+7. **Free ground truth for Route B**: write `extract/gt/<reel>.json` (cuts, transitions, camera, eases, text timing)
+   from the dump, run `python3 -m extract.check --remeasure`, and fix Route B wherever it misses. Every owned project
+   makes the video-only route better.
+8. **Original touch** (REQUIREMENTS.md picks 1–4, 6) is applied through the exposed params when a template is used in
+   our videos — never by editing the template itself.
+
+First test project: "Stop Trying to Please Everyone" (zip + old dump `tpl/an/json/stop.json` already restored). Then
+sells, gen, Zeigarnik when bought. Which reel in `tpl/reels/names.txt` matches stop/sells/gen: confirm with the user.
+
 ## Ground truth and benchmarks
 - `extract/gt/r1.json`: the r1 reel's real cuts, transitions and camera from its AE project — the yardstick.
 - `python3 -m extract.bench_eases [n] [noise_px]`: synthetic ease/keyframe benchmark (perfect labels for free).
 - Add ground truth whenever a reel's real values become known (e.g. our own renders: the scene JSON is the truth).
 
 ## Not built yet (say so when relevant)
-Font ID (DINOv2 Google-Fonts classifier → render-and-compare shortlist), colour/finish measurement, audio (VO word
+Route A (all of it — see above). Font ID (DINOv2 Google-Fonts classifier → render-and-compare shortlist), colour/finish measurement, audio (VO word
 timing, stems, SFX onsets), archetype auto-matcher, automatic fit loop, layer masks (SAM 2 / omnimatte need a GPU).
 Order and choices: `EXTRACT_PLAN.md` phases P2–P4 and the research report's ranked list.
