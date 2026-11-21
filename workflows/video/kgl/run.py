@@ -57,8 +57,8 @@ if GPU:   # NVIDIA GL/Vulkan user-space drivers matching the host driver, so Chr
     v = sh('nvidia-smi --query-gpu=driver_version --format=csv,noheader').stdout.split()[0].split('.')[0]
     sh(f'apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq libnvidia-gl-{v} libvulkan1')
 tgz = glob.glob('/kaggle/input/**/inputs.tgz', recursive=True)[0]
-os.makedirs('/kaggle/working/job', exist_ok=True); os.makedirs('/kaggle/working/out', exist_ok=True)
-tarfile.open(tgz).extractall('/kaggle/working/job'); os.chdir('/kaggle/working/job'); os.environ['OUT'] = '/kaggle/working/out'
+os.makedirs('/tmp/job', exist_ok=True); os.makedirs('/kaggle/working/out', exist_ok=True)
+tarfile.open(tgz).extractall('/tmp/job'); os.chdir('/tmp/job'); os.environ['OUT'] = '/kaggle/working/out'
 # ---- job ----
 '''
 

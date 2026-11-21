@@ -28,3 +28,7 @@ Rules here override defaults in the code until they are folded into it.
   at the white peak (493). Saved as corrections.json. Fix to do: when a short segment is a monotonic ramp to
   white/black, merge it into the cut at the ramp's peak. Short 0.5-0.8 s shots (568, 933, 1217) are real: keep them.
   Camera keys at the first 1-3 frames of a shot that opens with a whip are transition motion, not camera: drop them.
+- 2026-11-21 zeigarnik OCR (ran on Kaggle CPU, ~20 min incl. setup): the creator's handle (@SepticVisuals) is read
+  in almost every shot -> treat a word seen in >50 % of shots as a watermark and drop it from the shot text. Small
+  print on props (Figure1, CALENDER, dates) mixes with the spoken-text words: rank words by box height; the big
+  ones are the kinetic text. Kaggle outputs download from www.kaggleusercontent.com (now allowed).
