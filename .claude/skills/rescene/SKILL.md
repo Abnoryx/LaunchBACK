@@ -49,7 +49,10 @@ from `breakdown.json`. No template fits → note it as a new archetype and scaff
 Render 360p previews (`engine/render.mjs --preview 1 --every 3`), compare to the reel frames for that shot, adjust
 the handful of parameters that are off (positions, sizes, key times). Measure first and fit last: a black-box render
 is ~0.5–5 s/frame, so blind search over many parameters is too slow (a 6-parameter CMA-ES fit ≈ 30 min/segment).
-Then follow REQUIREMENTS.md: check twice, render, send, commit.
+**Score every shot against the reel** with `python3 -I engine/parity.py <frames_dir> <reel.mp4> 30 <out_dir> <label>`
+(per-shot SSIM, mean abs diff, histogram distance + side-by-side sheets). Pass bar (REQUIREMENTS.md): SSIM 0.92–0.95 on
+paper/text shots, 0.85+ on asset-heavy shots, and you can't tell them apart side by side. A shot below the bar goes back
+to fitting; report the scores to the user. Then follow REQUIREMENTS.md: check twice, render, send, commit.
 
 ## 5. Learn from the run (do this every time — it's how /rescene gets better)
 1. **Corrections → tests.** Write what the user corrected to `extract/runs/<name>/corrections.json`, e.g.
