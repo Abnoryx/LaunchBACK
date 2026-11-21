@@ -60,3 +60,9 @@ Rules here override defaults in the code until they are folded into it.
   `Helvetica`, `Helvetica-Bold(Oblique)` now map to the real Helvetica files (was the Inter stand-in; only our own
   templates' `HelvReal-*` names got the real font). r1 check: no frame worse, f30 SSIM 0.836 -> 0.882.
 - Still stand-ins: HelveticaNowText-Black/Bold (3 comps), Coolvetica Heavy (paid), SF Pro -> Inter Tight, InkFree -> Patrick Hand.
+
+## 2026-11-21 — Route A steps 4–5 on Sells
+- Shots: 23, time offset 0; detector whip cuts +2 f, crossfades ±5 f, shot 22's momentum-matched whip not detected.
+- Templates: 23 private JSONs (13 MB); shot 1 template renders pixel-identical to the full project. Accent = hue band
+  100–170 (green family, measured from non-default colours); apply() rotates that band to the new hue. Images/footage
+  keep their own colours (logos, UI screenshots) — tell the user when the accent lives in pictures.

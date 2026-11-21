@@ -73,7 +73,7 @@ to fitting; report the scores to the user. Then follow REQUIREMENTS.md: check tw
 4. **Grow the priors**: approved shots go into the template catalog with their measured eases and timings.
 5. Commit `extract/` changes, `runs/<name>/` (breakdown, storyboard, score, corrections — not frames.npy) and push.
 
-## Route A — .aep route (steps 1–4 built; 5–8 planned — build in order)
+## Route A — .aep route (steps 1–5 built; 6–8 planned — build in order)
 **Run the steps back to back without asking the user between them** (user rule 2026-11-21); stop only for a real
 blocker or a decision that is theirs (missing files, licence, taste). Report at the end, or at long waits.
 Input: `<project>.aep` (+ its footage folder) and the posted mp4. Output: `library/templates/<project>/<shot>` per shot,
@@ -97,7 +97,10 @@ assets in `/home/user/tpl/lib/<project>/`, scores per shot. Read LEARNINGS.md fi
    detector, crossfades ±5; a momentum-matched whip may not be detected at all — the project wins. Split from the project's own structure (top comp's layer in/out points + precomp boundaries),
    cross-checked against the mp4 cut detector (Route B measure). Mismatch > 1 frame → the mp4 was trimmed/retimed:
    find the offset/stretch by aligning cut times, store it as the shot's time map.
-5. **Templates.** Each shot → a self-contained template that reproduces the scene exactly. Auto-expose as params:
+5. **Templates** — BUILT: `python3 -m extract.aep_template make <dump.json> <shots.json> <tpl dir>` and
+   `... apply <shot_NN.json> <params.json> <out.json>` (params: texts by "<comp>/<layer i>", accent hex, footage by id).
+   Times stay as in the project (render the template's `window` with --from/--to). Checked on Sells shot 1: template
+   render == full-project render, pixel-identical. Not yet: shared-precomp dedupe, time-scale param. Each shot → a self-contained template that reproduces the scene exactly. Auto-expose as params:
    text layers (string, font, size), fills matching the accent colour, image/footage layers (props), global time
    scale; everything else locked. Precomps reused across shots become one shared template. Catalog entry gets the
    features Route B measures (world, camera move, transition, word count, props) so it can be matched later.
