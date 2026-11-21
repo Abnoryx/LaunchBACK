@@ -12,6 +12,8 @@ os.makedirs(out_dir, exist_ok=True)
 CUTS = [0, 97, 141, 249, 345, 455, 547, 636, 713, 774, 845, 934, 992]
 NAMES = ["S1", "S1b", "S2", "S3", "S4", "S5", "S6", "S7", "S8a", "S8b", "S9", "S10"]
 PAPER = {"S1", "S1b", "S3", "S4", "S6", "S8a", "S10"}
+if len(sys.argv) > 6:   # another reel: shots json {"cuts": [start..., end], "names": [...], "paper": [...]}
+    _j = __import__("json").load(open(sys.argv[6])); CUTS, NAMES, PAPER = _j["cuts"], _j["names"], set(_j.get("paper", []))
 W, H = 360, 640
 
 # whole reel decoded once, BT.709, at 360x640
@@ -45,11 +47,11 @@ def hist_dist(a, b):
 rows, per = [], {n: [] for n in NAMES}
 for f in sorted(glob.glob(f"{frames_dir}/f*.png")):
     n = int(os.path.basename(f)[1:-4])
-    if n >= len(R) or n >= 992:
+    if n >= len(R) or n >= CUTS[-1]:
         continue
     e = np.asarray(Image.open(f).convert("RGB").resize((W, H), Image.BILINEAR))
     r = R[n]
-    shot = NAMES[max(i for i in range(12) if CUTS[i] <= n)]
+    shot = NAMES[max(i for i in range(len(NAMES)) if CUTS[i] <= n)]
     s, m, h = ssim(luma(e), luma(r)), float(np.abs(e.astype(int) - r.astype(int)).mean()), hist_dist(e, r)
     per[shot].append((n, s, m, h, e, r))
 

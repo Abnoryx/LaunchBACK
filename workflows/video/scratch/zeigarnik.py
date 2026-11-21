@@ -57,33 +57,34 @@ def cam(a, b):
     s = next(s for s in BD['shots'] if s['start'] <= a <= s['end'])
     out = {}
     for k, ks in s['camera'].items():
-        ks = [(q['frame'] - a, q['value']) for q in ks if a + 3 <= q['frame'] <= b]
+        ks = [(q['frame'] - a, q['value']) for q in ks if a + 3 <= q['frame'] <= b - 4]   # skip whip/flash frames at both ends
         if len(ks) < 2: continue
         v0 = ks[0][1]; base = 100 if k == 'zoom' else 0
-        out[k] = [(0, base)] + [(f, base + (v - v0)) for f, v in ks]
+        lo, hi = {'x': (-150, 150), 'y': (-150, 150), 'zoom': (97, 135), 'roll': (-6, 6)}[k]
+        out[k] = [(0, base)] + [(f, min(max(base + (v - v0), lo), hi)) for f, v in ks]
     return out
 
 
 P = dict  # prop
 SHOTS = [   # name, reel frames a..b, world, props, shapes, extra
-    ('Z0', 0, 47, dict(bg='#02080A', flare=dict(y=1250)), [P(file='z_clock.png', w=1024, h=1024, width=1150, pos=[300, 1250], spin=8, grow=1.08, tint=('#050302', '#E8B04A', 60))], [], {}),
+    ('Z0', 0, 47, dict(bg='#02080A', flare=dict(y=1250)), [P(file='z_clock.png', w=1024, h=1024, width=760, pos=[860, 230], spin=10, grow=1.06, op=80), P(file='z_clock.png', w=1024, h=1024, width=900, pos=[80, 1000], spin=-8, grow=1.06, op=85)], [], {}),
     ('Z1', 48, 98, dict(bg='#100203', shafts=[shaft(300, 0, 540, 1300, 300, 900, '#7A0A0A', 70)]), [P(file='z_tv.png', w=880, h=1168, width=640, pos=[560, 1060], grow=1.05)], [], {}),
-    ('Z3', 196, 237, dict(bg='#E7E1D6', stripes=[dict(quad=[[0, 300], [1080, 0], [1080, 260], [0, 640]]), dict(quad=[[0, 900], [1080, 520], [1080, 700], [0, 1120]])]),
+    ('Z3', 196, 237, dict(bg='#4A3628', stripes=[dict(quad=[[0, 300], [1080, 0], [1080, 260], [0, 640]]), dict(quad=[[0, 900], [1080, 520], [1080, 700], [0, 1120]])]),
      [P(file='z_clipboard.png', w=880, h=1168, width=900, pos=[560, 1020], rot=-2)], [], dict(color=DARK_INK, font='HelvReal-Bold')),
-    ('Z4', 238, 336, dict(bg='#E2DCD0', stripes=[dict(quad=[[0, 200], [1080, 0], [1080, 200], [0, 520]], op=40)]),
+    ('Z4', 238, 336, dict(bg='#4A3628', stripes=[dict(quad=[[0, 200], [1080, 0], [1080, 200], [0, 520]], op=40)]),
      [P(file='z_clipboard.png', w=880, h=1168, width=1000, pos=[520, 1040]), P(file='z_sketch.png', w=1024, h=1024, width=440, pos=[560, 900], multiply=True, **{'in': (4, 10)})],
      [dict(kind='disc', d=46, color='#C8221A', pos=[420, 520], t=6)], dict(color=DARK_INK)),
     ('Z5', 337, 374, dict(bg='#02090B', shafts=[shaft(0, 400, 700, 1100, 260, 600)]), [P(file='z_cliff.png', w=880, h=1168, width=760, pos=[760, 1180], grow=1.05)], [], {}),
     ('Z6', 375, 406, dict(bg='#0E0203', shafts=[shaft(540, 0, 540, 900, 300, 700, '#6A0808', 60)]), [],
      [dict(kind='ring', d=1250, color='#E01010', w=10, pos=[540, 960], glow='#FF2020', screen=True)], dict(glow_color='#FF3030', glow_op=60)),
     ('Z7', 407, 451, dict(bg='#01060A', flare=dict(y=1150)), [], [], {}),
-    ('Z8', 452, 492, dict(bg='#010A0D', shafts=[shaft(540, 0, 540, 1920, 200, 600, TEAL, 40)]), [P(file='z_sword.png', w=752, h=1344, width=560, pos=[540, 980], grow=1.25)], [], {}),
-    ('Z9', 493, 567, dict(bg='#E6E0D6'), [P(file='z_sneaker.png', w=1168, h=880, width=520, pos=[560, 1000], **{'in': (6, 12)})],
+    ('Z8', 452, 492, dict(bg='#010A0D', shafts=[shaft(540, 0, 540, 1920, 200, 600, TEAL, 40)]), [P(file='z_sword.png', w=752, h=1344, width=720, pos=[540, 980], grow=1.25, glow='#20E0F0', glow_op=90, glow_size=40)], [], {}),
+    ('Z9', 493, 567, dict(bg='#D9D7D1', stripes=[dict(quad=[[0, 560], [1080, 200], [1080, 480], [0, 900]], op=30)]), [P(file='z_sneaker.png', w=1168, h=880, width=520, pos=[560, 1000], **{'in': (6, 12)})],
      [dict(kind='disc', d=620, color='#C9A27E', pos=[560, 1000]), dict(kind='rect', w=560, h=700, stroke='#3A2418', sw=22, pos=[560, 1000], t=4),
       dict(kind='rect', w=200, h=260, stroke='#1E1612', sw=14, pos=[200, 420]), dict(kind='rect', w=220, h=290, stroke='#1E1612', sw=14, pos=[870, 1500], t=20)],
      dict(color=DARK_INK)),
     ('Z10', 568, 584, dict(bg='#E8E2D8'), [], [dict(kind='disc', d=1100, color='#C9A27E', pos=[900, 500]), dict(kind='rect', w=420, h=560, stroke='#1E1612', sw=20, pos=[200, 1100])], dict(color=DARK_INK)),
-    ('Z11', 585, 656, dict(bg='#07071A', shafts=[shaft(380, 0, 600, 1300, 250, 700, '#3A3A90', 55)]), [P(file='z_vase.png', w=752, h=1344, width=380, pos=[560, 1100])], [], {}),
+    ('Z11', 585, 656, dict(bg='#07071A', shafts=[shaft(150, 0, 600, 1500, 250, 800, '#3A3A90', 70)]), [P(file='z_vase.png', w=752, h=1344, width=560, pos=[540, 1120])], [], {}),
     ('Z12', 657, 705, dict(bg='#030405', flare=dict(y=960, color='#8A9AA0', hot='#DDE8EA')), [], [dict(kind='ring', d=1050, color='#2A3034', w=40, pos=[540, 980])], {}),
     ('Z13', 706, 736, dict(bg='#010603', flare=dict(y=960, color='#1A7A2A', hot='#5FE07A')), [P(file='z_lock.png', w=1024, h=1024, width=420, pos=[540, 960], glow='#30FF60')], [], {}),
     ('Z14', 737, 778, dict(bg='#050507'), [P(file='z_hands.png', w=1024, h=1024, width=1000, pos=[540, 980], grow=1.06)], [dict(kind='ring', d=1100, color='#30363A', w=6, pos=[540, 980])], {}),
@@ -108,7 +109,9 @@ def build():
         for t in texts:
             if 'glow_color' in ex: t.update(glow_color=ex['glow_color'], glow_op=ex['glow_op'])
             if ex.get('color') == DARK_INK: t['glow'] = False
-        cine_scene.build(p, name, b - a + 1, world, props, shapes, texts, camera=cam(a, b))
+        sh = next(q for q in BD['shots'] if q['start'] <= a <= q['end'])
+        fl = a > 0 and any(t in sh['transition_in'] for t in ('flash_white', 'invert'))
+        cine_scene.build(p, name, b - a + 1, world, props, shapes, texts, camera=cam(a, b), flash_in=fl)
         order.append((name, b - a + 1))
         if name == 'Z1':   # shot 2 is the two hand-built templates
             flare_script.build(p, 'Z2A'); brain_words.build(p, 'Z2B')

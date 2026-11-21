@@ -25,7 +25,7 @@ def clip(v):   # mask vertices must stay inside the layer: the engine drops mask
 def _world(proj, c, W, end):
     for i, s in enumerate(W.get('shafts', [])):   # {'quad': [[x,y]x4], 'color', 'op', 'feather'}
         L = c.footage(proj.solid(s['color'], name=f'shaft {i}'), 0, end, blend=SCREEN)
-        c.masks(L, mask(clip(s['quad']), feather=s.get('feather', 150))); c.transform(L, op=s.get('op', 60))
+        c.masks(L, mask(clip(s['quad']), feather=s.get('feather', 150))); c.transform(L, op=s.get('op', 60) * 0.55)   # the reel's rooms are near-black
     if W.get('flare'):
         fy, col = W['flare'].get('y', 1092), W['flare'].get('color', '#1F7A86')
         for nm, rx, ry, cc, op, fe in (('streak a', 1200, 7, col, 45, 10), ('streak b', 700, 9, col, 60, 12),
@@ -38,7 +38,7 @@ def _world(proj, c, W, end):
         c.masks(L, mask(clip(s['quad']), feather=s.get('feather', 40))); c.transform(L, op=s.get('op', 45))
 
 
-def build(proj, name, dur_f, world, props=(), shapes=(), texts=(), camera=None, out_blur=None, fringe=0.6):
+def build(proj, name, dur_f, world, props=(), shapes=(), texts=(), camera=None, out_blur=None, fringe=0.6, flash_in=False, overscan=106):
     end = dur_f * F
     inner = proj.comp(f'{name} content', dur=end)
     for i, t in enumerate(texts):
@@ -49,6 +49,19 @@ def build(proj, name, dur_f, world, props=(), shapes=(), texts=(), camera=None, 
         p = t['pos']; d = t.get('drift', [0, 0])
         inner.transform(L, pos=K((0, p), (end, [p[0] + d[0], p[1] + d[1]])))
         if t.get('glow', True): inner.effects(L, drop_shadow(t.get('glow_color', '#FFFFFF'), t.get('glow_op', 18), 0, 0, 8))
+    for i, p in enumerate(props):
+        ft = proj.still(p['file'], p['w'], p['h'])
+        L = inner.footage(ft, 0, end, **({'blend': MULTIPLY} if p.get('multiply') else {}))
+        sc = 100 * p['width'] / p['w']; t0 = p.get('in', (0, 4))
+        g = p.get('grow', 1.0); d = p.get('drift', [0, 0]); r = p.get('rot', 0)
+        inner.transform(L, pos=K((0, p['pos']), (end, [p['pos'][0] + d[0], p['pos'][1] + d[1]])),
+                        scale=K((0, [sc, sc]), (end, [sc * g, sc * g])), rot=K((0, r), (end, r + p.get('spin', 0))),
+                        op=K((t0[0] * F, 0), (t0[1] * F, p.get('op', 100))))
+        fx = []
+        if p.get('tint'): fx.append(tint(*p['tint']))
+        if p.get('glow'): fx.append(drop_shadow(p['glow'], p.get('glow_op', 60), 0, 0, p.get('glow_size', 18)))
+        fx.append(lens_blur(K((t0[0] * F, p.get('blur_in', 14)), (t0[1] * F, p.get('blur', 0)))))
+        inner.effects(L, *fx)
     for i, s in enumerate(shapes):
         k = s['kind']
         if k == 'ring':
@@ -64,19 +77,6 @@ def build(proj, name, dur_f, world, props=(), shapes=(), texts=(), camera=None, 
         inner.transform(L, pos=s['pos'], rot=K((0, 0), (end, s.get('spin', 0))) if s.get('spin') else None,
                         op=K((s.get('t', 0) * F, 0), ((s.get('t', 0) + 4) * F, s.get('op', 100))))
         if s.get('glow'): inner.effects(L, drop_shadow(s['glow'], 70, 0, 0, 16))
-    for i, p in enumerate(props):
-        ft = proj.still(p['file'], p['w'], p['h'])
-        L = inner.footage(ft, 0, end, **({'blend': MULTIPLY} if p.get('multiply') else {}))
-        sc = 100 * p['width'] / p['w']; t0 = p.get('in', (0, 4))
-        g = p.get('grow', 1.0); d = p.get('drift', [0, 0]); r = p.get('rot', 0)
-        inner.transform(L, pos=K((0, p['pos']), (end, [p['pos'][0] + d[0], p['pos'][1] + d[1]])),
-                        scale=K((0, [sc, sc]), (end, [sc * g, sc * g])), rot=K((0, r), (end, r + p.get('spin', 0))),
-                        op=K((t0[0] * F, 0), (t0[1] * F, p.get('op', 100))))
-        fx = []
-        if p.get('tint'): fx.append(tint(*p['tint']))
-        if p.get('glow'): fx.append(drop_shadow(p['glow'], 60, 0, 0, 18))
-        fx.append(lens_blur(K((t0[0] * F, p.get('blur_in', 14)), (t0[1] * F, p.get('blur', 0)))))
-        inner.effects(L, *fx)
     _world(proj, inner, world, end)
     inner.footage(proj.solid(world['bg'], name='bg'), 0, end)
     inner.finalize()
@@ -96,8 +96,14 @@ def build(proj, name, dur_f, world, props=(), shapes=(), texts=(), camera=None, 
                 if a[0] <= f <= b[0]: return a[1] + (b[1] - a[1]) * (f - a[0]) / max(1, b[0] - a[0])
             return ks[-1][1] if f > ks[-1][0] else v
         pos = K(*[(f * F, [540 + at(xs, f), 960 + at(ys, f)]) for f in fr]) if len(fr) > 1 else None
-        zk = keys('zoom', 100, lambda v: [v, v]); rk = keys('roll', 0)
-        c.transform(L, anchor=[540, 960], pos=pos or [540, 960], scale=zk, rot=rk)
+        zk = keys('zoom', 100, lambda v: [v * overscan / 100, v * overscan / 100]); rk = keys('roll', 0)
+        c.transform(L, anchor=[540, 960], pos=pos or [540, 960], scale=zk or [overscan, overscan], rot=rk)
+    else:
+        c.transform(L, anchor=[540, 960], pos=[540, 960], scale=[overscan, overscan])
+    if flash_in:   # the reel's white flash into the shot (3 frames)
+        fl = c.footage(proj.solid('#FFFFFF', name='flash'), 0, 3 * F)
+        c.transform(fl, op=K((0, 100), (3 * F, 0)))
+        c.layers.insert(0, c.layers.pop()) if hasattr(c, 'layers') else None
     if out_blur:
         c.effects(L, lens_blur(K((out_blur[0] * F, 0), (out_blur[1] * F, 30))))
     c.finalize()
