@@ -13,6 +13,10 @@ const FONT_MAP = [
   [/^GFSDidot/, () => ({ family: 'GFS Didot', weight: 700 })],
   // Inter Tight at 0.975x matches SF Pro Display's set width (calibrated on "Solutions" in the 7th-reel render).
   [/^SFPro(Display|Text|Rounded)-(\w+)/, (m) => ({ family: 'Inter Tight Variable', weight: W[m[2]] ?? 500, sizeScale: 0.975 })],
+  // the real Helvetica files are in /home/user/tpl/fonts/helv (page.html) — use them for the .aep PostScript names
+  [/^Helvetica-BoldOblique$/, () => ({ family: 'Helvetica Real', weight: 700, italic: true })],
+  [/^Helvetica-Bold$/, () => ({ family: 'Helvetica Real', weight: 700 })],
+  [/^Helvetica(-Oblique)?$/, () => ({ family: 'Helvetica Real', weight: 400 })],
   [/^Helvetica(Neue)?-?Bold/, () => ({ family: 'Inter Variable', weight: 700, tracking: -0.01 })],
   [/^HelveticaNow\w*-Black/, () => ({ family: 'Inter Variable', weight: 900 })],
   [/^HelveticaNow\w*-Bold/, () => ({ family: 'Inter Variable', weight: 800 })],

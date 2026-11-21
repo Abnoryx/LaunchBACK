@@ -73,7 +73,7 @@ to fitting; report the scores to the user. Then follow REQUIREMENTS.md: check tw
 4. **Grow the priors**: approved shots go into the template catalog with their measured eases and timings.
 5. Commit `extract/` changes, `runs/<name>/` (breakdown, storyboard, score, corrections — not frames.npy) and push.
 
-## Route A — .aep route (steps 1–2 built; 3–8 planned — build in order)
+## Route A — .aep route (steps 1–3 built; 4–8 planned — build in order)
 **Run the steps back to back without asking the user between them** (user rule 2026-11-21); stop only for a real
 blocker or a decision that is theirs (missing files, licence, taste). Report at the end, or at long waits.
 Input: `<project>.aep` (+ its footage folder) and the posted mp4. Output: `library/templates/<project>/<shot>` per shot,
@@ -88,7 +88,8 @@ assets in `/home/user/tpl/lib/<project>/`, scores per shot. Read LEARNINGS.md fi
    look at them next to the reel before going further: it caught a reversed fold and a trim bug in Sells. (cheap): list every effect match-name, expression and layer feature in the
    dump; flag what the engine doesn't support yet (`engine.js` effect switch). Gaps get fixed in the engine first —
    one fix serves every project. Saves wasted Kaggle renders.
-3. **Harvest assets** into `/home/user/tpl/lib/<project>/` with `manifest.json` (path, sha1, type, used-by shots).
+3. **Harvest assets** — BUILT: `python3 -m extract.aep_harvest <dump.json> <project folder> <name>` (hard links, so no
+   extra disk; zip names like `#U2026` are decoded). Fonts the engine would draw with a stand-in are listed as missing. Into `/home/user/tpl/lib/<project>/` with `manifest.json` (path, sha1, type, used-by shots).
    Missing footage/fonts are listed for the user — never silently substituted. Then refresh the Kaggle backup
    (`kgl.tpl_backup`) so nothing lives only in the container.
 4. **Split into shots** from the project's own structure (top comp's layer in/out points + precomp boundaries),

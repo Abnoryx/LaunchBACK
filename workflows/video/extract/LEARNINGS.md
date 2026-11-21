@@ -54,3 +54,9 @@ Rules here override defaults in the code until they are folded into it.
   (AE behaviour). Fixing it also corrected r1 f510 ("100" now drawn like the reel; old render showed "1").
 - Still approximate on Sells: overall grade (needs fitted LUTs, step 6), CC Cylinder money bill too small, page fold
   ignores curl radius.
+
+## 2026-11-21 — Route A step 3 on Sells: harvest
+- 125 footage files linked, 0 missing once zip `#UXXXX` names are decoded. Fonts: .aep PostScript names
+  `Helvetica`, `Helvetica-Bold(Oblique)` now map to the real Helvetica files (was the Inter stand-in; only our own
+  templates' `HelvReal-*` names got the real font). r1 check: no frame worse, f30 SSIM 0.836 -> 0.882.
+- Still stand-ins: HelveticaNowText-Black/Bold (3 comps), Coolvetica Heavy (paid), SF Pro -> Inter Tight, InkFree -> Patrick Hand.
