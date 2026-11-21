@@ -12,6 +12,8 @@ comps = [[c.split(':')[0], float(c.split(':')[1]) if ':' in c else durs[c]] for 
 tmp = tempfile.mkdtemp(); v = os.path.join(tmp, 'video')
 for d in ('engine', 'library/assets'): shutil.copytree(os.path.join(VID, d), os.path.join(v, d))
 for f in ('package.json', 'package-lock.json'): shutil.copy(os.path.join(VID, f), v)
+TPL = '/home/user/tpl/fonts'   # licensed fonts the page loads by absolute path (/file/home/user/tpl/fonts/...); private upload only
+if os.path.isdir(TPL): shutil.copytree(TPL, os.path.join(v, 'tplfonts'), ignore=shutil.ignore_patterns('*zip*'))
 rel = os.path.relpath(os.path.abspath(a.project), VID); os.makedirs(os.path.dirname(os.path.join(v, rel)), exist_ok=True)
 shutil.copy(a.project, os.path.join(v, rel))
 json.dump(dict(project=rel, footage='library/assets', comps=comps, extra=a.extra.split(), out=os.path.basename(a.out), crf=a.crf),

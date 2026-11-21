@@ -4,6 +4,8 @@
 import json, time
 cfg = json.load(open('render.json'))
 sh('apt-get install -y -qq nodejs npm ffmpeg')
+os.makedirs('/home/user/tpl', exist_ok=True)
+if os.path.isdir('video/tplfonts') and not os.path.exists('/home/user/tpl/fonts'): os.symlink(os.path.abspath('video/tplfonts'), '/home/user/tpl/fonts')
 os.chdir('video'); r = sh('npm ci --silent && npx playwright install --with-deps chromium'); print('setup', r.returncode, r.stderr[-300:])
 os.environ['RENDER_GPU'] = '1'
 lst = []
