@@ -36,6 +36,10 @@ def upload_inputs(paths, owner, slug):
     urllib.request.urlopen(urllib.request.Request(b['createUrl'], data=data, method='PUT',
                                                   headers={'Content-Type': 'application/octet-stream'}), timeout=600).read()
     files = [dict(token=b['token'])]
+    def version():
+        try: return call('GET', f'/datasets/view/{owner}/{slug}').get('currentVersionNumber') or 0
+        except urllib.error.HTTPError: return 0
+    v0 = version()
     try:
         r = call('POST', f'/datasets/create/version/{owner}/{slug}', dict(versionNotes='job', files=files))
     except urllib.error.HTTPError:
@@ -46,7 +50,7 @@ def upload_inputs(paths, owner, slug):
     for _ in range(90):   # wait until Kaggle has processed the files
         try: s = call('GET', f'/datasets/status/{owner}/{slug}', raw=True).decode().strip().strip('"').lower()
         except urllib.error.HTTPError: s = 'pending'   # a brand-new dataset answers 403 until Kaggle has registered it
-        if s == 'ready': return
+        if s == 'ready' and version() > v0: return   # a stale 'ready' is the old version: wait for the new one
         time.sleep(10)
     sys.exit('dataset never became ready')
 

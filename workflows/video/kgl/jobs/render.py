@@ -4,11 +4,12 @@
 import json, time
 cfg = json.load(open('render.json'))
 subprocess.run([sys.executable, '-m', 'pip', 'install', '-q', 'nodejs-wheel-binaries>=22,<23'], check=True)   # apt's node 18 is too old for playwright
-import nodejs_wheel; os.environ['PATH'] = os.path.dirname(nodejs_wheel.__file__) + '/bin:' + os.environ['PATH']
+import nodejs_wheel; NW = os.path.dirname(nodejs_wheel.__file__); os.environ['PATH'] = NW + '/bin:' + os.environ['PATH']
+NPM = f'node {NW}/lib/node_modules/npm/bin/npm-cli.js'; NPX = f'node {NW}/lib/node_modules/npm/bin/npx-cli.js'   # the wheel's bin/npm shims are broken
 print('node', sh('node -v').stdout.strip(), sh('which ffmpeg || apt-get install -y -qq ffmpeg').stdout.strip())
 os.makedirs('/home/user/tpl', exist_ok=True)
 if os.path.isdir('video/tplfonts') and not os.path.exists('/home/user/tpl/fonts'): os.symlink(os.path.abspath('video/tplfonts'), '/home/user/tpl/fonts')
-os.chdir('video'); r = sh('npm ci --silent && npx playwright install --with-deps chromium'); print('setup', r.returncode, r.stderr[-300:])
+os.chdir('video'); r = sh(f'{NPM} ci --silent && {NPX} playwright install --with-deps chromium'); print('setup', r.returncode, r.stderr[-300:])
 os.environ['RENDER_GPU'] = '1'
 lst = []
 for name, dur in cfg['comps']:
