@@ -193,11 +193,16 @@ export function textAnimation(layer, tComp, ctx) {
         const ap = findDeep(sel, 'ADBE Text Expressible Amount');
         const e = ap && exprOf(ap);
         const tLocal = tComp - (layer.in_point ?? 0);
-        if (e && e.kind === 'textBounce') a = chars.map((_, i) => textBounceAmount(e, i, chars.length, tLocal, ctx) / 100);
+        const bo = evalProp(find(sel, 'ADBE Text Range Type2'), tComp) ?? 1;   // Based On: textIndex counts these units
+        const { idx: ui, n: un } = unitIndex(text, bo);
+        const unitOf = (i) => (ui[i] >= 0 ? ui[i] : (ui.slice(i).find((k) => k >= 0) ?? un - 1));
+        if (e && e.kind === 'textBounce') a = chars.map((_, i) => textBounceAmount(e, unitOf(i), un, tLocal, ctx) / 100);
         else if (e && e.kind === 'lastChar') a = chars.map((_, i) => (i === chars.length - 1 ? 1 : 0));
         else a = chars.map(() => (ap ? (evalProp(ap, tComp) ?? 100) : 100) / 100);
       } else continue; // wiggly selectors: ignored
-      amt = first ? a : amt.map((v, i) => Math.min(1, v + a[i]));
+      // AE default modes: Range Selector = Add, Expression Selector = Intersect
+      const intersect = sel.m === 'ADBE Text Expressible Selector';
+      amt = first ? a : amt.map((v, i) => (intersect ? v * a[i] : Math.min(1, v + a[i])));
       first = false;
     }
     for (const p of props?.c || []) {

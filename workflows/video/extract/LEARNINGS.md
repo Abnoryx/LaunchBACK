@@ -70,3 +70,8 @@ Rules here override defaults in the code until they are folded into it.
 ## 2026-11-21 — engine: 3D sort for parallel layers (Sells shot 18)
 - Text floating 16 px in front of a tilting card vanished: sorting by centre depth put it behind the card. Parallel
   layers are now ordered by their offset along the shared normal (coplanar = layer order). r1: no frame changed.
+
+## 2026-11-21 — engine: expression selectors (Sells shot 18)
+- Small text never appeared: bounce selectors with Based On = Words used the character index as textIndex (huge
+  delays), and every selector was combined by Add. Now textIndex follows Based On, and an Expression Selector
+  intersects (AE default) with the selectors above it. r1 sample frames unchanged.
