@@ -32,3 +32,7 @@ Rules here override defaults in the code until they are folded into it.
   in almost every shot -> treat a word seen in >50 % of shots as a watermark and drop it from the shot text. Small
   print on props (Figure1, CALENDER, dates) mixes with the spoken-text words: rank words by box height; the big
   ones are the kinetic text. Kaggle outputs download from www.kaggleusercontent.com (now allowed).
+- 2026-11-21 zeigarnik rebuild (cine_scene, auto text + measured camera, Kaggle renders ~15 min): SSIM v1 0.556,
+  v2 0.555 (3/23 pass). Measured camera keys at shot ends are whip/flash, not camera: clamp and skip the last 4
+  frames. Auto hero-font guess (big = serif) was wrong for this reel: pick fonts per reel. With only the video (no
+  project files) and our own props, SSIM is capped by prop/layout differences: score layout/timing, not pixels.
