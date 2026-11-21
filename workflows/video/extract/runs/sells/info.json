@@ -1,0 +1,14 @@
+{
+ "w": 720,
+ "h": 1280,
+ "fps": 30.0,
+ "frames": 1362,
+ "dur": 45.486485,
+ "vfr": false,
+ "color_space": "bt709",
+ "audio": true,
+ "analysis_w": 216,
+ "analysis_h": 384,
+ "decoded": 1362,
+ "scale_to_1080": 5.0
+}
