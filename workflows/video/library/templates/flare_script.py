@@ -60,7 +60,7 @@ def build(proj, name='flare_script', **params):
         c.transform(L, op=K((0, op * 0.55), (10 * F, op), (end, op * 0.9)))
     haze = proj.solid('#0B2A30', name='haze')
     L = c.footage(haze, 0, end, blend=SCREEN)
-    c.masks(L, mask([[560, fy - 260], [1180, fy - 260], [1180, fy + 260], [560, fy + 260]], feather=260))
+    c.masks(L, mask([[560, fy - 260], [1080, fy - 260], [1080, fy + 260], [560, fy + 260]], feather=260))   # stay inside the layer (engine drops masks that leave it)
 
     rnd = random.Random(Pm['dust_seed'])
     specks = [ellipse_group(s, s, '#CFE6EA', pos=(rnd.uniform(0, 1080), rnd.uniform(0, 1920)))
