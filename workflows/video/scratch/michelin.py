@@ -13,6 +13,7 @@ FINE = ('The Michelin Guide was first printed in 1900 and handed out free to Fre
         'where to sleep, where to eat. It existed to sell tyres.')
 WM = ' '
 RED = '#E10600'
+ASSETS = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'library', 'assets')
 
 SHOTS = [
     ('S1', 'hero_word', dict(words={'kicker': 'a tyre company', 'hero': 'POWER', 'q1': 'over', 'q2': 'chefs', 'sub1': 'has more', 'sub2': ' '},
@@ -67,9 +68,12 @@ SHOTS = [
     ('S19', 'brain_collage', dict(words={'amp': '', 'line': 'Most creators\nhave a guide', 'small': 'and no', 'accent': 'tyres.', 'label': 'Audience'},
                                   ring='FOLLOWERS  VIEWS  LIKES  FOLLOWERS  VIEWS  LIKES', watermark=WM, fineprint=FINE,
                                   prop={'model': 'm_book.glb', 'scale': 110, 'rx': 0, 'rz': 0}, quad=('m_book.png', 713, 1108, 26), prop_plain=True)),
-    ('S20', 'follow_needle', dict(words={'cta': 'That gap', 'accent': 'is what', 'small': 'I work', 'big': 'on.'},
-                                  watermark=WM, fineprint=FINE, logo=('blank.png', 4, 4), hand=None,
-                                  layout={'pens': [([915, 1412, -862], 334, ('m_tyre.png', 705, 1006), 45), ([30, 1286, 0], 21, ('m_book.png', 713, 1108), 45)]})),
+    ('S20', 'needle_wave', dict(words={'cta': 'That gap', 'accent': 'is what', 'small': 'I\nwork', 'big': 'on.'},
+                                  watermark=WM, fineprint=' ', logo=('blank.png', 4, 4), hand=None,
+                                  layout={'pens': [([915, 1412, -862], 334, ('m_tyre.png', 705, 1006), 45), ([30, 1286, 0], 21, ('m_book.png', 713, 1108), 45)]},
+                                  timing={'props_out': (28, 38)},
+                                  needle={'assets': {'logo': os.path.join(ASSETS, 'blank.png'), 'plate': os.path.join(ASSETS, 'needle_plate_red.png')},
+                                          'layout': {'pens': []}})),
     ('LOGO', 'logo_reveal', dict(bg='#000000')),
 ]
 
