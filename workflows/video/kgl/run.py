@@ -44,7 +44,8 @@ def upload_inputs(paths, owner, slug):
         r = call('POST', '/datasets/create/new', dict(ownerSlug=owner, slug=slug, title=slug, licenseName='CC0-1.0', isPrivate=True, files=files))
     if r.get('error'): sys.exit(f'dataset upload failed: {r["error"]}')
     for _ in range(90):   # wait until Kaggle has processed the files
-        s = call('GET', f'/datasets/status/{owner}/{slug}', raw=True).decode().strip().strip('"').lower()
+        try: s = call('GET', f'/datasets/status/{owner}/{slug}', raw=True).decode().strip().strip('"').lower()
+        except urllib.error.HTTPError: s = 'pending'   # a brand-new dataset answers 403 until Kaggle has registered it
         if s == 'ready': return
         time.sleep(10)
     sys.exit('dataset never became ready')
