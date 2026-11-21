@@ -5,7 +5,7 @@ usage: python3 -m kgl.run <job.py> <out_dir> [input files/dirs ...] [--name resc
   to <out_dir>. Prelude: NVIDIA GL/Vulkan drivers are installed so Chrome/WebGL uses the GPU (see REQUIREMENTS.md).
 - Auth: the Kaggle key is injected by the environment's proxy for www.kaggle.com (never stored here).
   User name: env KAGGLE_USER or ~/.kaggle/kaggle.json."""
-import argparse, io, json, os, sys, tarfile, time, urllib.request, base64
+import argparse, io, json, os, sys, tarfile, time, urllib.request, urllib.error, base64
 
 API = 'https://www.kaggle.com/api/v1'
 AUTH = 'Basic ' + base64.b64encode(b'dummy:proxy-injected').decode()   # the proxy replaces it with the saved key
@@ -19,8 +19,11 @@ def user():
 def call(method, path, body=None, raw=False):
     req = urllib.request.Request(API + path, method=method, headers={'Authorization': AUTH, 'Content-Type': 'application/json'},
                                  data=json.dumps(body).encode() if body is not None else None)
-    with urllib.request.urlopen(req, timeout=300) as r:
-        d = r.read()
+    try:
+        with urllib.request.urlopen(req, timeout=300) as r:
+            d = r.read()
+    except urllib.error.HTTPError as e:   # say which step failed (a bare 403 traceback hid it)
+        print(f'{method} {path} -> {e.code} {e.read()[:300]!r}', file=sys.stderr); raise
     return d if raw else json.loads(d or b'{}')
 
 
