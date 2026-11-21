@@ -26,7 +26,8 @@ for (const d of (args.footage || '').split(',').filter(Boolean)) walk(d);
 const findFile = (name) => files.get(decodeURIComponent(name).normalize('NFC')) || [...files.entries()].find(([k]) => k.replace(/#U[0-9A-F]{4}/g, '') === name.replace(/[^\x00-\x7f]/g, ''))?.[1];
 
 const MIME = { '.js': 'text/javascript', '.html': 'text/html', '.json': 'application/json', '.woff2': 'font/woff2', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif' };
-const browser = await chromium.launch({ args: ['--enable-unsafe-swiftshader', '--disable-web-security'] });
+const GPU_ARGS = process.env.RENDER_GPU ? ['--use-angle=vulkan', '--enable-features=Vulkan,VulkanFromANGLE,DefaultANGLEVulkan', '--ignore-gpu-blocklist', '--enable-gpu', '--headless=new'] : [];   // RENDER_GPU=1: real GPU (Kaggle T4)
+const browser = await chromium.launch({ args: ['--enable-unsafe-swiftshader', '--disable-web-security', ...GPU_ARGS] });
 const page = await browser.newPage();
 page.on('console', (m) => { if (m.type() === 'warning' || m.type() === 'error') console.error('[page]', m.text()); });
 page.on('pageerror', (e) => console.error('[pageerror]', e.message));
