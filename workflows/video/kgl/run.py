@@ -37,7 +37,7 @@ def upload_inputs(paths, owner, slug):
                                                   headers={'Content-Type': 'application/octet-stream'}), timeout=600).read()
     files = [dict(token=b['token'])]
     try:
-        r = call('POST', f'/datasets/create/version/{owner}/{slug}', dict(versionNotes='job', files=files, deleteOldVersions=True))
+        r = call('POST', f'/datasets/create/version/{owner}/{slug}', dict(versionNotes='job', files=files))
     except urllib.error.HTTPError:
         r = None
     if not r or r.get('error'):
@@ -59,7 +59,11 @@ if GPU:   # NVIDIA GL/Vulkan user-space drivers matching the host driver, so Chr
     sh(f'apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq libnvidia-gl-{v} libvulkan1')
 import shutil
 os.makedirs('/kaggle/working/out', exist_ok=True); os.environ['OUT'] = '/kaggle/working/out'
-tgz = glob.glob('/kaggle/input/**/inputs.tgz', recursive=True)
+import time
+for _ in range(30):   # a just-uploaded dataset version can mount a few moments late
+    tgz = glob.glob('/kaggle/input/**/inputs.tgz', recursive=True)
+    if tgz or glob.glob('/kaggle/input/**/*.json', recursive=True): break
+    time.sleep(10)
 if tgz: os.makedirs('/tmp/job', exist_ok=True); tarfile.open(tgz[0]).extractall('/tmp/job')
 else:   # Kaggle unpacks big archives itself: copy the unpacked tree (it is read-only)
     print('inputs:', sh('find /kaggle/input -maxdepth 4 | head -20').stdout)
