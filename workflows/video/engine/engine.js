@@ -89,6 +89,10 @@ export class Engine {
         const p = e?.c?.find((x) => !x.c);
         return p ? evalProp(p, self._t) : 0;
       },
+      effectProp(name) {
+        const fx = findM(L, 'ADBE Effect Parade');
+        return fx?.c?.find((x) => x.n === name)?.c?.find((x) => !x.c);
+      },
       ctrl(compName, layerName, effName) {
         const c = self.compsByName.get(compName);
         const l = c?.layers.find((x) => x.name === layerName);
@@ -264,7 +268,7 @@ export class Engine {
     const ev = (p, d) => (p ? evalProp(p, t, ctxE) : d);
     const draws = []; // {path:Path2D in layer coords, fill, stroke, width, m:DOMMatrix}
     const pts = [];
-    const walk = (grp, mat, opacity) => {
+    const walk = (grp, mat, opacity, inTrim = null) => {
       const items = findM(grp, 'ADBE Vectors Group')?.c || grp.c || [];
       const paths = [];
       let localM = mat;
@@ -275,11 +279,11 @@ export class Engine {
         opacity *= ev(findM(vt, 'ADBE Vector Group Opacity'), 100) / 100;
         localM = mat.multiply(new DOMMatrix().translate(p[0], p[1]).rotate(r).scale(s[0] / 100, s[1] / 100).translate(-a[0], -a[1]));
       }
-      let trim = null;
-      for (const it of items) if (it.m === 'ADBE Vector Filter - Trim') trim = { s: ev(findM(it, 'ADBE Vector Trim Start'), 0), e: ev(findM(it, 'ADBE Vector Trim End'), 100), o: ev(findM(it, 'ADBE Vector Trim Offset'), 0) };
+      let trim = inTrim; // AE: a Trim Paths also trims the groups above it in its parent
+      for (const it of items) if (it.m === 'ADBE Vector Filter - Trim' && !it.off) trim = { s: ev(findM(it, 'ADBE Vector Trim Start'), 0), e: ev(findM(it, 'ADBE Vector Trim End'), 100), o: ev(findM(it, 'ADBE Vector Trim Offset'), 0) };
       for (const it of items) {
         if (it.off) continue; // disabled in AE
-        if (it.m === 'ADBE Vector Group') { walk(it, localM, opacity); continue; }
+        if (it.m === 'ADBE Vector Group') { walk(it, localM, opacity, trim); continue; }
         if (it.m === 'ADBE Vector Shape - Rect') {
           const sz = ev(findM(it, 'ADBE Vector Rect Size'), [100, 100]), ps = ev(findM(it, 'ADBE Vector Rect Position'), [0, 0]);
           const rd = Math.min(ev(findM(it, 'ADBE Vector Rect Roundness'), 0), sz[0] / 2, sz[1] / 2);
@@ -594,8 +598,88 @@ export class Engine {
           swap(o);
           break;
         }
+
+        // --- added for the Sells project (Route A step 2); approximations are marked ---
+        case 'ADBE Ramp': {
+          const L2 = (q) => [(q[0] - rect[0]) * sx, (q[1] - rect[1]) * sx];
+          const o = g.target(cur.w, cur.h);
+          g.run('ramp', o, { uS: L2(PM('0001', [0, 0])), uE: L2(PM('0003', [0, 100])), uA: PM('0002', [0, 0, 0, 1]), uB: PM('0004', [1, 1, 1, 1]),
+            uRad: PM('0005', 1) === 2 ? 1 : 0, uBlend: PM('0007', 0) / 100 }, { uTex: cur });
+          swap(o); break;
+        }
+        case 'ADBE Fractal Noise': { // value-noise fbm stand-in for AE's noise; contrast/brightness/scale/complexity/evolution honoured
+          const o = g.target(cur.w, cur.h), sc = PM('0010', 100), off = PM('0013', [0, 0]);
+          g.run('fractal', o, { uOff: [(off[0] - rect[0]) * sx, (off[1] - rect[1]) * sx], uScale: Math.max(0.5, sc * sx), uContrast: PM('0004', 100) / 100,
+            uBright: PM('0005', 0) / 100, uEvo: PM('0023', 0) / 360, uOp: PM('0029', 100) / 100, uOct: Math.min(8, Math.max(1, Math.round(PM('0015', 6)))),
+            uTurb: PM('0001', 1) === 2 ? 1 : 0, uInv: PM('0003', 0) ? 1 : 0 }, { uTex: cur });
+          swap(o); break;
+        }
+        case 'ADBE Find Edges': { const o = g.target(cur.w, cur.h); g.run('findedges', o, { uInv: PM('0001', 0), uBlend: PM('0002', 0) / 100 }, { uTex: cur }); swap(o); break; }
+        case 'ADBE Radial Blur': { // Type 1 = spin (amount in degrees), 2 = zoom
+          const amt = PM('0001', 0), c = PM('0002', [540, 960]), zoom = PM('0003', 1) === 2;
+          if (amt > 0) { const o = g.target(cur.w, cur.h); g.run('spinblur', o, { uC: [(c[0] - rect[0]) * sx, (c[1] - rect[1]) * sx], uAng: zoom ? 0 : amt * Math.PI / 180, uZoom: zoom ? amt / 100 : 0 }, { uTex: cur }); swap(o); }
+          break;
+        }
+        case 'ADBE Roughen Edges': { // approx: noisy threshold of the blurred alpha
+          const bd = PM('0002', 8) * sx, B = g.blur(cur, Math.max(0.5, bd * 0.5), Math.max(0.5, bd * 0.5)), off = PM('0007', [0, 0]);
+          const o = g.target(cur.w, cur.h);
+          g.run('roughen', o, { uScale: Math.max(1, PM('0005', 100) * sx * 0.25), uSharp: Math.max(0.2, PM('0003', 1)), uEvo: PM('0009', 0) / 360, uOff: [off[0] * sx, off[1] * sx] }, { uTex: cur, uBlur: B });
+          g.release(B); swap(o); break;
+        }
+        case 'ADBE Turbulent Displace': {
+          const o = g.target(cur.w, cur.h), off = PM('0004', [0, 0]);
+          g.run('turbdisp', o, { uAmt: PM('0002', 50) * sx * 0.6, uSize: Math.max(1, PM('0003', 100) * sx), uEvo: PM('0006', 0) / 360, uOct: Math.max(1, Math.round(PM('0005', 1))),
+            uOff: [(off[0] - rect[0]) * sx, (off[1] - rect[1]) * sx] }, { uTex: cur });
+          swap(o); break;
+        }
+        case 'ADBE Noise HLS2': case 'ADBE Noise HLS': {
+          const o = g.target(cur.w, cur.h), auto = e.m === 'ADBE Noise HLS2' && PM('0006', 0) === 0;
+          g.run('noisehls', o, { uL: PM('0003', 0) / 100, uPh: auto ? Math.floor(t * comp.fps) : PM('0006', 0), uGrain: Math.max(1, PM('0005', 1) * sx) }, { uTex: cur });
+          swap(o); break;
+        }
+        case 'S_Glow': { // approx: threshold, blur by glow width, add back * brightness
+          const bt = g.target(cur.w, cur.h); g.run('bright', bt, { uT: PM('0052', 0.6) }, { uTex: cur });
+          const w = PM('0054', 96) * sx * 0.25, bl = g.blur(bt, w, w); g.release(bt);
+          const o = g.target(cur.w, cur.h); g.run('add', o, { uK: PM('0050', 1) * 0.5 }, { uTex: bl, uDst: cur });
+          g.release(bl); swap(o); break;
+        }
+        case 'ADBE Compound Blur': { // approx: blur map = the layer itself (luma), max blur at white
+          const r = PM('0002', 20) * sx * 0.5, bl = g.blur(cur, r, r), o = g.target(cur.w, cur.h);
+          g.run('lumamix', o, {}, { uTex: cur, uB: bl }); g.release(bl); swap(o); break;
+        }
+        case 'CC Cylinder': {
+          const D = Math.PI / 180, rx = PM('0009', 0) * D, ry = PM('0010', 0) * D, rz = PM('0011', 0) * D;
+          const cx = Math.cos(rx), sxr = Math.sin(rx), cy = Math.cos(ry), sy = Math.sin(ry), cz = Math.cos(rz), sz = Math.sin(rz);
+          // R = Rz*Ry*Rx (column-major for GLSL mat3)
+          const m = [cy * cz, cy * sz, -sy, sxr * sy * cz - cx * sz, sxr * sy * sz + cx * cz, sxr * cy, cx * sy * cz + sxr * sz, cx * sy * sz - sxr * cz, cx * cy];
+          const o = g.target(cur.w, cur.h);
+          g.run('cylinder', o, { uR: m, uRad: (PM('0002', 100) / 100) * cur.w / (2 * Math.PI), uSize: [cur.w, cur.h] }, { uTex: cur });
+          swap(o); break;
+        }
+        case 'CC Page Turn': { // approx: flat fold (no curl radius / lighting)
+          const f = PM('0001', [0, 0]), a = (PM('0002', 0) - 90) * Math.PI / 180, o = g.target(cur.w, cur.h);
+          g.run('pageturn', o, { uF: [(f[0] - rect[0]) * sx, (f[1] - rect[1]) * sx], uN: [-Math.cos(a), -Math.sin(a)], uPaper: PM('0006', [1, 1, 1, 1]), uBackOp: PM('0009', 100) / 100 }, { uTex: cur });
+          swap(o); break;
+        }
+        case 'ADBE BEZMESH': { // approx: corner vertices only (tangents ignored), bilinear
+          const L2 = (q) => [(q[0] - rect[0]) * sx, (q[1] - rect[1]) * sx];
+          const tl = PM('0001', [0, 0]), tr = PM('0004', [100, 0]), br = PM('0007', [100, 100]), bl = PM('0010', [0, 100]);
+          const src0 = L2([0, 0]), src1 = L2([tr[0], bl[1]]);
+          const o = g.target(cur.w, cur.h);
+          g.run('bezwarp', o, { uP0: L2(tl), uP1: L2(tr), uP2: L2(br), uP3: L2(bl), uQ0: src0, uQs: [src1[0] - src0[0], src1[1] - src0[1]] }, { uTex: cur });
+          swap(o); break;
+        }
+        case 'ADBE Posterize Time': if (isAdjustment && this._adj?.L === L) { // re-render what's below at the stepped time
+          const fr = PM('0001', 12), tq = Math.floor(t * fr + 1e-6) / fr;
+          if (Math.abs(tq - t) > 1e-6) {
+            const { comp: ac } = this._adj, saveT = this._t, saveAdj = this._adj; this._adj = null;
+            const A = this.renderComp(ac, tq, { tc: tq, onlyBelow: L.i }); this._adj = saveAdj; this._t = saveT; swap(A);
+          }
+        } break;
+        // identity at the values these projects use, or a <=5 px shift: deliberately a no-op
+        case 'ADBE Easy Levels2': case 'ADBE Displacement Map': break;
         case 'ADBE Slider Control': case 'ADBE Checkbox Control': case 'ADBE Layer Control': case 'ADBE Color Control': case 'ADBE Point Control': case 'ADBE Angle Control': break;
-        default: this.warn('effect not implemented: ' + e.m + ' (' + e.n + ')');
+        default: if (!e.m.startsWith('Pseudo/')) this.warn('effect not implemented: ' + e.m + ' (' + e.n + ')'); // Pseudo/ = control-only presets
       }
     }
     return cur;

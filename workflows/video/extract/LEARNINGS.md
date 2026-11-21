@@ -44,3 +44,13 @@ Rules here override defaults in the code until they are folded into it.
   mixed-style text runs, box text position, spatial tangents (in_st/out_st, used by anim.js), gradients, markers, curves.
 - Layers py_aep can't decode `enabled` for are dumped as disabled (same as before: engine needs enabled === true).
   Earlier note (stop): such a layer can be the one actually rendered — check against the mp4 when a shot is missing.
+
+## 2026-11-21 — Route A step 2 on Sells: coverage + engine gaps
+- Coverage found 16 effects + 2 expressions missing. Added: Gradient Ramp, Fractal Noise (fbm stand-in), Find Edges,
+  Radial Blur, Roughen Edges, Turbulent Displace, Noise HLS, S_Glow, Compound Blur, CC Cylinder, CC Page Turn (flat
+  fold), Bezier Warp (corners only), Posterize Time (adjustment re-render); Levels/Displacement Map no-ops at the values
+  used; typewriter text + blinking cursor expressions; Pseudo/ effects are controls.
+- Engine bug found by the first 5-frame look: a Trim Paths at a shape layer's root must also trim its child groups
+  (AE behaviour). Fixing it also corrected r1 f510 ("100" now drawn like the reel; old render showed "1").
+- Still approximate on Sells: overall grade (needs fitted LUTs, step 6), CC Cylinder money bill too small, page fold
+  ignores curl radius.

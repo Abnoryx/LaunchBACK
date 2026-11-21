@@ -38,7 +38,7 @@ def main(path, out=None):
             if p.get('x'): exprs.setdefault(p['x'], set()).add(comp)
             if p.get('m') == 'ADBE Effect Parade':
                 for e in p.get('c') or []:
-                    if not e.get('off'): use['effect'][e['m'] + ' (' + str(e.get('n')) + ')'].add(comp) if e['m'] not in FX_OK and not AUDIO_FX.match(e['m']) else None
+                    if not e.get('off'): use['effect'][e['m'] + ' (' + str(e.get('n')) + ')'].add(comp) if e['m'] not in FX_OK and not AUDIO_FX.match(e['m']) and not e['m'].startswith('Pseudo/') else None
             if p.get('m') == 'ADBE Mask Atom' and p.get('mode') not in MASK_OK: use['mask_mode'][p.get('mode')].add(comp)
             walk(p.get('c') or [], comp)
 

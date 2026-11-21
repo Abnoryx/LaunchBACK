@@ -8,8 +8,71 @@ void main(){ gl_Position = aPos; vUV = aUV; }`;
 const FS_HEAD = `#version 300 es
 precision highp float; in vec2 vUV; out vec4 o; uniform sampler2D uTex; uniform vec2 uRes;`;
 
+
+const NOISE = `float h21(vec2 p){ p = fract(p*vec2(123.34, 456.21)); p += dot(p, p+45.32); return fract(p.x*p.y); }
+  float vnoise(vec2 p){ vec2 i = floor(p), f = fract(p); f = f*f*(3.0-2.0*f);
+    return mix(mix(h21(i), h21(i+vec2(1,0)), f.x), mix(h21(i+vec2(0,1)), h21(i+vec2(1,1)), f.x), f.y); }
+  float fbm(vec2 p, int oct, float gain, float lac){ float s = 0.0, a = 0.5, n = 0.0;
+    for (int i = 0; i < 8; i++){ if (i >= oct) break; s += a*vnoise(p); n += a; p = p*lac + 17.1; a *= gain; } return s/n; }`;
+
 const SHADERS = {
   copy: `${FS_HEAD} void main(){ o = texture(uTex, vUV); }`,
+  // --- effects added for the Sells project (Route A step 2) ---
+  ramp: `${FS_HEAD} uniform vec2 uS, uE; uniform vec4 uA, uB; uniform float uRad, uBlend; void main(){ vec2 p = vUV*uRes; vec4 src = texture(uTex, vUV);
+    float k = uRad > 0.5 ? clamp(length(p-uS)/max(length(uE-uS),1e-3), 0.0, 1.0) : clamp(dot(p-uS, uE-uS)/max(dot(uE-uS,uE-uS),1e-3), 0.0, 1.0);
+    vec3 c = mix(uA.rgb, uB.rgb, k); o = vec4(mix(c*src.a, src.rgb, uBlend), src.a); }`,
+  fractal: `${FS_HEAD} ${NOISE} uniform vec2 uOff; uniform float uScale, uContrast, uBright, uEvo, uOp; uniform int uOct, uTurb, uInv; void main(){
+    vec4 src = texture(uTex, vUV); vec2 p = (vUV*uRes - uOff)/uScale + vec2(uEvo*0.37, uEvo*0.21);
+    float n = fbm(p, uOct, 0.7, 1.8); if (uTurb == 1) n = abs(n*2.0-1.0);
+    n = (n - 0.5)*uContrast + 0.5 + uBright; n = clamp(n, 0.0, 1.0); if (uInv == 1) n = 1.0 - n;
+    o = vec4(mix(src.rgb, vec3(n)*src.a, uOp), src.a); }`,
+  findedges: `${FS_HEAD} uniform float uInv, uBlend; void main(){ vec2 d = 1.0/uRes; vec4 src = texture(uTex, vUV);
+    vec3 gx = -texture(uTex, vUV+vec2(-d.x, d.y)).rgb - 2.0*texture(uTex, vUV+vec2(-d.x,0)).rgb - texture(uTex, vUV-d).rgb
+             + texture(uTex, vUV+d).rgb + 2.0*texture(uTex, vUV+vec2(d.x,0)).rgb + texture(uTex, vUV+vec2(d.x,-d.y)).rgb;
+    vec3 gy = -texture(uTex, vUV-d).rgb - 2.0*texture(uTex, vUV+vec2(0,-d.y)).rgb - texture(uTex, vUV+vec2(d.x,-d.y)).rgb
+             + texture(uTex, vUV+vec2(-d.x,d.y)).rgb + 2.0*texture(uTex, vUV+vec2(0,d.y)).rgb + texture(uTex, vUV+d).rgb;
+    vec3 e = clamp(sqrt(gx*gx+gy*gy), 0.0, 1.0); vec3 c = uInv > 0.5 ? e : 1.0 - e;
+    o = vec4(mix(c*src.a, src.rgb, uBlend), src.a); }`,
+  spinblur: `${FS_HEAD} uniform vec2 uC; uniform float uAng, uZoom; void main(){ vec2 p = vUV*uRes - uC; vec4 s = vec4(0.0);
+    for (int i = 0; i < 24; i++){ float f = float(i)/23.0 - 0.5; float a = f*uAng; vec2 q = mat2(cos(a), -sin(a), sin(a), cos(a))*p*(1.0+f*uZoom);
+      s += texture(uTex, (q+uC)/uRes); } o = s/24.0; }`,
+  roughen: `${FS_HEAD} ${NOISE} uniform sampler2D uBlur; uniform float uScale, uSharp, uEvo; uniform vec2 uOff; void main(){
+    vec4 src = texture(uTex, vUV); float b = texture(uBlur, vUV).a; vec2 p = (vUV*uRes - uOff)/uScale + uEvo;
+    float n = fbm(p, 2, 0.5, 2.0) - 0.5; float a = clamp((b - 0.5 + n*0.9)*(4.0*uSharp) + 0.5, 0.0, 1.0);
+    o = src.a > 0.0 ? src * (a*min(1.0, b*2.0)) / max(src.a, 1e-4) * src.a : vec4(0.0); }`,
+  turbdisp: `${FS_HEAD} ${NOISE} uniform float uAmt, uSize, uEvo; uniform vec2 uOff; uniform int uOct; void main(){
+    vec2 p = (vUV*uRes - uOff)/uSize + uEvo; vec2 d = vec2(fbm(p, uOct, 0.5, 2.0), fbm(p+31.7, uOct, 0.5, 2.0)) - 0.5;
+    o = texture(uTex, vUV + d*uAmt/uRes); }`,
+  noisehls: `${FS_HEAD} uniform float uL, uPh, uGrain; void main(){ vec4 c = texture(uTex, vUV);
+    vec2 q = floor(vUV*uRes/uGrain); float n = fract(sin(dot(q + uPh*7.13, vec2(12.9898, 78.233)))*43758.5453) - 0.5;
+    o = vec4(clamp(c.rgb + n*uL*c.a, 0.0, 1.0), c.a); }`,
+  bright: `${FS_HEAD} uniform float uT; void main(){ vec4 c = texture(uTex, vUV); float l = dot(c.rgb, vec3(0.299,0.587,0.114));
+    o = c * smoothstep(uT - 0.05, uT + 0.05, l); }`,
+  lumamix: `${FS_HEAD} uniform sampler2D uB; void main(){ vec4 a = texture(uTex, vUV), b = texture(uB, vUV);
+    float k = clamp(dot(a.rgb, vec3(0.299,0.587,0.114))/max(a.a,1e-4), 0.0, 1.0); o = mix(a, b, k); }`,
+  cylinder: `${FS_HEAD} uniform mat3 uR; uniform float uRad; uniform vec2 uSize; void main(){
+    // orthographic view of the layer wrapped round a vertical cylinder (circumference = layer width), rotated by uR
+    vec2 p = vUV*uRes - uRes*0.5; vec3 ro = uR * vec3(p, -4000.0), rd = uR * vec3(0.0, 0.0, 1.0);
+    float A = rd.x*rd.x + rd.z*rd.z, B = 2.0*(ro.x*rd.x + ro.z*rd.z), C = ro.x*ro.x + ro.z*ro.z - uRad*uRad, D = B*B - 4.0*A*C;
+    o = vec4(0.0); if (D < 0.0 || A < 1e-6) return;
+    for (int s = 0; s < 2; s++){ float t = (-B + (s == 0 ? -1.0 : 1.0)*sqrt(D))/(2.0*A); vec3 h = ro + rd*t;
+      float u = atan(h.x, -h.z)/6.2831853 + 0.5; vec2 uv = vec2(u, (h.y + uSize.y*0.5)/uSize.y);
+      if (uv.y < 0.0 || uv.y > 1.0) continue; vec4 c = texture(uTex, uv); o = o + c*(1.0 - o.a); } }`,
+  pageturn: `${FS_HEAD} uniform vec2 uF; uniform vec2 uN; uniform vec4 uPaper; uniform float uBackOp; void main(){
+    // flat fold: everything past the fold line (along uN) folds back over the page; the flap shows the paper colour
+    vec2 p = vUV*uRes; float d = dot(p - uF, uN); vec4 src = texture(uTex, vUV);
+    vec2 q = p - 2.0*d*uN; vec4 back = texture(uTex, q/uRes);
+    bool flap = d < 0.0 && back.a > 0.0 && all(greaterThanEqual(q, vec2(0.0))) && all(lessThanEqual(q, uRes));
+    vec4 front = d < 0.0 ? src : vec4(0.0);
+    if (flap) { vec4 b = vec4(uPaper.rgb, 1.0)*back.a*uBackOp; o = b + front*(1.0 - b.a); } else o = front; }`,
+  bezwarp: `${FS_HEAD} uniform vec2 uP0, uP1, uP2, uP3, uQ0, uQs; void main(){
+    // inverse bilinear: output pixel -> (u,v) in the source rect whose corners moved to P0 (TL) P1 (TR) P2 (BR) P3 (BL)
+    vec2 p = vUV*uRes, e = uP1-uP0, f = uP3-uP0, g = uP0-uP1+uP2-uP3, h = p-uP0;
+    float k2 = g.x*f.y - g.y*f.x, k1 = e.x*f.y - e.y*f.x + h.x*g.y - h.y*g.x, k0 = h.x*e.y - h.y*e.x, v;
+    if (abs(k2) < 1e-4) v = -k0/k1; else { float w = k1*k1 - 4.0*k0*k2; if (w < 0.0) { o = vec4(0.0); return; } v = (-k1 - sqrt(w))/(2.0*k2); if (v < 0.0 || v > 1.0) v = (-k1 + sqrt(w))/(2.0*k2); }
+    float u = abs(e.x + g.x*v) > abs(e.y + g.y*v) ? (h.x - f.x*v)/(e.x + g.x*v) : (h.y - f.y*v)/(e.y + g.y*v);
+    o = (u < 0.0 || u > 1.0 || v < 0.0 || v > 1.0) ? vec4(0.0) : texture(uTex, (uQ0 + vec2(u, v)*uQs)/uRes); }`,
+
   // Layer composite: src texture * opacity * matte * mask, blended over dst copy with an AE blend mode.
   layer: `${FS_HEAD}
   uniform sampler2D uDst, uMatte, uMask; uniform float uOpacity; uniform int uMode, uMatteMode, uHasMask;

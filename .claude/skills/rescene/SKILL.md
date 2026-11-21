@@ -73,7 +73,7 @@ to fitting; report the scores to the user. Then follow REQUIREMENTS.md: check tw
 4. **Grow the priors**: approved shots go into the template catalog with their measured eases and timings.
 5. Commit `extract/` changes, `runs/<name>/` (breakdown, storyboard, score, corrections — not frames.npy) and push.
 
-## Route A — .aep route (step 1 built; steps 2–8 planned — build in order, one step per job)
+## Route A — .aep route (steps 1–2 built; 3–8 planned — build in order)
 **Run the steps back to back without asking the user between them** (user rule 2026-11-21); stop only for a real
 blocker or a decision that is theirs (missing files, licence, taste). Report at the end, or at long waits.
 Input: `<project>.aep` (+ its footage folder) and the posted mp4. Output: `library/templates/<project>/<shot>` per shot,
@@ -83,7 +83,9 @@ assets in `/home/user/tpl/lib/<project>/`, scores per shot. Read LEARNINGS.md fi
    (needs `pip install py_aep`; ~6 s). Everything the engine reads: comps, precomps, layers, parenting, keyframes + eases,
    expressions, effects, masks/mattes, mixed-style text runs, fonts, 3D layers, cameras, lights, markers, audio layers.
    → checked 2026-11-21: psych re-dump renders identical to the old dump (8 frames, mean diff ≤ 0.002).
-2. **Coverage report before any render** (cheap): list every effect match-name, expression and layer feature in the
+2. **Coverage report before any render** — BUILT: `python3 -m extract.aep_coverage <dump.json> [out.json]` (uses the
+   engine's own effect list and expression classifier). Then render 5 frames of the opening shot at 360p on CPU and
+   look at them next to the reel before going further: it caught a reversed fold and a trim bug in Sells. (cheap): list every effect match-name, expression and layer feature in the
    dump; flag what the engine doesn't support yet (`engine.js` effect switch). Gaps get fixed in the engine first —
    one fix serves every project. Saves wasted Kaggle renders.
 3. **Harvest assets** into `/home/user/tpl/lib/<project>/` with `manifest.json` (path, sha1, type, used-by shots).
@@ -115,6 +117,6 @@ sells, gen, Zeigarnik when bought. Which reel in `tpl/reels/names.txt` matches s
 - Add ground truth whenever a reel's real values become known (e.g. our own renders: the scene JSON is the truth).
 
 ## Not built yet (say so when relevant)
-Route A steps 2–8 (see above). Font ID (DINOv2 Google-Fonts classifier → render-and-compare shortlist), colour/finish measurement, audio (VO word
+Route A steps 3–8 (see above). Font ID (DINOv2 Google-Fonts classifier → render-and-compare shortlist), colour/finish measurement, audio (VO word
 timing, stems, SFX onsets), archetype auto-matcher, automatic fit loop, layer masks (SAM 2 / omnimatte need a GPU).
 Order and choices: `EXTRACT_PLAN.md` phases P2–P4 and the research report's ranked list.

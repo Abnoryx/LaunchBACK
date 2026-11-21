@@ -158,7 +158,12 @@ export function textAnimation(layer, tComp, ctx) {
   const docProp = find(textGrp, 'ADBE Text Document');
   const doc = docProp ? evalProp(docProp, tComp) : null;
   const base = layer.text || {};
-  const text = (doc && doc._text ? doc.text : base.text) ?? '';
+  let text = (doc && doc._text ? doc.text : base.text) ?? '';
+  const tw = docProp && exprOf(docProp);
+  if (tw && tw.kind === 'typewriter') { // AE: t.slice(0, l*linear(a,0,100,0,1)) + cursor
+    const a = Math.min(1, Math.max(0, (ctx.effectValue?.(tw.anim) ?? 100) / 100));
+    text = text.slice(0, Math.trunc(text.length * a)) + (tw.cursors[(ctx.effectValue?.(tw.shape) ?? 1) - 1] ?? '');
+  }
   const font = (doc && doc._text && doc.font) || base.font;
   const size = (doc && doc._text && doc.size) || base.font_size || 72;
   const fill = (doc && doc._text && doc.fill) || base.fill_color || [1, 1, 1];
