@@ -9,7 +9,7 @@ Read this before any video work. Every rule below came from the user; keep it cu
 - The workflow must be repeatable for as many videos as the user wants; it ends packaged as a skill.
 
 ## How to build
-- **From scratch.** Their reel is the only reference: measure it. Do not render, copy or ship their project files, footage, models, images, music or SFX in the rebuild or in our videos. Our own code, our own assets (generated or drawn), free/user-supplied fonts, our own sound.
+- **1:1 from the bought project files, then an original touch** (user rule 2026-11-21, replaces "from scratch"): the user buys the template .aep files (e.g. Earn Edits) so we may use them directly — copy layouts, timings, eases, effects and their assets for the 1:1 rebuild. Every video we make then gets an original touch (our brand, accent, props, type, motifs) chosen by the user from options. Still never commit their files/fonts/renders to git (licence: use, not redistribution) — keep them in the private template folder.
 - **Template-first.** Each shot is built once as a parameterised template, proven 1:1 against the reel with their content, then reused with our content. No throwaway one-off scenes.
 - **Library of everything**, not only shots: shot templates, transitions, camera moves, text styles and font pairings, fonts, palettes, eases, finishes (paper, film edge, grade, edge blur, fringing), assets (props, textures, overlays, 3D models), SFX and music cues. See `library/`.
 - Library grows after every video, but **only with the user's approval** (scorecard pass + a yes on a short clip).
