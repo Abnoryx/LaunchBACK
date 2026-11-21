@@ -74,6 +74,8 @@ to fitting; report the scores to the user. Then follow REQUIREMENTS.md: check tw
 5. Commit `extract/` changes, `runs/<name>/` (breakdown, storyboard, score, corrections — not frames.npy) and push.
 
 ## Route A — .aep route (step 1 built; steps 2–8 planned — build in order, one step per job)
+**Run the steps back to back without asking the user between them** (user rule 2026-11-21); stop only for a real
+blocker or a decision that is theirs (missing files, licence, taste). Report at the end, or at long waits.
 Input: `<project>.aep` (+ its footage folder) and the posted mp4. Output: `library/templates/<project>/<shot>` per shot,
 assets in `/home/user/tpl/lib/<project>/`, scores per shot. Read LEARNINGS.md first, as in Route B.
 
