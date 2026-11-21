@@ -34,6 +34,7 @@ Read this before any video work. Every rule below came from the user; keep it cu
 - Keep the user's personal info private.
 - Higgsfield: the user approved generation spend; image generation is ~0.25 credits each. Original guidance was 50–60 credits, hard cap 100, for a project — quote anything large first.
 - Remind the user of `ROADMAP.md` after a few rounds of video tweaks.
+- **GPU work goes to Kaggle** (user rule, 2026-11-21): renders and anything that needs or benefits from a GPU (rescene heavy stages, AI models) run on the user's free Kaggle GPU (private notebooks, T4, ~30 h/week) via the Kaggle REST API at www.kaggle.com/api/v1 (key saved on the environment; the new CLI uses api.kaggle.com, which is not allowed). Not Higgsfield GPUs. Fall back to this CPU only if Kaggle is down or out of quota, and say so.
 
 ## Known blockers / asks
 - Higgsfield downloads need host `d8j0ntlcm91z4.cloudfront.net` allowed in this environment's network settings (user must do it from a computer). Until then the user sends generated images in chat.
