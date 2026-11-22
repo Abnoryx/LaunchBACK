@@ -12,7 +12,7 @@ BLEND_OK = {int(k) for k in re.findall(r'(\d{4}):', re.search(r'export const BLE
 MATTE_OK = {5012, 5013, 5014, 5015, 5016}
 MASK_OK = {6812, 6813, 6814, 6815}
 LAYER_OK = {'AVLayer', 'TextLayer', 'ShapeLayer', 'CameraLayer', 'ThreeDModelLayer'}
-AUDIO_FX = re.compile(r'^ADBE Aud')
+AUDIO_FX = re.compile(r'^ADBE Aud(?!Spect|Wave)')   # audio-only effects; Audio Spectrum/Waveform draw pictures
 # shape items (Sells lesson: G-Fill/Merge slipped through an effects-only check)
 SHAPE_OK = set(re.findall(r"it\.m === '(ADBE Vector [^']+)'", src)) | {'ADBE Vector Group', 'ADBE Vector Filter - Trim'}
 

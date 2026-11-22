@@ -861,7 +861,7 @@ export class Engine {
     }
     const m = parentM ? mm(parentM, w.m) : w.m;
     const is3D = w.is3D || !!parentM;
-    if (L.adjustment_layer) { this.drawAdjustment(comp, L, t, out, op); return; }
+    if (L.adjustment_layer) { this.drawAdjustment(comp, L, t, out, op, cam, cache, opts, parentM, parentOp); return; }
     if (L.type === 'ThreeDModelLayer') { this.drawModel(comp, L, t, out, cam, m, op); return; }
     if (L.type === 'TextLayer' && is3D && this.pathTextMask(L)) { this.drawPathText3D(comp, L, t, out, cam, m, op); return; }
     // scale hint for rasterisation of vectors/text
@@ -1031,17 +1031,26 @@ export class Engine {
     g.release(tg);
   }
 
-  drawAdjustment(comp, L, t, out, op) {
+  drawAdjustment(comp, L, t, out, op, cam, cache, opts, parentM, parentOp) {
     const g = this.g;
     const below = g.target(out.w, out.h); g.copy(out, below);
     this._adj = { comp, L };
     const fx = this.applyEffects(comp, L, t, below, [0, 0, comp.w, comp.h], true);
     this._adj = null;
+    // shape/text adjustment layers apply their effects only inside their own drawn alpha (AE): draw the layer without
+    // its effects (masks, transform and opacity included) and mix through that
+    let shapeA = null;
+    if (L.type === 'ShapeLayer' || L.type === 'TextLayer') {
+      const Lc = { ...L, adjustment_layer: false, props: (L.props || []).filter((p) => p.m !== 'ADBE Effect Parade') };
+      shapeA = g.target(out.w, out.h); g.clear(shapeA);
+      this.drawLayer(comp, Lc, t, shapeA, cam, cache, opts, parentM, parentOp);
+    }
     const mp = findM(L, 'ADBE Mask Parade');
     let mask = null;
-    if (mp?.c?.length) mask = this.maskTarget(L, t, { tg: { w: out.w, h: out.h }, rect: [0, 0, comp.w, comp.h] });
+    if (!shapeA && mp?.c?.length) mask = this.maskTarget(L, t, { tg: { w: out.w, h: out.h }, rect: [0, 0, comp.w, comp.h] });
     const dst = g.target(out.w, out.h); g.copy(out, dst);
-    g.run('mix', out, { uK: op, uHasMask: mask ? 1 : 0 }, { uTex: fx, uDst: dst, uMask: mask });
+    g.run('mix', out, { uK: shapeA ? 1 : op, uHasMask: mask || shapeA ? 1 : 0 }, { uTex: fx, uDst: dst, uMask: shapeA || mask });
+    if (shapeA) g.release(shapeA);
     if (mask) g.deleteTex(mask);
     if (fx !== below) g.release(fx);
     g.release(below); g.release(dst);

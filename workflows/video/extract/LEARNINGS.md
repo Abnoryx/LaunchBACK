@@ -115,3 +115,7 @@ Rules here override defaults in the code until they are folded into it.
   olive, ui-scene background too cyan). Needs a measured palette per layer (fit from reel pixels), not a frame LUT.
 - Debug recipe that found the logo bug in minutes: render the precomp alone, then log per-layer content alpha
   (readPixels FLOAT) + mask presence from drawLayer via console.warn (render.mjs only forwards warnings/errors).
+- Round 1 (540p, Kaggle 13 min): mean SSIM 0.863; 11/17 at the bar. Found by the render: shape/text adjustment layers
+  applied their effects to the whole frame (s10 ui scene blurred all over) -> now only inside the layer's own drawn
+  alpha (masks/opacity included). Coverage skipped `ADBE AudSpect` as an audio effect (regex `^ADBE Aud`) -> the
+  Audio Spectrum solid drew as a grey slab over s17; regex now excludes AudSpect/AudWave.
