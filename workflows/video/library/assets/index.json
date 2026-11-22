@@ -1,0 +1,1489 @@
+{
+ "bed.png": {
+  "kind": "image",
+  "tags": [
+   "bed"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   1145,
+   879
+  ],
+  "cutout": true
+ },
+ "bed_bedding.glb": {
+  "kind": "3d",
+  "tags": [
+   "bed",
+   "bedding"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "bed_frame.glb": {
+  "kind": "3d",
+  "tags": [
+   "bed",
+   "frame"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "blank.png": {
+  "kind": "image",
+  "tags": [
+   "blank"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   4,
+   4
+  ],
+  "cutout": true
+ },
+ "brain.glb": {
+  "kind": "3d",
+  "tags": [
+   "brain"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "brain_quad.png": {
+  "kind": "image",
+  "tags": [
+   "brain",
+   "quad"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   1024,
+   1024
+  ],
+  "cutout": true
+ },
+ "brain_side.glb": {
+  "kind": "3d",
+  "tags": [
+   "brain",
+   "side"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "brain_side.png": {
+  "kind": "image",
+  "tags": [
+   "brain",
+   "side"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   1098,
+   855
+  ],
+  "cutout": true
+ },
+ "brain_top.png": {
+  "kind": "image",
+  "tags": [
+   "brain",
+   "top"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   880,
+   1168
+  ],
+  "cutout": true
+ },
+ "calendar_1.png": {
+  "kind": "image",
+  "tags": [
+   "calendar",
+   "1"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   827,
+   956
+  ],
+  "cutout": false
+ },
+ "calendar_10.png": {
+  "kind": "image",
+  "tags": [
+   "calendar",
+   "10"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   827,
+   956
+  ],
+  "cutout": false
+ },
+ "calendar_100.png": {
+  "kind": "image",
+  "tags": [
+   "calendar",
+   "100"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   827,
+   956
+  ],
+  "cutout": false
+ },
+ "calendar_1897.png": {
+  "kind": "image",
+  "tags": [
+   "calendar",
+   "1897"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   827,
+   956
+  ],
+  "cutout": false
+ },
+ "calendar_1898.png": {
+  "kind": "image",
+  "tags": [
+   "calendar",
+   "1898"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   827,
+   956
+  ],
+  "cutout": false
+ },
+ "calendar_1899.png": {
+  "kind": "image",
+  "tags": [
+   "calendar",
+   "1899"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   827,
+   956
+  ],
+  "cutout": false
+ },
+ "calendar_1900.png": {
+  "kind": "image",
+  "tags": [
+   "calendar",
+   "1900"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   827,
+   956
+  ],
+  "cutout": false
+ },
+ "calendar_30.png": {
+  "kind": "image",
+  "tags": [
+   "calendar",
+   "30"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   827,
+   956
+  ],
+  "cutout": false
+ },
+ "calendar_50.png": {
+  "kind": "image",
+  "tags": [
+   "calendar",
+   "50"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   827,
+   956
+  ],
+  "cutout": false
+ },
+ "car.png": {
+  "kind": "image",
+  "tags": [
+   "car"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   1024,
+   688
+  ],
+  "cutout": true
+ },
+ "census_doc.png": {
+  "kind": "image",
+  "tags": [
+   "census",
+   "doc"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   1128,
+   893
+  ],
+  "cutout": false
+ },
+ "chart_doc.png": {
+  "kind": "image",
+  "tags": [
+   "chart",
+   "doc"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   932,
+   600
+  ],
+  "cutout": false
+ },
+ "desk_plate.png": {
+  "kind": "image",
+  "tags": [
+   "desk",
+   "plate"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   752,
+   1344
+  ],
+  "cutout": false
+ },
+ "e_mark.png": {
+  "kind": "image",
+  "tags": [
+   "e",
+   "mark"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   640,
+   440
+  ],
+  "cutout": true
+ },
+ "film_edge.png": {
+  "kind": "image",
+  "tags": [
+   "film",
+   "edge"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   1080,
+   1920
+  ],
+  "cutout": false
+ },
+ "film_edge_dark.png": {
+  "kind": "image",
+  "tags": [
+   "film",
+   "edge",
+   "dark"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   1080,
+   1920
+  ],
+  "cutout": false
+ },
+ "fist.png": {
+  "kind": "image",
+  "tags": [
+   "fist"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   1085,
+   650
+  ],
+  "cutout": true
+ },
+ "flame.png": {
+  "kind": "image",
+  "tags": [
+   "flame"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   752,
+   1344
+  ],
+  "cutout": false
+ },
+ "flame_loop.mp4": {
+  "kind": "video",
+  "tags": [
+   "flame",
+   "loop"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "floppy.png": {
+  "kind": "image",
+  "tags": [
+   "floppy"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   945,
+   977
+  ],
+  "cutout": true
+ },
+ "formula_board.png": {
+  "kind": "image",
+  "tags": [
+   "formula",
+   "board"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   1200,
+   840
+  ],
+  "cutout": false
+ },
+ "glove_cut_fist.png": {
+  "kind": "image",
+  "tags": [
+   "glove",
+   "cut",
+   "fist"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   776,
+   994
+  ],
+  "cutout": true
+ },
+ "glove_cut_fist_red.png": {
+  "kind": "image",
+  "tags": [
+   "glove",
+   "cut",
+   "fist",
+   "red"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   776,
+   994
+  ],
+  "cutout": true
+ },
+ "glove_cut_half.png": {
+  "kind": "image",
+  "tags": [
+   "glove",
+   "cut",
+   "half"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   811,
+   955
+  ],
+  "cutout": true
+ },
+ "glove_cut_half_red.png": {
+  "kind": "image",
+  "tags": [
+   "glove",
+   "cut",
+   "half",
+   "red"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   811,
+   955
+  ],
+  "cutout": true
+ },
+ "glove_cut_near.png": {
+  "kind": "image",
+  "tags": [
+   "glove",
+   "cut",
+   "near"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   885,
+   935
+  ],
+  "cutout": true
+ },
+ "glove_cut_near_red.png": {
+  "kind": "image",
+  "tags": [
+   "glove",
+   "cut",
+   "near",
+   "red"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   885,
+   935
+  ],
+  "cutout": true
+ },
+ "glove_cut_open.png": {
+  "kind": "image",
+  "tags": [
+   "glove",
+   "cut",
+   "open"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   966,
+   961
+  ],
+  "cutout": true
+ },
+ "glove_cut_open_red.png": {
+  "kind": "image",
+  "tags": [
+   "glove",
+   "cut",
+   "open",
+   "red"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   966,
+   961
+  ],
+  "cutout": true
+ },
+ "glove_fist.png": {
+  "kind": "image",
+  "tags": [
+   "glove",
+   "fist"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   969,
+   716
+  ],
+  "cutout": true
+ },
+ "glove_hand.glb": {
+  "kind": "3d",
+  "tags": [
+   "glove",
+   "hand"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "glove_open.mp4": {
+  "kind": "video",
+  "tags": [
+   "glove",
+   "open"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "glove_open.png": {
+  "kind": "image",
+  "tags": [
+   "glove",
+   "open"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   924,
+   544
+  ],
+  "cutout": true
+ },
+ "graph_paper.png": {
+  "kind": "image",
+  "tags": [
+   "graph",
+   "paper"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   745,
+   745
+  ],
+  "cutout": false
+ },
+ "hand_flat_rim.mp4": {
+  "kind": "video",
+  "tags": [
+   "hand",
+   "flat",
+   "rim"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "hand_grab.mp4": {
+  "kind": "video",
+  "tags": [
+   "hand",
+   "grab"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "hand_match.png": {
+  "kind": "image",
+  "tags": [
+   "hand",
+   "match"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   752,
+   1344
+  ],
+  "cutout": true
+ },
+ "hand_reach.glb": {
+  "kind": "3d",
+  "tags": [
+   "hand",
+   "reach"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "hand_rim.png": {
+  "kind": "image",
+  "tags": [
+   "hand",
+   "rim"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   752,
+   1344
+  ],
+  "cutout": true
+ },
+ "hand_rim_grab.mp4": {
+  "kind": "video",
+  "tags": [
+   "hand",
+   "rim",
+   "grab"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "hand_rim_mid.png": {
+  "kind": "image",
+  "tags": [
+   "hand",
+   "rim",
+   "mid"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   752,
+   1344
+  ],
+  "cutout": false
+ },
+ "hand_rim_mid_red.png": {
+  "kind": "image",
+  "tags": [
+   "hand",
+   "rim",
+   "mid",
+   "red"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   752,
+   1344
+  ],
+  "cutout": false
+ },
+ "hand_rim_open.png": {
+  "kind": "image",
+  "tags": [
+   "hand",
+   "rim",
+   "open"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   752,
+   1344
+  ],
+  "cutout": false
+ },
+ "hand_rim_open_red.png": {
+  "kind": "image",
+  "tags": [
+   "hand",
+   "rim",
+   "open",
+   "red"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   752,
+   1344
+  ],
+  "cutout": false
+ },
+ "hand_rim_pinch.png": {
+  "kind": "image",
+  "tags": [
+   "hand",
+   "rim",
+   "pinch"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   752,
+   1344
+  ],
+  "cutout": false
+ },
+ "hand_rim_pinch_red.png": {
+  "kind": "image",
+  "tags": [
+   "hand",
+   "rim",
+   "pinch",
+   "red"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   752,
+   1344
+  ],
+  "cutout": false
+ },
+ "iphone15.glb": {
+  "kind": "3d",
+  "tags": [
+   "iphone15"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "m_book.glb": {
+  "kind": "3d",
+  "tags": [
+   "book"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "m_book.png": {
+  "kind": "image",
+  "tags": [
+   "book"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   713,
+   1108
+  ],
+  "cutout": true
+ },
+ "m_cloche.glb": {
+  "kind": "3d",
+  "tags": [
+   "cloche"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "m_cloche.png": {
+  "kind": "image",
+  "tags": [
+   "cloche"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   1024,
+   818
+  ],
+  "cutout": true
+ },
+ "m_france.png": {
+  "kind": "image",
+  "tags": [
+   "france"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   1024,
+   1024
+  ],
+  "cutout": false
+ },
+ "m_france_dark.png": {
+  "kind": "image",
+  "tags": [
+   "france",
+   "dark"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   1024,
+   1024
+  ],
+  "cutout": false
+ },
+ "m_ledger.png": {
+  "kind": "image",
+  "tags": [
+   "ledger"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   880,
+   1168
+  ],
+  "cutout": false
+ },
+ "m_map.png": {
+  "kind": "image",
+  "tags": [
+   "map"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   1168,
+   878
+  ],
+  "cutout": true
+ },
+ "m_pump.glb": {
+  "kind": "3d",
+  "tags": [
+   "pump"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "m_pump.png": {
+  "kind": "image",
+  "tags": [
+   "pump"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   429,
+   1158
+  ],
+  "cutout": true
+ },
+ "m_toque.png": {
+  "kind": "image",
+  "tags": [
+   "toque"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   992,
+   961
+  ],
+  "cutout": true
+ },
+ "m_tyre.glb": {
+  "kind": "3d",
+  "tags": [
+   "tyre"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "m_tyre.png": {
+  "kind": "image",
+  "tags": [
+   "tyre"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   705,
+   1006
+  ],
+  "cutout": true
+ },
+ "math_graph.png": {
+  "kind": "image",
+  "tags": [
+   "math",
+   "graph"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   2640,
+   2640
+  ],
+  "cutout": true
+ },
+ "mri_a.png": {
+  "kind": "image",
+  "tags": [
+   "mri",
+   "a"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   1024,
+   1024
+  ],
+  "cutout": false
+ },
+ "mri_b.png": {
+  "kind": "image",
+  "tags": [
+   "mri",
+   "b"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   1024,
+   1024
+  ],
+  "cutout": false
+ },
+ "pen.png": {
+  "kind": "image",
+  "tags": [
+   "pen"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   762,
+   1117
+  ],
+  "cutout": true
+ },
+ "phone.glb": {
+  "kind": "3d",
+  "tags": [
+   "phone"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "phone_back.png": {
+  "kind": "image",
+  "tags": [
+   "phone",
+   "back"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   414,
+   997
+  ],
+  "cutout": true
+ },
+ "ruler.png": {
+  "kind": "image",
+  "tags": [
+   "ruler"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   1280,
+   640
+  ],
+  "cutout": true
+ },
+ "sofa.glb": {
+  "kind": "3d",
+  "tags": [
+   "sofa"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "sofa.png": {
+  "kind": "image",
+  "tags": [
+   "sofa"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   1002,
+   985
+  ],
+  "cutout": true
+ },
+ "star_glow.mp4": {
+  "kind": "video",
+  "tags": [
+   "star",
+   "glow"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "viewfinder.png": {
+  "kind": "image",
+  "tags": [
+   "viewfinder"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   1080,
+   1920
+  ],
+  "cutout": true
+ },
+ "z_brain.png": {
+  "kind": "image",
+  "tags": [
+   "brain"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   1024,
+   1024
+  ],
+  "cutout": true
+ },
+ "z_brain_src.png": {
+  "kind": "image",
+  "tags": [
+   "brain"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   1024,
+   1024
+  ],
+  "cutout": false
+ },
+ "z_card.png": {
+  "kind": "image",
+  "tags": [
+   "card"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   880,
+   1168
+  ],
+  "cutout": true
+ },
+ "z_cliff.png": {
+  "kind": "image",
+  "tags": [
+   "cliff"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   880,
+   1168
+  ],
+  "cutout": true
+ },
+ "z_clipboard.png": {
+  "kind": "image",
+  "tags": [
+   "clipboard"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   880,
+   1168
+  ],
+  "cutout": true
+ },
+ "z_clock.png": {
+  "kind": "image",
+  "tags": [
+   "clock"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   1024,
+   1024
+  ],
+  "cutout": true
+ },
+ "z_hands.png": {
+  "kind": "image",
+  "tags": [
+   "hands"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   1024,
+   1024
+  ],
+  "cutout": true
+ },
+ "z_lock.png": {
+  "kind": "image",
+  "tags": [
+   "lock"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   1024,
+   1024
+  ],
+  "cutout": true
+ },
+ "z_sketch.png": {
+  "kind": "image",
+  "tags": [
+   "sketch"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   1024,
+   1024
+  ],
+  "cutout": true
+ },
+ "z_sneaker.png": {
+  "kind": "image",
+  "tags": [
+   "sneaker"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   1168,
+   880
+  ],
+  "cutout": true
+ },
+ "z_sword.png": {
+  "kind": "image",
+  "tags": [
+   "sword"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   752,
+   1344
+  ],
+  "cutout": true
+ },
+ "z_tv.png": {
+  "kind": "image",
+  "tags": [
+   "tv"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   880,
+   1168
+  ],
+  "cutout": true
+ },
+ "z_ui.png": {
+  "kind": "image",
+  "tags": [
+   "ui"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   752,
+   1344
+  ],
+  "cutout": true
+ },
+ "z_vase.png": {
+  "kind": "image",
+  "tags": [
+   "vase"
+  ],
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  },
+  "size": [
+   752,
+   1344
+  ],
+  "cutout": true
+ }
+}

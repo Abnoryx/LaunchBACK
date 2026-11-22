@@ -1,6 +1,7 @@
 # Handoff for a new chat (read with REQUIREMENTS.md, ROADMAP.md, extract/LEARNINGS.md)
 
-In git (safe): rules (REQUIREMENTS.md), plan (ROADMAP.md), /rescene skill (.claude/skills/rescene), extractor +
+In git (safe): rules (REQUIREMENTS.md), plan (ROADMAP.md), /rescene skill (.claude/skills/rescene), /gen skill
+(.claude/skills/gen + gen/: script -> reel, learns every run), extractor +
 lessons (extract/), Kaggle GPU runner (kgl/: `python3 -m kgl.render <project.json> <out.mp4> <comps...>`),
 templates (library/templates/), our props (library/assets/z_*, m_*), Michelin + Zeigarnik builds (scratch/), renders.
 

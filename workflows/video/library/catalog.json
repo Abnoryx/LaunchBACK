@@ -19,7 +19,22 @@
     "ssim_reel": 0.728,
     "frames": 97
    },
-   "blocked_by": "car shape (different model) and WONDER font (Coolvetica Heavy Comp is paid); position fitting has converged"
+   "blocked_by": "car shape (different model) and WONDER font (Coolvetica Heavy Comp is paid); position fitting has converged",
+   "gen": {
+    "world": "paper",
+    "words": [
+     2,
+     4
+    ],
+    "hero": true,
+    "prop": true,
+    "use": "opening hook: giant hero word + spinning prop + marks",
+    "stats": {
+     "picked": 0,
+     "approved": 0,
+     "rejected": 0
+    }
+   }
   },
   "share_card": {
    "file": "templates/share_card.py",
@@ -40,7 +55,22 @@
     "ssim_reel": 0.882,
     "frames": 58
    },
-   "weak": "card-shrink transition f968-971 (0.31-0.68)"
+   "weak": "card-shrink transition f968-971 (0.31-0.68)",
+   "gen": {
+    "world": "paper",
+    "words": [
+     2,
+     4
+    ],
+    "hero": false,
+    "prop": false,
+    "use": "one emphasised word in a pill, card shrinks",
+    "stats": {
+     "picked": 0,
+     "approved": 0,
+     "rejected": 0
+    }
+   }
   },
   "word_panel": {
    "file": "templates/word_panel.py",
@@ -56,7 +86,22 @@
     "ssim_reel": 0.928,
     "frames": 60
    },
-   "weak": "f181-184 black gap between the two wipes (0.5-0.8)"
+   "weak": "f181-184 black gap between the two wipes (0.5-0.8)",
+   "gen": {
+    "world": "paper",
+    "words": [
+     3,
+     5
+    ],
+    "hero": true,
+    "prop": false,
+    "use": "line + huge word rising per letter",
+    "stats": {
+     "picked": 0,
+     "approved": 0,
+     "rejected": 0
+    }
+   }
   },
   "flythrough_words": {
    "file": "templates/flythrough_words.py",
@@ -71,6 +116,21 @@
    "score": {
     "ssim_reel": 0.907,
     "frames": 71
+   },
+   "gen": {
+    "world": "dark",
+    "words": [
+     2,
+     5
+    ],
+    "hero": true,
+    "prop": false,
+    "use": "words fly in through a dusty dark room",
+    "stats": {
+     "picked": 0,
+     "approved": 0,
+     "rejected": 0
+    }
    }
   },
   "statement_flip": {
@@ -90,7 +150,22 @@
     "scan_half": 0.281,
     "frames": 89
    },
-   "weak": "scan half: our MRI is a different scan (texture cannot match); layout/motion match"
+   "weak": "scan half: our MRI is a different scan (texture cannot match); layout/motion match",
+   "gen": {
+    "world": "paper",
+    "words": [
+     3,
+     6
+    ],
+    "hero": true,
+    "prop": false,
+    "use": "statement with accent word, flips to a scan/map",
+    "stats": {
+     "picked": 0,
+     "approved": 0,
+     "rejected": 0
+    }
+   }
   },
   "dark_docs": {
    "file": "templates/dark_docs.py",
@@ -106,6 +181,21 @@
    "score": {
     "ssim_reel": 0.753,
     "frames": 77
+   },
+   "gen": {
+    "world": "dark",
+    "words": [
+     2,
+     5
+    ],
+    "hero": true,
+    "prop": true,
+    "use": "documents fly past in the dark, strike/stamp",
+    "stats": {
+     "picked": 0,
+     "approved": 0,
+     "rejected": 0
+    }
    }
   },
   "disc_brain": {
@@ -124,7 +214,22 @@
     "ssim_reel": 0.723,
     "frames": 43
    },
-   "notes": "3D brain_side.glb, smooth hand-drawn loop"
+   "notes": "3D brain_side.glb, smooth hand-drawn loop",
+   "gen": {
+    "world": "paper",
+    "words": [
+     2,
+     4
+    ],
+    "hero": true,
+    "prop": true,
+    "use": "prop on a disc with a definition, scribble loop",
+    "stats": {
+     "picked": 0,
+     "approved": 0,
+     "rejected": 0
+    }
+   }
   },
   "word_prop_pop": {
    "file": "templates/word_prop_pop.py",
@@ -144,7 +249,22 @@
     "ssim_reel": 0.781,
     "frames": 95
    },
-   "notes": "real iPhone 15 Pro Max (CC-BY-4.0 polyman); paper cut-out glove fist/open generated from OG frames"
+   "notes": "real iPhone 15 Pro Max (CC-BY-4.0 polyman); paper cut-out glove fist/open generated from OG frames",
+   "gen": {
+    "world": "paper",
+    "words": [
+     1,
+     3
+    ],
+    "hero": true,
+    "prop": true,
+    "use": "cut-out prop pops, big serif word",
+    "stats": {
+     "picked": 0,
+     "approved": 0,
+     "rejected": 0
+    }
+   }
   },
   "brand_box": {
    "file": "templates/brand_box.py",
@@ -164,7 +284,22 @@
     "ssim_reel": 0.779,
     "frames": 109
    },
-   "notes": "3D sofa model (sofa.glb) turns in Y"
+   "notes": "3D sofa model (sofa.glb) turns in Y",
+   "gen": {
+    "world": "paper",
+    "words": [
+     2,
+     4
+    ],
+    "hero": false,
+    "prop": true,
+    "use": "box with 3 props swapping, verb in highlighter",
+    "stats": {
+     "picked": 0,
+     "approved": 0,
+     "rejected": 0
+    }
+   }
   },
   "calendar_flip": {
    "file": "templates/calendar_flip.py",
@@ -184,7 +319,22 @@
     "ssim_reel": 0.715,
     "frames": 92
    },
-   "weak": "bed is a different model; window shadow across the card is a flat screen-space approximation"
+   "weak": "bed is a different model; window shadow across the card is a flat screen-space approximation",
+   "gen": {
+    "world": "dark",
+    "words": [
+     2,
+     4
+    ],
+    "hero": true,
+    "prop": true,
+    "use": "counter/calendar pages flip to a year or number",
+    "stats": {
+     "picked": 0,
+     "approved": 0,
+     "rejected": 0
+    }
+   }
   },
   "brain_collage": {
    "file": "templates/brain_collage.py",
@@ -204,7 +354,22 @@
     "frames": 60
    },
    "weak": "number ring angle/blur and grid fine detail; fineprint was 60 px high in the scored render (fixed since)",
-   "notes": "3D brain.glb; number ring depth-split so it wraps round the brain"
+   "notes": "3D brain.glb; number ring depth-split so it wraps round the brain",
+   "gen": {
+    "world": "paper",
+    "words": [
+     3,
+     6
+    ],
+    "hero": false,
+    "prop": true,
+    "use": "prop centre + ring of words in depth",
+    "stats": {
+     "picked": 0,
+     "approved": 0,
+     "rejected": 0
+    }
+   }
   },
   "follow_needle": {
    "file": "templates/follow_needle.py",
@@ -223,6 +388,21 @@
    "score": {
     "ssim_reel": 0.719,
     "frames": 88
+   },
+   "gen": {
+    "world": "paper",
+    "words": [
+     3,
+     6
+    ],
+    "hero": false,
+    "prop": false,
+    "use": "outro wave / call to action",
+    "stats": {
+     "picked": 0,
+     "approved": 0,
+     "rejected": 0
+    }
    }
   },
   "hand_flame": {
@@ -239,6 +419,21 @@
    "score": {
     "ssim_reel": 0.835,
     "frames": 48
+   },
+   "gen": {
+    "world": "dark",
+    "words": [
+     2,
+     4
+    ],
+    "hero": false,
+    "prop": true,
+    "use": "rim-lit hand reaching for a glowing object",
+    "stats": {
+     "picked": 0,
+     "approved": 0,
+     "rejected": 0
+    }
    }
   },
   "desk_flatlay": {
@@ -252,12 +447,99 @@
     "plate"
    ],
    "status": "draft",
-   "notes": "built for Michelin S18; charcoal mat"
+   "notes": "built for Michelin S18; charcoal mat",
+   "gen": {
+    "world": "paper",
+    "words": [
+     3,
+     6
+    ],
+    "hero": false,
+    "prop": true,
+    "use": "top-down desk with chat bubbles",
+    "stats": {
+     "picked": 0,
+     "approved": 0,
+     "rejected": 0
+    }
+   }
   },
   "logo_reveal": {
    "file": "templates/logo_reveal.py",
    "source": "ours (LaunchBack logo pieces, make_logo.py)",
-   "status": "draft"
+   "status": "draft",
+   "gen": {
+    "world": "dark",
+    "words": [
+     0,
+     1
+    ],
+    "hero": false,
+    "prop": false,
+    "use": "LaunchBack logo end sting (always last)",
+    "stats": {
+     "picked": 0,
+     "approved": 0,
+     "rejected": 0
+    }
+   }
+  },
+  "flare_script": {
+   "file": "templates/flare_script.py",
+   "status": "draft",
+   "gen": {
+    "world": "dark",
+    "words": [
+     2,
+     4
+    ],
+    "hero": true,
+    "prop": false,
+    "use": "short line + thin script word over a teal lens flare",
+    "stats": {
+     "picked": 0,
+     "approved": 0,
+     "rejected": 0
+    }
+   }
+  },
+  "brain_words": {
+   "file": "templates/brain_words.py",
+   "status": "draft",
+   "gen": {
+    "world": "dark",
+    "words": [
+     3,
+     6
+    ],
+    "hero": true,
+    "prop": true,
+    "use": "prop centre, camera pushes, lines reveal left",
+    "stats": {
+     "picked": 0,
+     "approved": 0,
+     "rejected": 0
+    }
+   }
+  },
+  "cine_scene": {
+   "file": "templates/cine_scene.py",
+   "status": "draft",
+   "gen": {
+    "world": "any",
+    "words": [
+     1,
+     6
+    ],
+    "hero": false,
+    "prop": true,
+    "use": "generic cinematic shot (data-driven), any prop/light",
+    "stats": {
+     "picked": 0,
+     "approved": 0,
+     "rejected": 0
+    }
+   }
   }
  },
  "transitions": {
