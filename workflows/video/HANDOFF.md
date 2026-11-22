@@ -16,7 +16,16 @@ NOT in git — redo in a new container:
    the environment for www.kaggle.com). Allowed hosts for Kaggle are already on the environment.
 3. The Zeigarnik reel video (uploads are per chat): ask for it again if reworking that reel.
 
-Where things stand (2026-11-21):
+Where things stand (2026-11-22):
+- Stop ("Stop Trying to Please Everyone", Earn Edits, Route A): steps 1-7 done in chat "Please everyone rescene".
+  Private files: /home/user/tpl/lib/stop/ (stop.json dump, assets/ incl. luts.json with the measured Colorama LUT,
+  templates/shot_NN.json, shots.json, parity_shots.json, r1/ r2/ final/ renders, parity/ scores). Renders need
+  `--footage /home/user/tpl/lib/stop/assets --extra "... --luts footage/luts.json"`. Round 2 at 540p: mean SSIM 0.908;
+  user said "looks good, no fixes" -> full-res final rendered for approval; then step 7b (library) and backup.
+  Known open gaps (user accepted): s01 glow too big/bright, s06 'Something' glow white (Colorama on shapes, no LUT),
+  s11 edge vignette/pill glow, CC Glass shine, stand-in fonts (InkFree, HelveticaNowText-Black, SF Pro).
+
+Earlier (2026-11-21):
 - Michelin v2 (quad eases) done: renders/michelin_v2_quad_1080p.mp4. Waiting on the user's ElevenLabs VO to retime.
 - Zeigarnik rebuild v2 is weak (SSIM 0.555, video-only guesses). The user will buy the .aep project files
   (Earn Edits) -> rebuild 1:1 from them (allowed now), then apply the original-touch picks in REQUIREMENTS.md.
