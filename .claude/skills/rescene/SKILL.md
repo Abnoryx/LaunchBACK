@@ -108,6 +108,11 @@ assets in `/home/user/tpl/lib/<project>/`, scores per shot. Read LEARNINGS.md fi
 6. **Render + score on Kaggle** (`kgl.render`), then `engine/parity.py` vs the mp4 using the time map. Bar: 0.92 on
    paper/text, 0.85 on asset-heavy. Below the bar = engine gap → fix in engine, log in LEARNINGS, never a per-shot hack.
    Check twice (REQUIREMENTS.md) before showing anything.
+   **Render rounds (user rule, 2026-11-22):** every scene renders separately (`kgl.render ... --shots
+   parity_shots.json`), and the scenes are stitched together for the showcase. Round 1 at 540p (`--preview 540 --samples 1`)
+   → send the showcase beside the reel and ask the user for changes, and also fix whatever is wrong by my own review →
+   round 2 at 540p, re-rendering only the changed scenes (`--only s06,s09`) → changes if needed → final at full
+   resolution. Never full-res before the final; never re-render unchanged scenes.
 7. **Free ground truth for Route B**: write `extract/gt/<reel>.json` (cuts, transitions, camera, eases, text timing)
    from the dump, run `python3 -m extract.check --remeasure`, and fix Route B wherever it misses. Every owned project
    makes the video-only route better.
