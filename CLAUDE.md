@@ -66,4 +66,4 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 
 ---
 
-**Video workflows:** before any work under `workflows/video/`, read `workflows/video/REQUIREMENTS.md` (the user's standing rules) and `workflows/video/ROADMAP.md`.
+**Video workflows:** before any work under `workflows/video/`, read `workflows/video/REQUIREMENTS.md` (the user's standing rules), `workflows/video/ROADMAP.md` and `workflows/video/HANDOFF.md` (current state, what is not in git and how to restore it). Skills: `/rescene` (reel -> templates) and `/gen` (script -> reel). Keep these files current yourself so every new chat starts with full context — the user should never need to paste a handoff.
