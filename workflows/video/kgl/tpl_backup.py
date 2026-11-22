@@ -1,6 +1,6 @@
 """Back up / restore /home/user/tpl (the bought templates: fonts, reels, zips, analysis notes) as a PRIVATE Kaggle
 dataset (<user>/launchback-tpl). Not in git on purpose (licence: use, not redistribution).
-usage: python3 -m kgl.tpl_backup backup     (fonts, reels, zips, an/ + lib/ notes and dumps; skips regenerable x/, lib/*/assets, frames)
+usage: python3 -m kgl.tpl_backup backup     (fonts, reels, zips, an/ + lib/ notes and dumps; plus lib/*/render_footage; skips regenerable x/, lib/*/assets, frames)
        python3 -m kgl.tpl_backup restore    (downloads and unpacks into /home/user/tpl)"""
 import os, sys, tarfile, time, urllib.request, zipfile, io
 from .run import call, user
@@ -14,6 +14,9 @@ def backup():
     with tarfile.open(tgz, 'w:gz') as t:
         for d in ('fonts', 'reels', 'zips'):
             if os.path.isdir(f'{TPL}/{d}'): t.add(f'{TPL}/{d}', arcname=d)
+        for d in sorted(os.listdir(f'{TPL}/lib')) if os.path.isdir(f'{TPL}/lib') else []:   # footage the renders read
+            rf = f'{TPL}/lib/{d}/render_footage'                                       # (no harvest step needed)
+            if os.path.isdir(rf): t.add(rf, arcname=os.path.relpath(rf, TPL))
         for root, _, files in [*os.walk(f'{TPL}/an'), *((r, _, f) for r, _, f in os.walk(f'{TPL}/lib') if '/assets' not in r)]:
             for f in files:
                 if f.endswith(KEEP_EXT): p = os.path.join(root, f); t.add(p, arcname=os.path.relpath(p, TPL))
