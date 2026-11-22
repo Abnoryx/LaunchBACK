@@ -116,6 +116,10 @@ assets in `/home/user/tpl/lib/<project>/`, scores per shot. Read LEARNINGS.md fi
 7. **Free ground truth for Route B**: write `extract/gt/<reel>.json` (cuts, transitions, camera, eases, text timing)
    from the dump, run `python3 -m extract.check --remeasure`, and fix Route B wherever it misses. Every owned project
    makes the video-only route better.
+7b. **Into the library first** (user rule, 2026-11-22): after the final render is approved, register every scene template
+   (`library/catalog.json` templates `<reel>/sNN`: private `tpl:` path, window, slots, parity score, status proven if
+   it meets the bar, else draft) and every harvested asset (`assets` `<reel>/<file>`, use-only licence). Only then is
+   anything customised. The files stay in the private template folder + Kaggle dataset; the catalog only points to them.
 8. **Original touch** (REQUIREMENTS.md picks 1–4, 6) is applied through the exposed params when a template is used in
    our videos — never by editing the template itself.
 
