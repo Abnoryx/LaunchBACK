@@ -312,7 +312,17 @@ export class Engine {
           const col = ev(findM(it, it.m.endsWith('Fill') ? 'ADBE Vector Fill Color' : 'ADBE Vector Stroke Color'), [1, 1, 1, 1]);
           const o = ev(findM(it, it.m.endsWith('Fill') ? 'ADBE Vector Fill Opacity' : 'ADBE Vector Stroke Opacity'), 100) / 100;
           const w = it.m.endsWith('Stroke') ? ev(findM(it, 'ADBE Vector Stroke Width'), 2) : 0;
+          if (it.m.endsWith('Stroke') && w <= 0) continue;   // AE draws nothing; canvas would ignore lineWidth 0 and draw 1px
           for (const p of paths) draws.push({ p, m: localM, col, o: o * opacity, stroke: it.m.endsWith('Stroke'), w, trim });
+        } else if (it.m === 'ADBE Vector Graphic - G-Fill' || it.m === 'ADBE Vector Graphic - G-Stroke') {
+          const stroke = it.m.endsWith('Stroke');
+          const w = stroke ? ev(findM(it, 'ADBE Vector Stroke Width'), 2) : 0;
+          if (stroke && w <= 0) continue;
+          const g = ev(findM(it, 'ADBE Vector Grad Colors'), null);
+          const o = ev(findM(it, stroke ? 'ADBE Vector Stroke Opacity' : 'ADBE Vector Fill Opacity'), 100) / 100;
+          const grad = { type: ev(findM(it, 'ADBE Vector Grad Type'), 1), s: ev(findM(it, 'ADBE Vector Grad Start Pt'), [0, 0]),
+                         e: ev(findM(it, 'ADBE Vector Grad End Pt'), [100, 0]), stops: gradStops(g) };
+          for (const p of paths) draws.push({ p, m: localM, col: [1, 1, 1, 1], o: o * opacity, stroke, w, trim, grad });
         }
       }
     };
@@ -330,7 +340,13 @@ export class Engine {
       c.save();
       c.setTransform(new DOMMatrix().scale(ss, ss).translate(-x0, -y0).multiply(d.m));
       c.globalAlpha = Math.max(0, Math.min(1, d.o * (d.col[3] ?? 1)));
-      const css = `rgb(${d.col.slice(0, 3).map((v) => Math.round(v * 255)).join(',')})`;
+      let css = `rgb(${d.col.slice(0, 3).map((v) => Math.round(v * 255)).join(',')})`;
+      if (d.grad) {   // in layer coords: the transform above is already set
+        const { s: a, e: b } = d.grad;
+        css = d.grad.type === 2 ? c.createRadialGradient(a[0], a[1], 0, a[0], a[1], Math.hypot(b[0] - a[0], b[1] - a[1]) || 1)
+                                : c.createLinearGradient(a[0], a[1], b[0], b[1]);
+        for (const [pos, col] of d.grad.stops) css.addColorStop(pos, col);
+      }
       if (d.stroke) {
         c.strokeStyle = css; c.lineWidth = d.w; c.lineCap = 'round'; c.lineJoin = 'round';
         if (d.trim && (d.trim.s !== 0 || d.trim.e !== 100)) { // approximate trim with dash
@@ -1003,6 +1019,21 @@ function bezLen(sh) {
   return L;
 }
 
+// AE gradient stops {colors:[[pos, mid, r, g, b]...], alphas:[[pos, mid, a]...]} -> [[pos, css]] (midpoints taken as 0.5)
+function gradStops(g) {
+  if (!g || !g.colors || !g.colors.length) return [[0, 'rgba(255,255,255,1)'], [1, 'rgba(0,0,0,1)']];
+  const cs = [...g.colors].sort((x, y) => x[0] - y[0]), as = g.alphas && g.alphas.length ? [...g.alphas].sort((x, y) => x[0] - y[0]) : [[0, 0.5, 1]];
+  const at = (arr, pos, n) => {
+    if (pos <= arr[0][0]) return arr[0].slice(2, 2 + n);
+    for (let i = 1; i < arr.length; i++) if (pos <= arr[i][0]) {
+      const f = (pos - arr[i - 1][0]) / ((arr[i][0] - arr[i - 1][0]) || 1);
+      return arr[i].slice(2, 2 + n).map((v, k) => arr[i - 1][2 + k] + (v - arr[i - 1][2 + k]) * f);
+    }
+    return arr[arr.length - 1].slice(2, 2 + n);
+  };
+  const ps = [...new Set([...cs.map((x) => x[0]), ...as.map((x) => x[0])])].map((v) => Math.min(1, Math.max(0, v))).sort((x, y) => x - y);
+  return ps.map((p) => { const [r, gg, b] = at(cs, p, 3), [a] = at(as, p, 1); return [p, `rgba(${Math.round(r * 255)},${Math.round(gg * 255)},${Math.round(b * 255)},${a})`]; });
+}
 function bezPath(sh) {
   const p = new Path2D(), v = sh.vtx, ti = sh.in, to = sh.out, n = v.length;
   if (!n) return p;
