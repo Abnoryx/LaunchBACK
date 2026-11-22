@@ -79,6 +79,12 @@ blocker or a decision that is theirs (missing files, licence, taste). Report at 
 Input: `<project>.aep` (+ its footage folder) and the posted mp4. Output: `library/templates/<project>/<shot>` per shot,
 assets in `/home/user/tpl/lib/<project>/`, scores per shot. Read LEARNINGS.md first, as in Route B.
 
+0. **Get the project** (user rule, 2026-11-22) — every .aep project zip is pulled from the user's MEGA folder
+   https://mega.nz/folder/InRm3CQT#xF_C5lxUl2l7TzSSyA_IzQ by its file name:
+   `python3 -m extract.aep_fetch "<zip name>"` (`--list` shows the folder; uses `/home/user/tpl/zips` first; needs
+   `apt-get install -y megatools`, and `ghostscript` for `.ai` footage). Unzip into `/home/user/tpl/src/<project>/`.
+   Then check the posted reel is the same video: contact sheet of the reel next to the project's own render
+   (often in its footage folder) before step 4 — the reel caption/file name can belong to another project.
 1. **Dump** — BUILT: `python3 -m extract.aep_dump <project.aep> /home/user/tpl/lib/<project>/<project>.json`
    (needs `pip install py_aep`; ~6 s). Everything the engine reads: comps, precomps, layers, parenting, keyframes + eases,
    expressions, effects, masks/mattes, mixed-style text runs, fonts, 3D layers, cameras, lights, markers, audio layers.

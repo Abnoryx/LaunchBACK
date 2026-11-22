@@ -26,7 +26,8 @@ rel = os.path.relpath(os.path.abspath(a.project), VID)
 if rel.startswith('..'): rel = 'project/' + os.path.basename(a.project)   # private project outside the repo
 os.makedirs(os.path.dirname(os.path.join(v, rel)), exist_ok=True)
 shutil.copy(a.project, os.path.join(v, rel))
-json.dump(dict(project=rel, footage='library/assets,footage' if a.footage else 'library/assets', comps=comps, extra=a.extra.split(), out=os.path.basename(a.out), crf=a.crf),
+json.dump(dict(project=rel, footage='library/assets,footage' if a.footage else 'library/assets', comps=comps, extra=a.extra.split(), out=os.path.basename(a.out), crf=a.crf,
+               fps=(json.load(open(a.shots)).get('fps', 30) if a.shots else 30)),
           open(os.path.join(tmp, 'render.json'), 'w'))
 res = os.path.join(tmp, 'res')
 r = subprocess.run([sys.executable, '-m', 'kgl.run', os.path.join(HERE, 'jobs', 'render.py'), res, v, os.path.join(tmp, 'render.json'),
