@@ -1,5 +1,7 @@
 # Handoff for a new chat (read with REQUIREMENTS.md, ROADMAP.md, extract/LEARNINGS.md)
 
+Repo is video-only (old Apify actor removed 2026-11-22); work from `main`.
+
 In git (safe): rules (REQUIREMENTS.md), plan (ROADMAP.md), /rescene skill (.claude/skills/rescene), /gen skill
 (.claude/skills/gen + gen/: script -> reel, learns every run), extractor +
 lessons (extract/), Kaggle GPU runner (kgl/: `python3 -m kgl.render <project.json> <out.mp4> <comps...>`),

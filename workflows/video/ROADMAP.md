@@ -3,6 +3,8 @@
 Done so far: engine reproduces their project at SSIM 0.86 (11/12 shots), all cuts exact — proves the engine can draw this style.
 Now: rebuild from scratch, template-first.
 
+Sells (Earn Edits, Route A): DONE 2026-11-22 — full-res final approved (mean SSIM 0.868), 23 scene templates + 101 assets in the library, private files backed up to Kaggle. Next: step 8 with the user's content (text, logo, brand red hex), then Michelin retime to the user's VO, then Zeigarnik.
+
 1. **Style system** (`library/style/`): paper, film edge, palette (green original / red ours), fonts and text styles, eases, grade, edge blur + fringing, transition kit (whip, minimax flash, lens blur, RGB split, wipes), camera moves, SFX rules. Every template pulls from it.
 2. **12 OG shots as templates** (`library/templates/`), each filled with the original's content, auto-fitted and checked against the reel until it passes. Asset-heavy shots judged on layout/motion where our assets differ.
 3. **Our video** ("Same recipes. Less hassle.") composed from the templates with our words, props, red accent; user notes; fixes go into templates, not one-offs.

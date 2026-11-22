@@ -32,7 +32,7 @@ Read this before any video work. Every rule below came from the user; keep it cu
 - Run **one job at a time**; do not spawn many agents in parallel (usage limits). Opus for agents; Fable only as advisor.
 - Take it slow, think before answering; research when useful.
 - Report outcomes honestly (scores, what failed, what was approximated).
-- Commit code to branch `claude/compassionate-faraday-nusqe9` and push. Do not commit their template files, fonts or renders. Our own small generated assets may be committed so they survive the ephemeral container.
+- Commit code to the session's branch and push, then fast-forward `main` to it (user rule, 2026-11-22: "merge the branch to main") so every new chat starts with the latest. Do not commit their template files, fonts or renders. Our own small generated assets may be committed so they survive the ephemeral container.
 - Keep the user's personal info private.
 - Higgsfield: the user approved generation spend; image generation is ~0.25 credits each. Original guidance was 50–60 credits, hard cap 100, for a project — quote anything large first.
 - Remind the user of `ROADMAP.md` after a few rounds of video tweaks.
@@ -42,9 +42,14 @@ Read this before any video work. Every rule below came from the user; keep it cu
 - **Kaggle user name** comes from the cloud environment's `KAGGLE_USER` variable (user rule, 2026-11-22); never write it into the repo.
 - **Private files travel between chats via Kaggle** (user rule, 2026-11-22): at the start of any video chat, if `/home/user/tpl` is missing or empty, run `python3 -m kgl.tpl_backup restore` before anything else; at the end of each rescene step that changes `/home/user/tpl` (new reel, renders, templates, LUTs), run `python3 -m kgl.tpl_backup backup`. A finished rescene in one chat is then usable for the video rebuild in the next.
 - **Say when a GPU starts** (user rule, 2026-11-22): after pushing a Kaggle job, watch its log for `STATUS running` (kgl.run prints it) and tell the user as soon as it appears; also tell them if it is still queued after 20 min.
+- **Library only after the full-res final is approved** (user rule, 2026-11-22): a reel's scene templates and assets go into `library/catalog.json` (private `tpl:` references, final scores) only once the user approves the full-resolution render — never after a 540p round.
+- **Two-chat workflow** (user rule, 2026-11-22): one chat runs /rescene to the end (final approved → library → Kaggle backup); a later chat rebuilds a new video from the library templates. Each chat must leave main and the Kaggle backup complete.
+- **Explain in simple terms** (user preference, 2026-11-22): short, plain answers; no jargon walls. The user is often on a phone.
+- **When Kaggle is queued** (2026-11-22): it can wait 30+ min for a T4. Tell the user, keep the job queued. Options already weighed: Higgsfield GPU (no queue, ~71 credits/h, quote first; the auto-mode check blocks uploading licensed template files to third-party hosts, so a box must pull from the user's private Kaggle dataset); Colab notebook pulling the same dataset (works, but the user found it too manual — don't offer it first); this container's CPU (~8 s/frame full res 1 sample, ~30 s at 4 samples); OpenRouter can't run renders. Speeds on the T4: 540p 1 sample ~0.12 s/frame (whole reel ~3 min), full res 4 samples ~3.5 s/frame (~80-100 min).
 - **End every reply with a short status block** (user rule, 2026-11-21): only what is happening right now (no recap of finished things) — current task + state, what is rendering/running and its time left.
 
 ## Known blockers / asks
+- Sells step 8 (original touch) waits on the user's content: new text, images/logo, and the brand red hex.
 - Higgsfield downloads need host `d8j0ntlcm91z4.cloudfront.net` allowed in this environment's network settings (user must do it from a computer). Until then the user sends generated images in chat.
 - Fonts: user supplied Coolvetica (regular cuts only; Heavy cuts are paid). Kokila, Didot, Bradley Hand, Times, Helvetica still wanted from the user's own PC/Mac.
 - Music: decision pending (their bed is an Artlist screen recording — not licensed for us).
