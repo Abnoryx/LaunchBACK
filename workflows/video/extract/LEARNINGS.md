@@ -133,3 +133,5 @@ Rules here override defaults in the code until they are folded into it.
     input vs reel / (our post-Colorama gain): frame MAE 32.8 -> 4.4. Generic hook; the fit itself was by hand.
 - Round 2 (6 scenes re-rendered, 6 min GPU): mean SSIM 0.863 -> 0.908; s17 0.484 -> 0.940, s10 0.550 -> 0.834,
   s12 0.728 -> 0.745 (looks matched by eye: the random film-dust overlay on black dominates SSIM there).
+- Step 7 (Stop gt from the dump): Route B cut recall 0.938 (only the invisible whip at 929 missed), precision 0.833
+  (extras 59, 201, 779 are visual beats inside AE shots). Added to the baseline.

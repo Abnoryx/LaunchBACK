@@ -36,6 +36,13 @@
    1232
   ]
  },
+ "gt:stop": {
+  "cut_recall": 0.938,
+  "cut_precision": 0.833,
+  "cut_missed": [
+   929
+  ]
+ },
  "corrections:zeigarnik": {
   "cuts_add_ok": true,
   "cuts_remove_ok": false
