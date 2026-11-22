@@ -370,7 +370,7 @@ export class Engine {
           const L = d.p._len || 4000, s = (Math.min(d.trim.s, d.trim.e) / 100) * L, e = (Math.max(d.trim.s, d.trim.e) / 100) * L;
           c.setLineDash([Math.max(0.001, e - s), L * 2]); c.lineDashOffset = -s;
         }
-        if (d.p.merge) for (const q of d.p.parts) c.stroke(q); else c.stroke(d.p);
+        if (d.p.merge) for (const q of mergedLeaves(d.p)) c.stroke(q); else c.stroke(d.p);
       } else if (d.p.merge) { c.fillStyle = css; fillMerged(c, d.p, W, H); } else { c.fillStyle = css; c.fill(d.p); }
       c.restore();
     }
@@ -453,7 +453,7 @@ export class Engine {
 
   applyEffects(comp, L, t, tg, rect, isAdjustment = false) {
     const fx = findM(L, 'ADBE Effect Parade');
-    if (!fx?.c?.length) return tg;
+    if (!fx?.c?.length || this._noFx === L) return tg;
     const g = this.g;
     const sx = tg.w / (rect[2] - rect[0]);
     let cur = tg;
@@ -877,7 +877,7 @@ export class Engine {
     }
     const m = parentM ? mm(parentM, w.m) : w.m;
     const is3D = w.is3D || !!parentM;
-    if (L.adjustment_layer) { this.drawAdjustment(comp, L, t, out, op); return; }
+    if (L.adjustment_layer) { this.drawAdjustment(comp, L, t, out, op, (o) => this.drawLayer(comp, L, t, o, cam, cache, opts, parentM, 1)); return; }
     if (L.type === 'ThreeDModelLayer') { this.drawModel(comp, L, t, out, cam, m, op); return; }
     if (L.type === 'TextLayer' && is3D && this.pathTextMask(L)) { this.drawPathText3D(comp, L, t, out, cam, m, op); return; }
     // scale hint for rasterisation of vectors/text
@@ -1047,18 +1047,26 @@ export class Engine {
     g.release(tg);
   }
 
-  drawAdjustment(comp, L, t, out, op) {
+  drawAdjustment(comp, L, t, out, op, draw = null) {
     const g = this.g;
     const below = g.target(out.w, out.h); g.copy(out, below);
     this._adj = { comp, L };
     const fx = this.applyEffects(comp, L, t, below, [0, 0, comp.w, comp.h], true);
     this._adj = null;
     const mp = findM(L, 'ADBE Mask Parade');
-    let mask = null;
-    if (mp?.c?.length) mask = this.maskTarget(L, t, { tg: { w: out.w, h: out.h }, rect: [0, 0, comp.w, comp.h] });
+    let mask = null, area = null;
+    // AE limits an adjustment layer to its own alpha: a shape/text/footage adjustment layer only adjusts inside its
+    // content (drawn here without effects, masks included); solids keep the comp-rect + masks path
+    const f = L.src_id != null ? this.footage.get(L.src_id) : null;
+    if (draw && (L.type === 'ShapeLayer' || L.type === 'TextLayer' || (f && f.source_type !== 'SolidSource'))) {
+      area = g.target(out.w, out.h); g.clear(area);
+      L.adjustment_layer = false; this._noFx = L;
+      try { draw(area); } finally { L.adjustment_layer = true; this._noFx = null; }
+    } else if (mp?.c?.length) mask = this.maskTarget(L, t, { tg: { w: out.w, h: out.h }, rect: [0, 0, comp.w, comp.h] });
     const dst = g.target(out.w, out.h); g.copy(out, dst);
-    g.run('mix', out, { uK: op, uHasMask: mask ? 1 : 0 }, { uTex: fx, uDst: dst, uMask: mask });
+    g.run('mix', out, { uK: op, uHasMask: mask || area ? 1 : 0 }, { uTex: fx, uDst: dst, uMask: mask || area });
     if (mask) g.deleteTex(mask);
+    if (area) g.release(area);
     if (fx !== below) g.release(fx);
     g.release(below); g.release(dst);
   }
@@ -1103,14 +1111,18 @@ function bezLen(sh) {
 // AE gradient stops {colors:[[pos, mid, r, g, b]...], alphas:[[pos, mid, a]...]} -> [[pos, css]] (midpoints taken as 0.5)
 // Merge Paths fill on a 2D canvas whose transform and fillStyle are set: union modes fill every part; intersect clips the
 // first part by the others; subtract/exclude go through a scratch canvas so other shapes already drawn are untouched
+// A part can itself be a merge result (a second Merge Paths in the same group): fill recurses, clip uses its outline union.
+const fillPart = (c, q, W, H) => (q.parts ? fillMerged(c, q, W, H) : c.fill(q));
+function mergedLeaves(q) { return q.parts ? q.parts.flatMap(mergedLeaves) : [q]; }
+function unionPath(q) { if (!q.parts) return q; const u = new Path2D(); for (const l of mergedLeaves(q)) u.addPath(l); return u; }
 function fillMerged(c, m, W, H) {
   const [first, ...rest] = m.parts;
-  if (m.merge === 4) { c.save(); for (const q of rest) c.clip(q); c.fill(first); c.restore(); return; }
-  if (m.merge !== 3 && m.merge !== 5) { for (const q of m.parts) c.fill(q); return; }
+  if (m.merge === 4) { c.save(); for (const q of rest) c.clip(unionPath(q)); fillPart(c, first, W, H); c.restore(); return; }
+  if (m.merge !== 3 && m.merge !== 5) { for (const q of m.parts) fillPart(c, q, W, H); return; }
   const t = new OffscreenCanvas(W, H).getContext('2d');
-  t.setTransform(c.getTransform()); t.fillStyle = c.fillStyle; t.fill(first);
+  t.setTransform(c.getTransform()); t.fillStyle = c.fillStyle; fillPart(t, first, W, H);
   t.globalCompositeOperation = m.merge === 3 ? 'destination-out' : 'xor';
-  for (const q of rest) t.fill(q);
+  for (const q of rest) fillPart(t, q, W, H);
   c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.drawImage(t.canvas, 0, 0); c.restore();
 }
 function gradStops(g) {

@@ -89,3 +89,9 @@ Rules here override defaults in the code until they are folded into it.
 - First look vs Comp 1_2.mp4 (the creator's own render): Jaws letterbox matches; radial blur fitted (amount/1000);
   twirl radius fitted (50 = layer diagonal) but still too weak mid-ramp; scene 5 XP wallpaper (alpha-matted by the
   `notepad` precomp) is hidden in ours but shows as a large rect in AE — open engine gap, not yet explained.
+- Engine (gen s04/s05 crash): a second Merge Paths in the same shape group gets the first merge's result as a part;
+  fillMerged now recurses (clip uses the parts' union outline).
+- Engine (gen s04 phone blurred): AE limits an adjustment layer to its own alpha. Shape/text/footage adjustment layers
+  now adjust only inside their content (drawn without effects); solid adjustment layers keep the comp-rect + masks
+  path. Sells/r1 have no such layers (unchanged); Stop has 17.
+- CPU render speed here (4 cores, 540p, 1 sample): 12 s/frame on light scenes, 25–32 s/frame on heavy ones.
