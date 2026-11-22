@@ -75,3 +75,22 @@ Rules here override defaults in the code until they are folded into it.
 - Small text never appeared: bounce selectors with Based On = Words used the character index as textIndex (huge
   delays), and every selector was combined by Add. Now textIndex follows Based On, and an Expression Selector
   intersects (AE default) with the selectors above it. r1 sample frames unchanged.
+
+## 2026-11-22 — Sells step 6: engine gaps found by render rounds (mean SSIM 0.844 -> 0.868 full res)
+- Seeks past a clip's end (and any seek in short GIFs) wrote no frame -> ENOENT crash: decode all frames once, take the
+  frame at t, hold the last.
+- Shape Gradient Fill/Stroke were not implemented (21 uses in Sells): linear + radial with alpha stops.
+- Zero-width strokes drew 1 px (canvas ignores lineWidth 0): skip them (faint green rings on the pebbles).
+- Merge Paths was ignored (iMessage bubbles came out as rectangles): all five modes.
+- S_Gradient ran reversed at a fixed 60%: now Start->End colour multiply (dark grid tops, emoji shading).
+- Text animators whose only property sits at its default (red Fill Color) were skipped as `syn` filler: when an
+  animator has no real property, all its properties count.
+- readPixels read RGBA16F targets as UNSIGNED_BYTE (invalid in WebGL2) -> every large-feather mask crossing the layer
+  edge came back empty (Exposure vignettes, masked blurs did nothing). Read as FLOAT.
+- LUT fitting from pixel pairs learns nonsense where geometry differs (inverted grid lines): keep a LUT only if luma
+  SSIM improves. A spatial falloff is never a LUT's job.
+- `extract.aep_coverage` only checks effects/expressions — shape items (G-Fill, Merge) slipped through; check those too.
+- Route B: same-palette hard cuts (light page -> light page) fail the window-histogram test; a pixel-difference spike
+  rule found Sells f1232 (cut recall 0.86 -> 0.91). Cuts inside white flashes are still found ~5 f off.
+- Known open gaps: s09 'Why' faces 0.50, s16 'People don't care' 0.57, s22 camera runs ahead 0.72; scene 5 glow too
+  big; box blur sigma (0.6 R) likely too small; s01 underline should be red, bills out of sync.
