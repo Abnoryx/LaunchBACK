@@ -22,7 +22,8 @@ const FONT_MAP = [
   [/^HelveticaNow\w*-Bold/, () => ({ family: 'Inter Variable', weight: 800 })],
   // CoolveticaHv metrics in the saved layout are a fallback font's (YOURS is 0.72 em per glyph): use natural widths there
   [/^Helvetica-Compressed/, () => ({ family: 'League Gothic', weight: 400 })],
-  [/^Coolvetica-(HeavyComp|Cram)/, () => ({ family: 'League Gothic', weight: 400 })],
+  [/^Coolvetica-Cram/, () => ({ family: 'Coolvetica Crammed', weight: 400 })],   // the user's free regular Crammed cut
+  [/^Coolvetica-HeavyComp/, () => ({ family: 'League Gothic', weight: 400 })],
   [/^CoolveticaHv/, () => ({ family: 'League Gothic', weight: 400, natural: true })],
   [/^Coolvetica/, () => ({ family: 'Archivo Narrow', weight: 700 })],
   [/^Helvetica/, () => ({ family: 'Inter Variable', weight: 400 })],

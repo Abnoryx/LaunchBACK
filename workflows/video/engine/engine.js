@@ -366,9 +366,17 @@ export class Engine {
   }
 
   // ------------------------------------------------------------ masks & effects
-  maskTarget(L, t, ct) {
+  // 1-based indices of masks an effect lists in its Compositing Options (AE: those masks limit only the effect)
+  effectMaskRefs(e) {
+    const mp = findM(findM(e, 'ADBE Effect Built In Params'), 'ADBE Effect Mask Parade');
+    return (mp?.c || []).map((r) => findM(r, 'ADBE Effect Path Stream Ref')?.v).filter((v) => v > 0);
+  }
+  // only = mask indices to draw (an effect's references); otherwise all masks except effect-referenced ones
+  maskTarget(L, t, ct, only = null) {
     const mp = findM(L, 'ADBE Mask Parade');
-    const masks = (mp?.c || []).filter((m) => m.m === 'ADBE Mask Atom' && m.mode !== 6812);
+    const skip = new Set(only ? [] : (findM(L, 'ADBE Effect Parade')?.c || []).filter((e) => !e.off).flatMap((e) => this.effectMaskRefs(e)));
+    const atoms = (mp?.c || []).filter((m) => m.m === 'ADBE Mask Atom');
+    const masks = atoms.filter((m, i) => m.mode !== 6812 && (only ? only.includes(i + 1) : !skip.has(i + 1)));
     if (!masks.length) return null;
     const [rx0, ry0, rx1, ry1] = ct.rect;
     const W = ct.tg.w, H = ct.tg.h, sx = W / (rx1 - rx0), sy = H / (ry1 - ry0);
@@ -445,6 +453,28 @@ export class Engine {
     const swap = (n) => { if (n !== cur) { g.release(cur); cur = n; } };
     for (const e of fx.c) {
       if (e.off) continue;
+      // effect limited to masks (Compositing Options): run it, then keep its result only inside those masks
+      const refs = isAdjustment ? [] : this.effectMaskRefs(e);
+      const before = refs.length ? g.target(cur.w, cur.h) : null;
+      if (before) g.copy(cur, before);
+      this._applyEffect(comp, L, t, e, rect, sx, () => cur, (n) => swap(n), isAdjustment);
+      if (before) {
+        const mask = this.maskTarget(L, t, { tg: { w: cur.w, h: cur.h }, rect }, refs);
+        const o = g.target(cur.w, cur.h);
+        const k = (evalProp(findM(findM(e, 'ADBE Effect Built In Params'), 'ADBE Effect Mask Opacity'), t) ?? 100) / 100;
+        g.run('mix', o, { uK: k, uHasMask: mask ? 1 : 0 }, { uTex: cur, uDst: before, uMask: mask || g.blank });
+        if (mask) g.deleteTex(mask);
+        g.release(before); swap(o);
+      }
+    }
+    return cur;
+  }
+
+  _applyEffect(comp, L, t, e, rect, sx, getCur, swap, isAdjustment) {
+    const g = this.g;
+    let cur = getCur();
+    const swap0 = swap; swap = (n) => { swap0(n); cur = getCur(); };
+    {
       const P = (name, d) => { const p = (e.c || []).find((x) => x.n === name && !x.c); return p ? evalProp(p, t, this.ctxFor(comp, L)) : d; };
       const PM = (suffix, d) => { const p = (e.c || []).find((x) => x.m === `${e.m}-${suffix}`); return p ? evalProp(p, t, this.ctxFor(comp, L)) : d; };
       switch (e.m) {
@@ -670,6 +700,34 @@ export class Engine {
           const r = PM('0002', 20) * sx * 0.5, bl = g.blur(cur, r, r), o = g.target(cur.w, cur.h);
           g.run('lumamix', o, {}, { uTex: cur, uB: bl }); g.release(bl); swap(o); break;
         }
+        case 'ADBE 4ColorGradient': {
+          const L2 = (q) => [(q[0] - rect[0]) * sx, (q[1] - rect[1]) * sx];
+          const o = g.target(cur.w, cur.h);
+          g.run('fourcolor', o, { uP0: L2(PM('0001', [0, 0])), uP1: L2(PM('0003', [rect[2], 0])), uP2: L2(PM('0005', [0, rect[3]])), uP3: L2(PM('0007', [rect[2], rect[3]])),
+            uC0: PM('0002', [1, 1, 0, 1]), uC1: PM('0004', [0, 1, 0, 1]), uC2: PM('0006', [1, 0, 1, 1]), uC3: PM('0008', [0, 0, 1, 1]),
+            uPow: 1 + 2 * (PM('0009', 100) / 100), uK: PM('0013', 100) / 100 }, { uTex: cur });
+          swap(o); break;
+        }
+        case 'ADBE Optics Compensation': { // reverse off only (the case in our projects); FOV measured across the layer's width or height
+          if (PM('0002', 0)) { this.warn('Optics Compensation reverse not implemented'); break; }
+          const fov = PM('0001', 0), c = PM('0004', [rect[2] / 2, rect[3] / 2]);
+          if (fov <= 0) break;
+          const half = (PM('0003', 1) === 2 ? (rect[3] - rect[1]) : (rect[2] - rect[0])) / 2 * sx;
+          const o = g.target(cur.w, cur.h);
+          g.run('optics', o, { uC: [(c[0] - rect[0]) * sx, (c[1] - rect[1]) * sx], uR: half, uTh: Math.min(fov, 170) / 2 * Math.PI / 180 }, { uTex: cur });
+          swap(o); break;
+        }
+        case 'ADBE Grid': { // Size From 2/3 (width / width & height sliders); Corner Point mode uses |corner - anchor|
+          const a = PM('0001', [0, 0]), from = PM('0002', 2), wv = PM('0004', 100), hv = PM('0005', 100), cn = PM('0003', [a[0] + 100, a[1] + 100]);
+          const cell = from === 1 ? [Math.abs(cn[0] - a[0]), Math.abs(cn[1] - a[1])] : from === 2 ? [wv, wv] : [wv, hv];
+          const o = g.target(cur.w, cur.h);
+          g.run('grid', o, { uA: [(a[0] - rect[0]) * sx, (a[1] - rect[1]) * sx], uCell: [Math.max(1, cell[0] * sx), Math.max(1, cell[1] * sx)], uB: Math.max(0.5, PM('0006', 1) * sx),
+            uCol: PM('0012', [1, 1, 1, 1]), uK: PM('0013', 100) / 100, uOnly: PM('0014', 2) === 1 ? 1 : 0 }, { uTex: cur });
+          swap(o); break;
+        }
+        // Echo at the ~1 ms echo time used here is invisible; Colorama's output palette is not decodable from the .aep (left to
+        // the fitted grade); CC Glass bevel lighting not implemented yet: all three pass through unchanged
+        case 'ADBE Echo': case 'APC Colorama': case 'CC Glass': break;
         case 'CC Cylinder': {
           const D = Math.PI / 180, rx = PM('0009', 0) * D, ry = PM('0010', 0) * D, rz = PM('0011', 0) * D;
           const cx = Math.cos(rx), sxr = Math.sin(rx), cy = Math.cos(ry), sy = Math.sin(ry), cz = Math.cos(rz), sz = Math.sin(rz);

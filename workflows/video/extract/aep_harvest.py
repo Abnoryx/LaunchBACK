@@ -28,8 +28,9 @@ def main(dump, footage_dir, name):
     out = f'/home/user/tpl/lib/{name}'; os.makedirs(f'{out}/assets', exist_ok=True)
     files = {}
     for root, _, fs in os.walk(footage_dir):
-        for f in fs:   # zip tools store non-ASCII names as #UXXXX
-            k = unicodedata.normalize('NFC', re.sub(r'#U([0-9A-Fa-f]{4})', lambda m: chr(int(m.group(1), 16)), f))
+        for f in fs:   # zip tools store non-ASCII names as #UXXXX, and astral ones (emoji) as #LXXXXXX
+            k = re.sub(r'#L([0-9A-Fa-f]{6})', lambda m: chr(int(m.group(1), 16)), f)
+            k = unicodedata.normalize('NFC', re.sub(r'#U([0-9A-Fa-f]{4})', lambda m: chr(int(m.group(1), 16)), k))
             files.setdefault(k, os.path.join(root, f))
     # which comps use each footage item (directly)
     used = collections.defaultdict(set)

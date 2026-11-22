@@ -13,6 +13,8 @@ MATTE_OK = {5012, 5013, 5014, 5015, 5016}
 MASK_OK = {6812, 6813, 6814, 6815}
 LAYER_OK = {'AVLayer', 'TextLayer', 'ShapeLayer', 'CameraLayer', 'ThreeDModelLayer'}
 AUDIO_FX = re.compile(r'^ADBE Aud')
+# shape items (Sells lesson: G-Fill/Merge slipped through an effects-only check)
+SHAPE_OK = set(re.findall(r"it\.m === '(ADBE Vector [^']+)'", src)) | {'ADBE Vector Group', 'ADBE Vector Filter - Trim'}
 
 
 def classify(exprs):
@@ -39,6 +41,9 @@ def main(path, out=None):
             if p.get('m') == 'ADBE Effect Parade':
                 for e in p.get('c') or []:
                     if not e.get('off'): use['effect'][e['m'] + ' (' + str(e.get('n')) + ')'].add(comp) if e['m'] not in FX_OK and not AUDIO_FX.match(e['m']) and not e['m'].startswith('Pseudo/') else None
+            if p.get('m') in ('ADBE Vectors Group', 'ADBE Root Vectors Group'):
+                for it in p.get('c') or []:
+                    if not it.get('off') and it.get('m', '').startswith('ADBE Vector') and it['m'] not in SHAPE_OK: use['shape_item'][it['m'] + ' (' + str(it.get('n')) + ')'].add(comp)
             if p.get('m') == 'ADBE Mask Atom' and p.get('mode') not in MASK_OK: use['mask_mode'][p.get('mode')].add(comp)
             walk(p.get('c') or [], comp)
 

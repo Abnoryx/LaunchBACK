@@ -50,6 +50,23 @@ const SHADERS = {
     o = c * smoothstep(uT - 0.05, uT + 0.05, l); }`,
   lumamix: `${FS_HEAD} uniform sampler2D uB; void main(){ vec4 a = texture(uTex, vUV), b = texture(uB, vUV);
     float k = clamp(dot(a.rgb, vec3(0.299,0.587,0.114))/max(a.a,1e-4), 0.0, 1.0); o = mix(a, b, k); }`,
+  fourcolor: `${FS_HEAD} uniform vec2 uP0, uP1, uP2, uP3; uniform vec4 uC0, uC1, uC2, uC3; uniform float uPow, uK; void main(){
+    // 4-Color Gradient: inverse-distance blend of four colour points; uK = effect opacity, gradient replaces the layer's colour (blend mode None)
+    vec2 p = vUV*uRes; vec4 src = texture(uTex, vUV);
+    float w0 = 1.0/pow(max(length(p-uP0),1.0),uPow), w1 = 1.0/pow(max(length(p-uP1),1.0),uPow), w2 = 1.0/pow(max(length(p-uP2),1.0),uPow), w3 = 1.0/pow(max(length(p-uP3),1.0),uPow);
+    vec3 c = (uC0.rgb*w0 + uC1.rgb*w1 + uC2.rgb*w2 + uC3.rgb*w3)/(w0+w1+w2+w3);
+    o = vec4(mix(src.rgb, c*src.a, uK), src.a); }`,
+  optics: `${FS_HEAD} uniform vec2 uC; uniform float uR, uTh; void main(){
+    // Optics Compensation (not reversed): barrel bulge with unit scale at the centre: source radius = tan(r*th)/th, r in units
+    // of the FOV half-extent uR; samples past the layer edge clamp to it (the reel shows no empty corners)
+    vec2 d = vUV*uRes - uC; float r = length(d)/uR; float rs = r < 1e-4 ? r : tan(min(r*uTh, 1.55))/uTh;
+    vec2 q = clamp((uC + d*(r < 1e-4 ? 1.0 : rs/r))/uRes, vec2(0.0), vec2(1.0));
+    o = texture(uTex, q); }`,
+  grid: `${FS_HEAD} uniform vec2 uA; uniform vec2 uCell; uniform float uB; uniform vec4 uCol; uniform float uK; uniform int uOnly; void main(){
+    // Grid effect: lines of width uB px every uCell px from anchor uA; uOnly = blending mode None (lines replace the layer), else Normal over it
+    vec2 p = vUV*uRes - uA; vec2 m = mod(p + 0.5*uB, uCell); float on = (m.x < uB || m.y < uB) ? 1.0 : 0.0;
+    vec4 src = texture(uTex, vUV); float a = on*uCol.a*uK;
+    o = uOnly == 1 ? vec4(uCol.rgb*a, a) : vec4(mix(src.rgb, uCol.rgb*src.a, a), max(src.a, a)); }`,
   cylinder: `${FS_HEAD} uniform mat3 uR; uniform float uRad; uniform vec2 uSize; void main(){
     // orthographic view of the layer wrapped round a vertical cylinder (circumference = layer width), rotated by uR
     vec2 p = vUV*uRes - uRes*0.5; vec3 ro = uR * vec3(p, -4000.0), rd = uR * vec3(0.0, 0.0, 1.0);
