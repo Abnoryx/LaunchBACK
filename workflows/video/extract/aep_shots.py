@@ -2,7 +2,7 @@
 usage: python3 -m extract.aep_shots <dump.json> <root comp> <run name (extract/runs/<name>/measure.json)> <out.json>
 Shot boundaries come from the project: in-points of the root comp's enabled, normal-blend picture layers (precomps,
 footage). Overlays (screen/add), audio, adjustment and null layers don't start shots. Each boundary is matched to the
-nearest detected cut; the median offset is the time map (mp4 frame = project frame + offset). Detected cuts with no
+nearest detected cut; the median offset is the time map (mp4 frame = project frame + offset). All frame numbers are project frames (mp4 cuts are converted when the frame rates differ). Detected cuts with no
 project boundary are listed as inner cuts (whips, flashes, text swaps inside one shot)."""
 import sys, os, json, statistics
 
@@ -17,8 +17,11 @@ def main(dump, root, run, out):
     footage = {f['id']: f for f in d['footage']}
     m = json.load(open(os.path.join(HERE, 'runs', run, 'measure.json')))
     info = json.load(open(os.path.join(HERE, 'runs', run, 'info.json')))
-    n_frames = info.get('n_frames') or info.get('frames') or int(round(info['duration'] * fps))
-    cuts = m['cuts']
+    # the mp4 can run at another frame rate (e.g. an 18 fps project posted at 30 fps): work in project frames
+    mfps = info.get('fps') or fps
+    nf = info.get('n_frames') or info.get('frames')
+    n_frames = int(round(nf * fps / mfps)) if nf else int(round((info.get('dur') or info['duration']) * fps))
+    cuts = sorted({round(c * fps / mfps) for c in m['cuts']})
     layers = []
     for l in comp['layers']:
         if l.get('enabled') is not True or l.get('adjustment_layer') or l.get('null_layer'): continue

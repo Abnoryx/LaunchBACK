@@ -42,6 +42,21 @@ export const setBlurK = (k) => { BLUR_K = k; };
 const findM = (node, m) => (node?.c || node?.props || []).find((c) => c.m === m);
 const isEnabled = (L) => L.enabled === true;
 
+
+// inverse of the homography taking the unit square (0,0),(1,0),(1,1),(0,1) to p0..p3; column-major mat3 for GLSL
+function invHomography(p0, p1, p2, p3) {
+  const dx1 = p1[0] - p2[0], dx2 = p3[0] - p2[0], dx3 = p0[0] - p1[0] + p2[0] - p3[0];
+  const dy1 = p1[1] - p2[1], dy2 = p3[1] - p2[1], dy3 = p0[1] - p1[1] + p2[1] - p3[1];
+  const den = dx1 * dy2 - dx2 * dy1; if (Math.abs(den) < 1e-9) return null;
+  const g = (dx3 * dy2 - dx2 * dy3) / den, h = (dx1 * dy3 - dx3 * dy1) / den;
+  const a = p1[0] - p0[0] + g * p1[0], b = p3[0] - p0[0] + h * p3[0], c = p0[0];
+  const d = p1[1] - p0[1] + g * p1[1], e = p3[1] - p0[1] + h * p3[1], f = p0[1];
+  // M = [[a,b,c],[d,e,f],[g,h,1]] (row-major) maps (u,v,1) -> pixel; invert it
+  const A = e - f * h, B = -(d - f * g), C = d * h - e * g, det = a * A + b * B + c * C; if (Math.abs(det) < 1e-12) return null;
+  const inv = [A, -(b - c * h), b * f - c * e, B, a - c * g, -(a * f - c * d), C, -(a * h - b * g), a * e - b * d].map((v) => v / det);
+  return [inv[0], inv[3], inv[6], inv[1], inv[4], inv[7], inv[2], inv[5], inv[8]];
+}
+
 export class Engine {
   constructor(project, opts = {}) {
     this.p = project;
@@ -61,7 +76,7 @@ export class Engine {
     this.canvas = canvas;
     this.g = new GL(canvas);
     this.g.keep = [...new Set(this.p.comps.map((c) => c.w + 'x' + c.h))].map((k) => k.split('x').map(Number));
-    for (const f of ['Inter Variable', 'Inter Tight Variable', 'Anton', 'Tinos', 'Patrick Hand', 'League Gothic', 'Archivo Narrow', 'Bodoni Moda', 'Arimo', 'Coolvetica Compressed', 'Coolvetica Condensed', 'Coolvetica Crammed', 'Coolvetica', 'Helvetica Real', 'Kokila Real', 'GFS Didot'])
+    for (const f of ['Inter Variable', 'Inter Tight Variable', 'Anton', 'Tinos', 'Patrick Hand', 'League Gothic', 'Archivo Narrow', 'Bodoni Moda', 'Arimo', 'Coolvetica Compressed', 'Coolvetica Condensed', 'Coolvetica Crammed', 'Coolvetica', 'Helvetica Real', 'Kokila Real', 'GFS Didot', 'Montserrat', 'Barlow Condensed', 'Space Grotesk', 'Bitcount Prop Single'])
     { let n = 0; for (const w of [100, 300, 400, 500, 600, 700, 800, 900]) for (const st of ['', 'italic ']) n += (await document.fonts.load(`${st}${w} 40px "${f}"`).catch(() => [])).length;
       if (!n) this.warn('font did not load: ' + f); }
   }
@@ -699,6 +714,65 @@ export class Engine {
             const A = this.renderComp(ac, tq, { tc: tq, onlyBelow: L.i }); this._adj = saveAdj; this._t = saveT; swap(A);
           }
         } break;
+        case 'ADBE Twirl': { // angle falls off as (1-d/r)^2; radius: 50 = the layer diagonal (fit to Comp 1_2.mp4 f627)
+          const ang = PM('0001', 0) * Math.PI / 180, c = PM('0003', [540, 960]);
+          if (Math.abs(ang) > 1e-4) { const o = g.target(cur.w, cur.h); g.run('twirl', o, { uC: [(c[0] - rect[0]) * sx, (c[1] - rect[1]) * sx], uAng: ang, uR: Math.max(1, PM('0002', 50) / 50 * Math.hypot(...this.sourceSize(L).map((v, i) => v || (i ? comp.h : comp.w))) * sx) }, { uTex: cur }); swap(o); }
+          break;
+        }
+        case 'CC Radial Fast Blur': { // zoom blur; Amount 100 ~ a 10 % streak (fit to Comp 1_2.mp4 f321)
+          const amt = PM('0002', 0), c = PM('0001', [540, 960]);
+          if (amt > 0.1) { const o = g.target(cur.w, cur.h); g.run('spinblur', o, { uC: [(c[0] - rect[0]) * sx, (c[1] - rect[1]) * sx], uAng: 0, uZoom: amt / 1000 }, { uTex: cur }); swap(o); }
+          break;
+        }
+        case 'ADBE Noise2': { // Amount %, Use Color Noise, Clip; new pattern every frame
+          const o = g.target(cur.w, cur.h);
+          g.run('noisergb', o, { uAmt: PM('0001', 0) / 100, uPh: Math.floor(t * comp.fps), uColor: PM('0002', 1), uClip: PM('0003', 1) }, { uTex: cur });
+          swap(o); break;
+        }
+        case 'Universe_Distort_Heatwave': { // approx: drifting fbm displacement (intensity ~1.5 px/unit) + light blur
+          const amt = PM('0002', 3) * 1.5 * sx, dir = (PM('0003', 90) - 90) * Math.PI / 180, sp = PM('0004', 30) * t * sx, size = Math.max(4, PM('0007', 95) * 1.5 * sx);
+          const o = g.target(cur.w, cur.h);
+          g.run('turbdisp', o, { uAmt: amt, uSize: size, uEvo: t * 0.3, uOct: 2, uOff: [Math.sin(dir) * sp, -Math.cos(dir) * sp] }, { uTex: cur });
+          swap(o); const r = PM('0005', 25) / 25 * 0.6 * sx; if (r > 0.3) swap(g.blur(cur, r, r));
+          break;
+        }
+        case 'CC Jaws': { // halves slide apart along the normal; Height = tooth depth (fraction of the layer), Width = tooth count
+          const [lw, lh] = this.sourceSize(L).map((v, i) => v || (i ? comp.h : comp.w)), a = PM('0003', 0) * Math.PI / 180, c = PM('0002', [lw / 2, lh / 2]);
+          const amp = PM('0004', 0) * lh * 0.5 * sx, span = Math.abs(Math.cos(a)) * lh + Math.abs(Math.sin(a)) * lw;
+          const o = g.target(cur.w, cur.h);
+          g.run('jaws', o, { uC: [(c[0] - rect[0]) * sx, (c[1] - rect[1]) * sx], uN: [-Math.sin(a), Math.cos(a)], uT: [Math.cos(a), Math.sin(a)],
+            uS: PM('0001', 0) * (span * 0.5 * sx + amp), uAmp: amp, uPer: Math.max(2, (Math.abs(Math.cos(a)) * lw + Math.abs(Math.sin(a)) * lh) * sx / Math.max(1, PM('0005', 10))), uSharp: PM('0006', 1) === 1 ? 1 : 0 }, { uTex: cur });
+          swap(o); break;
+        }
+        case 'Keylight 906': { // approx: colour-difference matte against the screen colour + despill
+          const sc = P('Screen Colour', [0, 1, 0, 1]), pi = sc.slice(0, 3).indexOf(Math.max(...sc.slice(0, 3)));
+          const o = g.target(cur.w, cur.h); g.run('keylight', o, { uSc: sc.slice(0, 3), uP: pi }, { uTex: cur }); swap(o); break;
+        }
+        case 'ADBE Corner Pin': { // perspective map of the layer rect onto the 4 points
+          const [lw, lh] = this.sourceSize(L), L2 = (q) => [(q[0] - rect[0]) * sx, (q[1] - rect[1]) * sx];
+          const Hi = invHomography(L2(PM('0001', [0, 0])), L2(PM('0002', [lw, 0])), L2(PM('0004', [lw, lh])), L2(PM('0003', [0, lh])));
+          if (Hi) { const o = g.target(cur.w, cur.h); g.run('cornerpin', o, { uH: Hi, uSz: [lw * sx, lh * sx], uOff: L2([0, 0]) }, { uTex: cur }); swap(o); }
+          break;
+        }
+        case 'BCC4LED': { // approx: LED grid (cell ~ LED size + gap at 4 px/unit), brightness, mix with original
+          const sz = P('LED Size X', 1), gap = P('LED Gap X', 0.2), cell = Math.max(2, (sz + gap) * 4 * sx), o = g.target(cur.w, cur.h);
+          g.run('led', o, { uCell: [cell, cell], uGap: Math.min(0.8, gap / (sz + gap)), uBr: P('Brightness', 100) / 100, uMix: P('Mix with Original', 0) / 100 }, { uTex: cur });
+          swap(o); break;
+        }
+        case 'Magic_Bullet_Suite_Magic_Bullet': { // Magic Bullet Film: fitted LUT if one exists (luts.json), else exposure + grain only
+          const key = `${comp.id}|${L.i}`, lut = this.luts?.[key];
+          if (lut) {
+            this._lutTex = this._lutTex || new Map();
+            if (!this._lutTex.has(key)) this._lutTex.set(key, g.lut3dTex(lut.data, lut.n));
+            const o = g.target(cur.w, cur.h); g.run('lut3d', o, { uN: lut.n, uK: 1 }, { uTex: cur, uLut: this._lutTex.get(key) }); swap(o);
+          } else {
+            const ex = P('Exposure', 0); if (ex) swap(g.color(cur, 3, { uA: [ex, 0, 1, 0] }));
+            const gr = P('Grain', 0); if (gr > 0) { const o = g.target(cur.w, cur.h); g.run('noisehls', o, { uL: gr / 100 * 0.06, uPh: Math.floor(t * comp.fps), uGrain: Math.max(1, 1.5 * sx) }, { uTex: cur }); swap(o); }
+          }
+          break;
+        }
+        // S_TimeSlice with Frame Offset 0, Noise Alpha with Amount 0, Optics Compensation at FOV 12 (<5 px at the corners): no visible change
+        case 'S_TimeSlice': case 'ADBE Noise Alpha2': case 'ADBE Optics Compensation': break;
         // identity at the values these projects use, or a <=5 px shift: deliberately a no-op
         case 'ADBE Easy Levels2': case 'ADBE Displacement Map': break;
         case 'ADBE Slider Control': case 'ADBE Checkbox Control': case 'ADBE Layer Control': case 'ADBE Color Control': case 'ADBE Point Control': case 'ADBE Angle Control': break;

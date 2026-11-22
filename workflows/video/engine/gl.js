@@ -65,6 +65,30 @@ const SHADERS = {
     bool flap = d < 0.0 && back.a > 0.0 && all(greaterThanEqual(q, vec2(0.0))) && all(lessThanEqual(q, uRes));
     vec4 front = d < 0.0 ? src : vec4(0.0);
     if (flap) { vec4 b = vec4(uPaper.rgb, 1.0)*back.a*uBackOp; o = b + front*(1.0 - b.a); } else o = front; }`,
+  twirl: `${FS_HEAD} uniform vec2 uC; uniform float uAng, uR; void main(){ vec2 p = vUV*uRes - uC; float d = length(p), k = 1.0 - d/uR;
+    float a = k > 0.0 ? uAng*k*k : 0.0; o = texture(uTex, (mat2(cos(a), sin(a), -sin(a), cos(a))*p + uC)/uRes); }`,
+  noisergb: `${FS_HEAD} uniform float uAmt, uPh, uColor, uClip; void main(){ vec4 c = texture(uTex, vUV); vec2 q = floor(vUV*uRes);
+    vec3 n = fract(sin(vec3(dot(q + uPh*7.13, vec2(12.9898, 78.233)), dot(q + uPh*3.71, vec2(39.346, 11.135)), dot(q + uPh*5.27, vec2(73.156, 52.235))))*43758.5453) - 0.5;
+    if (uColor < 0.5) n = vec3(n.x); vec3 r = c.rgb + n*uAmt*c.a; o = vec4(uClip > 0.5 ? clamp(r, 0.0, c.a) : r, c.a); }`,
+  jaws: `${FS_HEAD} uniform vec2 uC, uN, uT; uniform float uS, uAmp, uPer, uSharp; void main(){
+    // CC Jaws: the layer splits along a toothed line through uC (tangent uT, normal uN); halves slide apart by uS
+    vec2 p = vUV*uRes - uC; float x = dot(p, uT), y = dot(p, uN); float ph = fract(x/uPer);
+    float tri = uSharp > 0.5 ? abs(ph*2.0 - 1.0)*2.0 - 1.0 : cos(ph*6.2831853); float e = uAmp*tri;
+    float ya = y + uS, yb = y - uS; vec4 c = vec4(0.0);
+    if (ya < e) c = texture(uTex, (uC + x*uT + ya*uN)/uRes); else if (yb > e) c = texture(uTex, (uC + x*uT + yb*uN)/uRes);
+    o = c; }`,
+  keylight: `${FS_HEAD} uniform vec3 uSc; uniform int uP; void main(){ vec4 c = texture(uTex, vUV); vec3 r = c.a > 0.0 ? c.rgb/c.a : vec3(0.0);
+    // screen matte = how far the dominant screen channel exceeds the other two, relative to the screen colour; despill clamps it
+    float sp = uP==0 ? uSc.r : uP==1 ? uSc.g : uSc.b, so = uP==0 ? max(uSc.g,uSc.b) : uP==1 ? max(uSc.r,uSc.b) : max(uSc.r,uSc.g);
+    float cp = uP==0 ? r.r : uP==1 ? r.g : r.b, co = uP==0 ? max(r.g,r.b) : uP==1 ? max(r.r,r.b) : max(r.r,r.g);
+    float m = clamp((cp - co)/max(sp - so, 1e-3), 0.0, 1.0), a = c.a*(1.0 - m);
+    if (uP==0) r.r = min(r.r, co); else if (uP==1) r.g = min(r.g, co); else r.b = min(r.b, co);
+    o = vec4(r*a, a); }`,
+  cornerpin: `${FS_HEAD} uniform mat3 uH; uniform vec2 uSz, uOff; void main(){ vec3 q = uH*vec3(vUV*uRes, 1.0); vec2 uv = q.xy/q.z;
+    o = (q.z <= 0.0 || uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) ? vec4(0.0) : texture(uTex, (uv*uSz + uOff)/uRes); }`,
+  led: `${FS_HEAD} uniform vec2 uCell; uniform float uGap, uBr, uMix; void main(){ vec4 c = texture(uTex, vUV); vec2 p = vUV*uRes, cell = floor(p/uCell);
+    vec4 s = texture(uTex, (cell + 0.5)*uCell/uRes); vec2 f = fract(p/uCell); float on = step(uGap*0.5, f.x)*step(f.x, 1.0-uGap*0.5)*step(uGap*0.5, f.y)*step(f.y, 1.0-uGap*0.5);
+    o = mix(vec4(min(s.rgb*uBr*on, vec3(s.a)), s.a), c, uMix); }`,
   bezwarp: `${FS_HEAD} uniform vec2 uP0, uP1, uP2, uP3, uQ0, uQs; void main(){
     // inverse bilinear: output pixel -> (u,v) in the source rect whose corners moved to P0 (TL) P1 (TR) P2 (BR) P3 (BL)
     vec2 p = vUV*uRes, e = uP1-uP0, f = uP3-uP0, g = uP0-uP1+uP2-uP3, h = p-uP0;
@@ -100,6 +124,10 @@ const SHADERS = {
     else if (uMode == 6) b = abs(dc3-sc3);             // difference
     else if (uMode == 7) b = sc3+dc3-2.0*sc3*dc3;      // exclusion
     else if (uMode == 8) b = ov(sc3, dc3);             // hard light
+    else if (uMode == 12) b = max(sc3+dc3-1.0, 0.0);   // linear burn
+    else if (uMode == 13) b = mix(1.0-min((1.0-dc3)/max(sc3,1e-4), 1.0), vec3(1.0), step(1.0-1e-4, dc3)); // (classic) color burn
+    else if (uMode == 14) b = max(sc3, dc3);           // lighten
+    else if (uMode == 15) b = dot(sc3,vec3(.2126,.7152,.0722)) > dot(dc3,vec3(.2126,.7152,.0722)) ? sc3 : dc3; // lighter color
     else b = sc3;
     vec3 rgb = (1.0-d.a)*s.rgb + (1.0-s.a)*d.rgb + s.a*d.a*b;
     if (uMode == 9) { o = d * s.a; return; }           // stencil alpha
@@ -379,4 +407,4 @@ export class GL {
   }
 }
 
-export const BLEND = { 5212: 0, 5216: 1, 5222: 2, 5226: 3, 5227: 4, 5220: 5, 5223: 5, 5233: 6, 5234: 6, 5235: 7, 5228: 8, 5240: 9 };
+export const BLEND = { 5212: 0, 5216: 1, 5222: 2, 5226: 3, 5227: 4, 5220: 5, 5223: 5, 5233: 6, 5234: 6, 5235: 7, 5228: 8, 5240: 9, 5217: 12, 5218: 13, 5219: 13, 5221: 14, 5246: 15 };

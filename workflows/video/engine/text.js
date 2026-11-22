@@ -40,7 +40,10 @@ const FONT_MAP = [
   [/^CoolRegular/, () => ({ family: 'Coolvetica', weight: 400 })],
   [/^Arimo/, () => ({ family: 'Arimo', weight: 700 })],
   [/^Anton/, () => ({ family: 'Anton', weight: 400 })],
-  [/^Montserrat-(\w+)/, (m) => ({ family: 'Inter Variable', weight: W[m[1]] ?? 800 })],
+  [/^Montserrat-(\w+)/, (m) => ({ family: 'Montserrat', weight: W[m[1]] ?? 800 })],
+  [/^BarlowCondensed-/, () => ({ family: 'Barlow Condensed', weight: 900 })],
+  [/^SpaceGrotesk-/, () => ({ family: 'Space Grotesk', weight: 500 })],
+  [/^BitcountPropSingle-/, () => ({ family: 'Bitcount Prop Single', weight: 400 })],
 ];
 const W = { Thin: 100, ExtraLight: 200, Light: 300, Regular: 400, Medium: 500, Semibold: 600, SemiBold: 600, Bold: 700, ExtraBold: 800, Heavy: 800, Black: 900 };
 

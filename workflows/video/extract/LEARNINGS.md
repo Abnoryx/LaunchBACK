@@ -75,3 +75,17 @@ Rules here override defaults in the code until they are folded into it.
 - Small text never appeared: bounce selectors with Based On = Words used the character index as textIndex (huge
   delays), and every selector was combined by Add. Now textIndex follows Based On, and an Expression Selector
   intersects (AE default) with the selectors above it. r1 sample frames unchanged.
+
+## 2026-11-22 — Route A steps 1–3 on The Generation Effect (gen)
+- The uploaded "gen" mp4 was the Stop Trying to Please Everyone reel (caption "Broad messages disappear…"); its run is
+  saved as `extract/runs/stop`. Always compare a contact sheet of the reel with the project's own render before step 4.
+- Step 4 assumed the mp4 and the project share a frame rate. gen is 18 fps, posted reels are 30 fps: aep_shots now
+  converts mp4 cuts to project frames (Sells output unchanged).
+- Coverage: added blend modes linear burn, (classic) color burn, lighten, lighter color; effects Twirl, CC Radial Fast
+  Blur, Noise, Heatwave (approx), CC Jaws, Keylight (colour-difference approx), Corner Pin (homography), BCC LED
+  (approx), Magic Bullet Film (LUT if fitted, else exposure + grain); TimeSlice/Noise Alpha/Optics Comp no-ops at the
+  values used. Fonts: Montserrat, Barlow Condensed, Space Grotesk, Bitcount Prop Single now real (fontsource).
+  `.ai` footage needs ghostscript in the container (ImageMagick rasterises through it) — install it first.
+- First look vs Comp 1_2.mp4 (the creator's own render): Jaws letterbox matches; radial blur fitted (amount/1000);
+  twirl radius fitted (50 = layer diagonal) but still too weak mid-ramp; scene 5 XP wallpaper (alpha-matted by the
+  `notepad` precomp) is hidden in ours but shows as a large rect in AE — open engine gap, not yet explained.
