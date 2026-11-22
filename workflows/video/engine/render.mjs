@@ -61,8 +61,17 @@ await page.route('http://engine.local/**', async (route) => {
       if (!fs.existsSync(out)) {
         const alpha = /\.(gif|mov|webm|png)$/i.test(f);
         try { execFileSync('ffmpeg', ['-v', 'error', '-y', '-ss', String(parseInt(ms) / 1000), '-i', f, '-frames:v', '1', ...(alpha ? ['-pix_fmt', 'rgba', '-f', 'image2', '-c:v', 'png'] : ['-q:v', '2', '-f', 'image2', '-c:v', 'mjpeg']), out]); } catch { return route.fulfill({ status: 404 }); }
-        // a seek past the clip's end writes nothing: hold its last frame
-        if (!fs.existsSync(out)) try { execFileSync('ffmpeg', ['-v', 'error', '-y', '-sseof', '-0.2', '-i', f, '-update', '1', ...(alpha ? ['-pix_fmt', 'rgba', '-f', 'image2', '-c:v', 'png'] : ['-q:v', '2', '-f', 'image2', '-c:v', 'mjpeg']), out]); } catch {}
+        // a seek past the clip's end (or any seek in a short GIF) writes nothing: decode all frames once, take the one at
+        // this time, holding the last
+        if (!fs.existsSync(out)) try {
+          const dir = path.join(cacheDir, `all_v${id}`);
+          if (!fs.existsSync(dir)) { fs.mkdirSync(dir + '.tmp', { recursive: true }); execFileSync('ffmpeg', ['-v', 'error', '-y', '-i', f, '-vsync', '0', '-pix_fmt', 'rgba', path.join(dir + '.tmp', '%05d.png')]); fs.renameSync(dir + '.tmp', dir); }
+          const all = fs.readdirSync(dir).sort();
+          const rate = String(execFileSync('ffprobe', ['-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=avg_frame_rate', '-of', 'csv=p=0', f])).trim().split('/');
+          const fr = +rate[0] / (+rate[1] || 1) || 30;
+          const src = path.join(dir, all[Math.min(all.length - 1, Math.floor(parseInt(ms) / 1000 * fr))]);
+          execFileSync('ffmpeg', ['-v', 'error', '-y', '-i', src, ...(alpha ? ['-pix_fmt', 'rgba', '-f', 'image2', '-c:v', 'png'] : ['-q:v', '2', '-f', 'image2', '-c:v', 'mjpeg']), out]);
+        } catch {}
         if (!fs.existsSync(out)) return route.fulfill({ status: 404 });
       }
       return route.fulfill({ path: out, contentType: /\.(gif|mov|webm|png)$/i.test(f) ? 'image/png' : 'image/jpeg' });
