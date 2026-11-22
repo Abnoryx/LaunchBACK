@@ -131,3 +131,5 @@ Rules here override defaults in the code until they are folded into it.
   - s10: shape adjustment layers fixed (see round 1). Colorama: palette not in the .aep (py_aep and the raw RIFX cdat
     hold nothing) -> measured LUT `colorama|<comp>|<layer>` in the reel's luts.json, fitted from the analytic 4-Color
     input vs reel / (our post-Colorama gain): frame MAE 32.8 -> 4.4. Generic hook; the fit itself was by hand.
+- Round 2 (6 scenes re-rendered, 6 min GPU): mean SSIM 0.863 -> 0.908; s17 0.484 -> 0.940, s10 0.550 -> 0.834,
+  s12 0.728 -> 0.745 (looks matched by eye: the random film-dust overlay on black dominates SSIM there).
