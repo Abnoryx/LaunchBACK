@@ -14,6 +14,16 @@ comps = {c["id"]: c for c in d["comps"]}
 byname = {c["name"]: c for c in d["comps"]}
 
 
+def ssim(x, y):
+    from numpy.lib.stride_tricks import sliding_window_view as sw
+    C1, C2 = (0.01 * 255) ** 2, (0.03 * 255) ** 2
+    X, Y = sw(x, (7, 7))[::2, ::2], sw(y, (7, 7))[::2, ::2]
+    mx, my = X.mean((-1, -2)), Y.mean((-1, -2))
+    vx, vy = X.var((-1, -2)), Y.var((-1, -2))
+    cxy = ((X - mx[..., None, None]) * (Y - my[..., None, None])).mean((-1, -2))
+    return float((((2 * mx * my + C1) * (2 * cxy + C2)) / ((mx ** 2 + my ** 2 + C1) * (vx + vy + C2))).mean())
+
+
 def intervals(comp, a, b, off, acc, depth=0):
     """Root-time intervals during which each comp is shown: acc[name] += [(r0, r1, root->local offset)]."""
     acc.setdefault(comp["name"], []).append((a, b, off))
@@ -74,6 +84,13 @@ for c in d["comps"]:
         print(f"{key} ({c['name']}): {len(E) // (W * H)} frames, mean abs diff {mae0:.1f} -> {mae1:.1f}")
         if mae1 > 0.8 * mae0:  # weak fit: content mismatch dominates, leave the layer ungraded for now
             print("   skipped (fit gain under 20%)"); continue
+        # pixel pairs from mismatched geometry can teach a LUT nonsense (inverted grid lines) that lowers colour error
+        # but wrecks structure: keep the LUT only if luma SSIM improves (2026-11-22, Sells scene 6)
+        lum = lambda a: a.reshape(-1, H, W, 3) @ np.array([0.2126, 0.7152, 0.0722]) * 255
+        s0 = np.mean([ssim(a, b) for a, b in zip(lum(E), lum(Rr))]); s1 = np.mean([ssim(a, b) for a, b in zip(lum(fit), lum(Rr))])
+        print(f"   luma SSIM {s0:.3f} -> {s1:.3f}")
+        if s1 < s0 + 0.005:
+            print("   skipped (structure got worse: a spatial difference, not a grade)"); continue
         luts[key] = {"n": N, "data": [int(round(v * 255)) for v in lut.reshape(-1)]}
 json.dump(luts, open(out, "w"))
 print(len(luts), "luts ->", out)

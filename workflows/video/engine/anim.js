@@ -203,6 +203,9 @@ export function classifyExpression(x) {
   m = s.match(/^comp\("([^"]+)"\)\.layer\("([^"]+)"\)\.effect\("([^"]+)"\)\(1\)\/(\d+)\s*;?$/);
   if (m) return { kind: 'ctrlDiv', comp: m[1], layer: m[2], effect: m[3], div: +m[4] };
   if (/textIndex === textTotal/.test(s)) return { kind: 'lastChar' };
+  m = s.match(/text\.sourceText.*effect\("([^"]+)"\)\(1\).*var c = \[([^\]]*)\].*effect\("([^"]+)"\)\(1\)/);
+  if (m) return { kind: 'typewriter', anim: m[1], cursors: JSON.parse('[' + m[2] + ']'), shape: m[3] };
+  if (/showCursor/.test(s) && /Cursor Blink Speed/.test(s)) return { kind: 'cursorBlink' };
   return { kind: 'unknown', src: s.slice(0, 80) };
 }
 
@@ -254,6 +257,17 @@ export function evalProp(prop, t, ctx = {}) {
       return [base[0] + (idx * off) / 10, base[1] + (idx * s) / 10, idx + (idx * zo) / 10];
     }
     case 'ctrlDiv': return (ctx.ctrl?.(e.comp, e.layer, e.effect) ?? 0) / e.div;
+    case 'cursorBlink': { // typewriter cursor: solid while typing, else blinks from the last Animation key
+      if ((ctx.effectValue?.('Cursor On/Off') ?? 1) != 1) return 0;
+      const P = ctx.effectProp?.('Animation'), K = P?.k;
+      if (!K || !K.length) return base;
+      const fd = ctx.frameDuration || 1 / 30;
+      const typing = t > K[0].t && t < K[K.length - 1].t && keyValue(P, t - 5 * fd) !== keyValue(P, t);
+      if (typing) return 100;
+      let near = 0; for (let i = 0; i < K.length; i++) if (Math.abs(K[i].t - t) < Math.abs(K[near].t - t)) near = i;
+      const prev = Math.max(near - (K[near].t > t ? 1 : 0), 0);
+      return Math.sin(Math.PI * (t - K[prev].t) * (ctx.effectValue?.('Cursor Blink Speed') ?? 1)) >= 0 ? 100 : 0;
+    }
     default: return base;
   }
 }

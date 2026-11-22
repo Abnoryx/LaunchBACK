@@ -1,0 +1,4192 @@
+{
+ "source": {
+  "w": 720,
+  "h": 1280,
+  "fps": 30.0,
+  "frames": 1362,
+  "dur": 45.486485,
+  "vfr": false,
+  "color_space": "bt709",
+  "audio": true,
+  "analysis_w": 216,
+  "analysis_h": 384,
+  "decoded": 1362,
+  "scale_to_1080": 5.0
+ },
+ "cuts": [
+  29,
+  41,
+  78,
+  100,
+  134,
+  166,
+  217,
+  258,
+  378,
+  388,
+  402,
+  435,
+  459,
+  503,
+  616,
+  676,
+  748,
+  775,
+  797,
+  822,
+  877,
+  930,
+  1067,
+  1104,
+  1135,
+  1168,
+  1263,
+  1294,
+  1325,
+  1361
+ ],
+ "shots": [
+  {
+   "shot": 0,
+   "start": 0,
+   "end": 28,
+   "frames": 29,
+   "seconds": 0.97,
+   "transition_in": [
+    "start"
+   ],
+   "camera": {
+    "zoom": [
+     {
+      "frame": 0,
+      "value": 100.0,
+      "ease": "linear"
+     },
+     {
+      "frame": 1,
+      "value": 105.24,
+      "ease": "linear"
+     },
+     {
+      "frame": 3,
+      "value": 109.89,
+      "ease": "linear"
+     },
+     {
+      "frame": 6,
+      "value": 114.48,
+      "ease": "linear"
+     },
+     {
+      "frame": 11,
+      "value": 119.99,
+      "ease": "linear"
+     },
+     {
+      "frame": 17,
+      "value": 125.21,
+      "ease": "linear"
+     },
+     {
+      "frame": 23,
+      "value": 128.92,
+      "ease": "linear"
+     },
+     {
+      "frame": 28,
+      "value": 131.06,
+      "ease": null
+     }
+    ]
+   },
+   "camera_confidence": 0.92,
+   "words": [],
+   "luma": 35.0
+  },
+  {
+   "shot": 1,
+   "start": 29,
+   "end": 40,
+   "frames": 12,
+   "seconds": 0.4,
+   "transition_in": [
+    "hard_cut"
+   ],
+   "camera": {
+    "zoom": [
+     {
+      "frame": 29,
+      "value": 100.0,
+      "ease": "quad_in"
+     },
+     {
+      "frame": 35,
+      "value": 104.02,
+      "ease": "expo_out"
+     },
+     {
+      "frame": 39,
+      "value": 102.76,
+      "ease": "linear"
+     },
+     {
+      "frame": 40,
+      "value": 105.1,
+      "ease": null
+     }
+    ]
+   },
+   "camera_confidence": 0.5,
+   "words": [],
+   "luma": 122.3
+  },
+  {
+   "shot": 2,
+   "start": 41,
+   "end": 77,
+   "frames": 37,
+   "seconds": 1.23,
+   "transition_in": [
+    "flash_white",
+    "blur"
+   ],
+   "camera": {
+    "x": [
+     {
+      "frame": 41,
+      "value": 0.0,
+      "ease": "cubic_inout"
+     },
+     {
+      "frame": 54,
+      "value": 1.3,
+      "ease": "hold"
+     },
+     {
+      "frame": 57,
+      "value": 0.85,
+      "ease": "ae_easy"
+     },
+     {
+      "frame": 73,
+      "value": 2.31,
+      "ease": "linear"
+     },
+     {
+      "frame": 74,
+      "value": 106.25,
+      "ease": "hold"
+     },
+     {
+      "frame": 75,
+      "value": 107.13,
+      "ease": "pop"
+     },
+     {
+      "frame": 77,
+      "value": 115.17,
+      "ease": null
+     }
+    ],
+    "y": [
+     {
+      "frame": 41,
+      "value": 0.0,
+      "ease": "hold"
+     },
+     {
+      "frame": 47,
+      "value": -0.51,
+      "ease": "expo_inout"
+     },
+     {
+      "frame": 64,
+      "value": -1.93,
+      "ease": "quad_inout"
+     },
+     {
+      "frame": 73,
+      "value": -0.99,
+      "ease": "linear"
+     },
+     {
+      "frame": 74,
+      "value": 131.55,
+      "ease": "hold"
+     },
+     {
+      "frame": 75,
+      "value": 131.55,
+      "ease": "linear"
+     },
+     {
+      "frame": 76,
+      "value": 37.52,
+      "ease": "hold"
+     },
+     {
+      "frame": 77,
+      "value": 37.6,
+      "ease": null
+     }
+    ],
+    "zoom": [
+     {
+      "frame": 41,
+      "value": 100.0,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 49,
+      "value": 103.83,
+      "ease": "linear"
+     },
+     {
+      "frame": 73,
+      "value": 108.48,
+      "ease": "back_out"
+     },
+     {
+      "frame": 75,
+      "value": 104.89,
+      "ease": "expo_out"
+     },
+     {
+      "frame": 77,
+      "value": 108.5,
+      "ease": null
+     }
+    ],
+    "roll": [
+     {
+      "frame": 41,
+      "value": 0.0,
+      "ease": "hold"
+     },
+     {
+      "frame": 75,
+      "value": -0.6,
+      "ease": "expo_out"
+     },
+     {
+      "frame": 77,
+      "value": -5.06,
+      "ease": null
+     }
+    ]
+   },
+   "camera_confidence": 0.63,
+   "words": [],
+   "luma": 60.3
+  },
+  {
+   "shot": 3,
+   "start": 78,
+   "end": 99,
+   "frames": 22,
+   "seconds": 0.73,
+   "transition_in": [
+    "flash_white",
+    "invert"
+   ],
+   "camera": {
+    "x": [
+     {
+      "frame": 78,
+      "value": 0.0,
+      "ease": "linear"
+     },
+     {
+      "frame": 79,
+      "value": -8.73,
+      "ease": "linear"
+     },
+     {
+      "frame": 81,
+      "value": -18.4,
+      "ease": "linear"
+     },
+     {
+      "frame": 88,
+      "value": -43.99,
+      "ease": "linear"
+     },
+     {
+      "frame": 92,
+      "value": -53.02,
+      "ease": "linear"
+     },
+     {
+      "frame": 99,
+      "value": -61.71,
+      "ease": null
+     }
+    ],
+    "y": [
+     {
+      "frame": 78,
+      "value": 0.0,
+      "ease": "hold"
+     },
+     {
+      "frame": 88,
+      "value": 0.47,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 92,
+      "value": -8.16,
+      "ease": "quad_in"
+     },
+     {
+      "frame": 94,
+      "value": -23.37,
+      "ease": "linear"
+     },
+     {
+      "frame": 95,
+      "value": -46.28,
+      "ease": "linear"
+     },
+     {
+      "frame": 96,
+      "value": -102.72,
+      "ease": "linear"
+     },
+     {
+      "frame": 97,
+      "value": -170.09,
+      "ease": "linear"
+     },
+     {
+      "frame": 98,
+      "value": -245.98,
+      "ease": "linear"
+     },
+     {
+      "frame": 99,
+      "value": -460.68,
+      "ease": null
+     }
+    ]
+   },
+   "camera_confidence": 0.54,
+   "words": [],
+   "luma": 146.8
+  },
+  {
+   "shot": 4,
+   "start": 100,
+   "end": 133,
+   "frames": 34,
+   "seconds": 1.13,
+   "transition_in": [
+    "whip"
+   ],
+   "camera": {
+    "x": [
+     {
+      "frame": 100,
+      "value": 0.0,
+      "ease": "linear"
+     },
+     {
+      "frame": 101,
+      "value": -15.71,
+      "ease": "linear"
+     },
+     {
+      "frame": 102,
+      "value": 0.66,
+      "ease": "hold"
+     },
+     {
+      "frame": 112,
+      "value": 3.0,
+      "ease": "hold"
+     },
+     {
+      "frame": 115,
+      "value": -2.6,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 123,
+      "value": -35.16,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 132,
+      "value": -136.6,
+      "ease": "linear"
+     },
+     {
+      "frame": 133,
+      "value": -185.31,
+      "ease": null
+     }
+    ],
+    "y": [
+     {
+      "frame": 100,
+      "value": 0.0,
+      "ease": "linear"
+     },
+     {
+      "frame": 101,
+      "value": -302.58,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 103,
+      "value": -404.19,
+      "ease": "linear"
+     },
+     {
+      "frame": 105,
+      "value": -442.22,
+      "ease": "linear"
+     },
+     {
+      "frame": 108,
+      "value": -476.04,
+      "ease": "linear"
+     },
+     {
+      "frame": 112,
+      "value": -505.2,
+      "ease": "linear"
+     },
+     {
+      "frame": 115,
+      "value": -458.71,
+      "ease": "ae_easy"
+     },
+     {
+      "frame": 123,
+      "value": -470.68,
+      "ease": "hold"
+     },
+     {
+      "frame": 133,
+      "value": -468.65,
+      "ease": null
+     }
+    ],
+    "zoom": [
+     {
+      "frame": 100,
+      "value": 100.0,
+      "ease": "hold"
+     },
+     {
+      "frame": 101,
+      "value": 99.37,
+      "ease": "linear"
+     },
+     {
+      "frame": 102,
+      "value": 103.07,
+      "ease": "quart_out"
+     },
+     {
+      "frame": 110,
+      "value": 102.15,
+      "ease": "pop"
+     },
+     {
+      "frame": 112,
+      "value": 100.5,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 114,
+      "value": 80.52,
+      "ease": "quart_out"
+     },
+     {
+      "frame": 133,
+      "value": 63.94,
+      "ease": null
+     }
+    ],
+    "roll": [
+     {
+      "frame": 100,
+      "value": 0.0,
+      "ease": "quart_out"
+     },
+     {
+      "frame": 102,
+      "value": -1.14,
+      "ease": "hold"
+     },
+     {
+      "frame": 111,
+      "value": -0.28,
+      "ease": "back_out"
+     },
+     {
+      "frame": 115,
+      "value": -1.42,
+      "ease": "linear"
+     },
+     {
+      "frame": 122,
+      "value": -4.52,
+      "ease": "hold"
+     },
+     {
+      "frame": 133,
+      "value": -4.48,
+      "ease": null
+     }
+    ]
+   },
+   "camera_confidence": 0.65,
+   "words": [],
+   "luma": 232.4
+  },
+  {
+   "shot": 5,
+   "start": 134,
+   "end": 165,
+   "frames": 32,
+   "seconds": 1.07,
+   "transition_in": [
+    "hard_cut"
+   ],
+   "camera": {
+    "x": [
+     {
+      "frame": 134,
+      "value": 0.0,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 138,
+      "value": -438.41,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 144,
+      "value": -805.47,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 149,
+      "value": -500.96,
+      "ease": "ae_easy"
+     },
+     {
+      "frame": 153,
+      "value": 6.2,
+      "ease": "hold"
+     },
+     {
+      "frame": 165,
+      "value": 49.59,
+      "ease": null
+     }
+    ],
+    "y": [
+     {
+      "frame": 134,
+      "value": 0.0,
+      "ease": "snap"
+     },
+     {
+      "frame": 139,
+      "value": 4.02,
+      "ease": "hold"
+     },
+     {
+      "frame": 150,
+      "value": 2.75,
+      "ease": "pop"
+     },
+     {
+      "frame": 154,
+      "value": 6.13,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 160,
+      "value": -28.39,
+      "ease": "quad_in"
+     },
+     {
+      "frame": 162,
+      "value": -47.21,
+      "ease": "linear"
+     },
+     {
+      "frame": 163,
+      "value": -65.28,
+      "ease": "linear"
+     },
+     {
+      "frame": 164,
+      "value": -150.79,
+      "ease": "linear"
+     },
+     {
+      "frame": 165,
+      "value": -224.5,
+      "ease": null
+     }
+    ],
+    "zoom": [
+     {
+      "frame": 134,
+      "value": 100.0,
+      "ease": "hold"
+     },
+     {
+      "frame": 154,
+      "value": 100.44,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 160,
+      "value": 98.41,
+      "ease": "linear"
+     },
+     {
+      "frame": 165,
+      "value": 99.63,
+      "ease": null
+     }
+    ]
+   },
+   "camera_confidence": 0.48,
+   "words": [],
+   "luma": 203.5
+  },
+  {
+   "shot": 6,
+   "start": 166,
+   "end": 216,
+   "frames": 51,
+   "seconds": 1.7,
+   "transition_in": [
+    "invert",
+    "blur",
+    "whip"
+   ],
+   "camera": {
+    "x": [
+     {
+      "frame": 166,
+      "value": 0.0,
+      "ease": "quad_in"
+     },
+     {
+      "frame": 168,
+      "value": 3.7,
+      "ease": "linear"
+     },
+     {
+      "frame": 176,
+      "value": 5.5,
+      "ease": "linear"
+     },
+     {
+      "frame": 190,
+      "value": 4.01,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 196,
+      "value": -11.26,
+      "ease": "linear"
+     },
+     {
+      "frame": 197,
+      "value": -22.99,
+      "ease": "linear"
+     },
+     {
+      "frame": 198,
+      "value": -46.63,
+      "ease": "linear"
+     },
+     {
+      "frame": 199,
+      "value": -80.72,
+      "ease": "linear"
+     },
+     {
+      "frame": 200,
+      "value": -105.65,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 202,
+      "value": -128.4,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 204,
+      "value": -134.41,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 213,
+      "value": -130.1,
+      "ease": "hold"
+     },
+     {
+      "frame": 216,
+      "value": -130.56,
+      "ease": null
+     }
+    ],
+    "y": [
+     {
+      "frame": 166,
+      "value": 0.0,
+      "ease": "linear"
+     },
+     {
+      "frame": 167,
+      "value": -94.34,
+      "ease": "linear"
+     },
+     {
+      "frame": 168,
+      "value": -138.06,
+      "ease": "quart_out"
+     },
+     {
+      "frame": 190,
+      "value": -300.83,
+      "ease": "quad_in"
+     },
+     {
+      "frame": 196,
+      "value": -316.55,
+      "ease": "quad_in"
+     },
+     {
+      "frame": 199,
+      "value": -376.78,
+      "ease": "linear"
+     },
+     {
+      "frame": 201,
+      "value": -427.26,
+      "ease": "cubic_out"
+     },
+     {
+      "frame": 205,
+      "value": -449.08,
+      "ease": "back_out"
+     },
+     {
+      "frame": 216,
+      "value": -444.94,
+      "ease": null
+     }
+    ],
+    "zoom": [
+     {
+      "frame": 166,
+      "value": 100.0,
+      "ease": "hold"
+     },
+     {
+      "frame": 175,
+      "value": 100.62,
+      "ease": "expo_out"
+     },
+     {
+      "frame": 188,
+      "value": 99.64,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 198,
+      "value": 103.26,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 201,
+      "value": 100.17,
+      "ease": "linear"
+     },
+     {
+      "frame": 203,
+      "value": 101.49,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 209,
+      "value": 99.37,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 216,
+      "value": 102.24,
+      "ease": null
+     }
+    ],
+    "roll": [
+     {
+      "frame": 166,
+      "value": 0.0,
+      "ease": "out"
+     },
+     {
+      "frame": 197,
+      "value": -1.27,
+      "ease": "dolly"
+     },
+     {
+      "frame": 200,
+      "value": -2.55,
+      "ease": "expo_out"
+     },
+     {
+      "frame": 216,
+      "value": -5.26,
+      "ease": null
+     }
+    ]
+   },
+   "camera_confidence": 0.8,
+   "words": [],
+   "luma": 21.5
+  },
+  {
+   "shot": 7,
+   "start": 217,
+   "end": 257,
+   "frames": 41,
+   "seconds": 1.37,
+   "transition_in": [
+    "hard_cut"
+   ],
+   "camera": {
+    "x": [
+     {
+      "frame": 217,
+      "value": 0.0,
+      "ease": "quad_in"
+     },
+     {
+      "frame": 224,
+      "value": -15.31,
+      "ease": "linear"
+     },
+     {
+      "frame": 226,
+      "value": -29.52,
+      "ease": "linear"
+     },
+     {
+      "frame": 228,
+      "value": -56.17,
+      "ease": "linear"
+     },
+     {
+      "frame": 229,
+      "value": -77.27,
+      "ease": "linear"
+     },
+     {
+      "frame": 230,
+      "value": -107.52,
+      "ease": "linear"
+     },
+     {
+      "frame": 231,
+      "value": -152.53,
+      "ease": "linear"
+     },
+     {
+      "frame": 233,
+      "value": -289.01,
+      "ease": "expo_out"
+     },
+     {
+      "frame": 252,
+      "value": -435.74,
+      "ease": "hold"
+     },
+     {
+      "frame": 257,
+      "value": -434.66,
+      "ease": null
+     }
+    ],
+    "y": [
+     {
+      "frame": 217,
+      "value": 0.0,
+      "ease": "hold"
+     },
+     {
+      "frame": 219,
+      "value": -0.79,
+      "ease": "linear"
+     },
+     {
+      "frame": 238,
+      "value": 1.59,
+      "ease": "hold"
+     },
+     {
+      "frame": 246,
+      "value": 1.2,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 254,
+      "value": -64.39,
+      "ease": "linear"
+     },
+     {
+      "frame": 255,
+      "value": -95.83,
+      "ease": "linear"
+     },
+     {
+      "frame": 256,
+      "value": -143.25,
+      "ease": "linear"
+     },
+     {
+      "frame": 257,
+      "value": -262.14,
+      "ease": null
+     }
+    ],
+    "zoom": [
+     {
+      "frame": 217,
+      "value": 100.0,
+      "ease": "snap"
+     },
+     {
+      "frame": 228,
+      "value": 113.27,
+      "ease": "hold"
+     },
+     {
+      "frame": 257,
+      "value": 113.66,
+      "ease": null
+     }
+    ]
+   },
+   "camera_confidence": 0.76,
+   "words": [],
+   "luma": 46.6
+  },
+  {
+   "shot": 8,
+   "start": 258,
+   "end": 377,
+   "frames": 120,
+   "seconds": 4.0,
+   "transition_in": [
+    "whip"
+   ],
+   "camera": {
+    "y": [
+     {
+      "frame": 258,
+      "value": 0.0,
+      "ease": "snap"
+     },
+     {
+      "frame": 279,
+      "value": -184.35,
+      "ease": "hold"
+     },
+     {
+      "frame": 284,
+      "value": -184.51,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 300,
+      "value": -219.53,
+      "ease": "linear"
+     },
+     {
+      "frame": 302,
+      "value": -243.42,
+      "ease": "linear"
+     },
+     {
+      "frame": 305,
+      "value": -302.07,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 314,
+      "value": -349.13,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 321,
+      "value": -292.52,
+      "ease": "linear"
+     },
+     {
+      "frame": 322,
+      "value": -255.66,
+      "ease": "linear"
+     },
+     {
+      "frame": 324,
+      "value": -133.87,
+      "ease": "linear"
+     },
+     {
+      "frame": 325,
+      "value": -91.47,
+      "ease": "linear"
+     },
+     {
+      "frame": 326,
+      "value": -62.49,
+      "ease": "linear"
+     },
+     {
+      "frame": 327,
+      "value": -41.06,
+      "ease": "linear"
+     },
+     {
+      "frame": 329,
+      "value": -11.27,
+      "ease": "linear"
+     },
+     {
+      "frame": 331,
+      "value": 8.47,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 341,
+      "value": 42.54,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 350,
+      "value": -54.87,
+      "ease": "linear"
+     },
+     {
+      "frame": 351,
+      "value": -75.79,
+      "ease": "linear"
+     },
+     {
+      "frame": 353,
+      "value": -102.88,
+      "ease": "cubic_out"
+     },
+     {
+      "frame": 370,
+      "value": -150.11,
+      "ease": "hold"
+     },
+     {
+      "frame": 377,
+      "value": -153.55,
+      "ease": null
+     }
+    ],
+    "zoom": [
+     {
+      "frame": 258,
+      "value": 100.0,
+      "ease": "ae_easy"
+     },
+     {
+      "frame": 282,
+      "value": 102.07,
+      "ease": "linear"
+     },
+     {
+      "frame": 302,
+      "value": 103.16,
+      "ease": "linear"
+     },
+     {
+      "frame": 303,
+      "value": 122.68,
+      "ease": "hold"
+     },
+     {
+      "frame": 350,
+      "value": 123.37,
+      "ease": "hold"
+     },
+     {
+      "frame": 366,
+      "value": 123.03,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 376,
+      "value": 105.17,
+      "ease": "linear"
+     },
+     {
+      "frame": 377,
+      "value": 94.16,
+      "ease": null
+     }
+    ]
+   },
+   "camera_confidence": 0.97,
+   "words": [],
+   "luma": 99.1
+  },
+  {
+   "shot": 9,
+   "start": 378,
+   "end": 387,
+   "frames": 10,
+   "seconds": 0.33,
+   "transition_in": [
+    "zoom_punch"
+   ],
+   "camera": {
+    "y": [
+     {
+      "frame": 378,
+      "value": 0.0,
+      "ease": "linear"
+     },
+     {
+      "frame": 380,
+      "value": -4.97,
+      "ease": "quad_in"
+     },
+     {
+      "frame": 382,
+      "value": -13.73,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 387,
+      "value": -22.64,
+      "ease": null
+     }
+    ],
+    "zoom": [
+     {
+      "frame": 378,
+      "value": 100.0,
+      "ease": "snap"
+     },
+     {
+      "frame": 387,
+      "value": 75.8,
+      "ease": null
+     }
+    ],
+    "roll": [
+     {
+      "frame": 378,
+      "value": 0.0,
+      "ease": "hold"
+     },
+     {
+      "frame": 381,
+      "value": -0.13,
+      "ease": "linear"
+     },
+     {
+      "frame": 382,
+      "value": -2.11,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 387,
+      "value": -4.98,
+      "ease": null
+     }
+    ]
+   },
+   "camera_confidence": 0.95,
+   "words": [],
+   "luma": 38.1
+  },
+  {
+   "shot": 10,
+   "start": 388,
+   "end": 401,
+   "frames": 14,
+   "seconds": 0.47,
+   "transition_in": [
+    "hard_cut"
+   ],
+   "camera": {
+    "x": [
+     {
+      "frame": 388,
+      "value": 0.0,
+      "ease": "hold"
+     },
+     {
+      "frame": 390,
+      "value": -0.2,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 399,
+      "value": -57.44,
+      "ease": "linear"
+     },
+     {
+      "frame": 400,
+      "value": -85.39,
+      "ease": "linear"
+     },
+     {
+      "frame": 401,
+      "value": -154.45,
+      "ease": null
+     }
+    ]
+   },
+   "camera_confidence": 1.0,
+   "words": [],
+   "luma": 13.7
+  },
+  {
+   "shot": 11,
+   "start": 402,
+   "end": 434,
+   "frames": 33,
+   "seconds": 1.1,
+   "transition_in": [
+    "invert",
+    "whip"
+   ],
+   "camera": {
+    "x": [
+     {
+      "frame": 402,
+      "value": 0.0,
+      "ease": "linear"
+     },
+     {
+      "frame": 403,
+      "value": -70.08,
+      "ease": "linear"
+     },
+     {
+      "frame": 404,
+      "value": -103.54,
+      "ease": "linear"
+     },
+     {
+      "frame": 406,
+      "value": -143.85,
+      "ease": "linear"
+     },
+     {
+      "frame": 408,
+      "value": -169.41,
+      "ease": "linear"
+     },
+     {
+      "frame": 411,
+      "value": -191.73,
+      "ease": "linear"
+     },
+     {
+      "frame": 424,
+      "value": -246.2,
+      "ease": "linear"
+     },
+     {
+      "frame": 427,
+      "value": -265.73,
+      "ease": "linear"
+     },
+     {
+      "frame": 429,
+      "value": -287.69,
+      "ease": "linear"
+     },
+     {
+      "frame": 431,
+      "value": -318.37,
+      "ease": "linear"
+     },
+     {
+      "frame": 432,
+      "value": -352.2,
+      "ease": "pop"
+     },
+     {
+      "frame": 434,
+      "value": -315.16,
+      "ease": null
+     }
+    ],
+    "y": [
+     {
+      "frame": 402,
+      "value": 0.0,
+      "ease": "hold"
+     },
+     {
+      "frame": 430,
+      "value": -0.57,
+      "ease": "hold"
+     },
+     {
+      "frame": 432,
+      "value": 0.31,
+      "ease": "expo_out"
+     },
+     {
+      "frame": 434,
+      "value": -22.81,
+      "ease": null
+     }
+    ],
+    "zoom": [
+     {
+      "frame": 402,
+      "value": 100.0,
+      "ease": "hold"
+     },
+     {
+      "frame": 406,
+      "value": 99.56,
+      "ease": "linear"
+     },
+     {
+      "frame": 428,
+      "value": 102.74,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 432,
+      "value": 105.9,
+      "ease": "expo_out"
+     },
+     {
+      "frame": 434,
+      "value": 94.27,
+      "ease": null
+     }
+    ]
+   },
+   "camera_confidence": 0.95,
+   "words": [],
+   "luma": 238.9
+  },
+  {
+   "shot": 12,
+   "start": 435,
+   "end": 458,
+   "frames": 24,
+   "seconds": 0.8,
+   "transition_in": [
+    "invert"
+   ],
+   "camera": {
+    "x": [
+     {
+      "frame": 435,
+      "value": 0.0,
+      "ease": "linear"
+     },
+     {
+      "frame": 436,
+      "value": -40.36,
+      "ease": "quart_out"
+     },
+     {
+      "frame": 458,
+      "value": -217.23,
+      "ease": null
+     }
+    ],
+    "y": [
+     {
+      "frame": 435,
+      "value": 0.0,
+      "ease": "hold"
+     },
+     {
+      "frame": 447,
+      "value": -0.74,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 454,
+      "value": -37.65,
+      "ease": "linear"
+     },
+     {
+      "frame": 455,
+      "value": -58.43,
+      "ease": "linear"
+     },
+     {
+      "frame": 456,
+      "value": -88.34,
+      "ease": "linear"
+     },
+     {
+      "frame": 457,
+      "value": -133.61,
+      "ease": "linear"
+     },
+     {
+      "frame": 458,
+      "value": -246.77,
+      "ease": null
+     }
+    ],
+    "zoom": [
+     {
+      "frame": 435,
+      "value": 100.0,
+      "ease": "standard"
+     },
+     {
+      "frame": 458,
+      "value": 98.3,
+      "ease": null
+     }
+    ]
+   },
+   "camera_confidence": 0.73,
+   "words": [],
+   "luma": 28.5
+  },
+  {
+   "shot": 13,
+   "start": 459,
+   "end": 502,
+   "frames": 44,
+   "seconds": 1.47,
+   "transition_in": [
+    "whip"
+   ],
+   "camera": {
+    "x": [
+     {
+      "frame": 459,
+      "value": 0.0,
+      "ease": "hold"
+     },
+     {
+      "frame": 474,
+      "value": 4.63,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 482,
+      "value": -101.14,
+      "ease": "linear"
+     },
+     {
+      "frame": 483,
+      "value": -160.13,
+      "ease": "ae_easy"
+     },
+     {
+      "frame": 486,
+      "value": -339.13,
+      "ease": "ae_easy"
+     },
+     {
+      "frame": 489,
+      "value": -433.36,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 496,
+      "value": -530.55,
+      "ease": "ae_easy"
+     },
+     {
+      "frame": 502,
+      "value": -551.46,
+      "ease": null
+     }
+    ],
+    "y": [
+     {
+      "frame": 459,
+      "value": 0.0,
+      "ease": "linear"
+     },
+     {
+      "frame": 460,
+      "value": -117.39,
+      "ease": "linear"
+     },
+     {
+      "frame": 461,
+      "value": -170.48,
+      "ease": "linear"
+     },
+     {
+      "frame": 462,
+      "value": -203.05,
+      "ease": "linear"
+     },
+     {
+      "frame": 466,
+      "value": -281.6,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 473,
+      "value": -331.89,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 479,
+      "value": -343.46,
+      "ease": "quad_in"
+     },
+     {
+      "frame": 493,
+      "value": -333.41,
+      "ease": "hold"
+     },
+     {
+      "frame": 500,
+      "value": -336.81,
+      "ease": "linear"
+     },
+     {
+      "frame": 502,
+      "value": -324.14,
+      "ease": null
+     }
+    ],
+    "zoom": [
+     {
+      "frame": 459,
+      "value": 100.0,
+      "ease": "quad_inout"
+     },
+     {
+      "frame": 465,
+      "value": 98.3,
+      "ease": "linear"
+     },
+     {
+      "frame": 466,
+      "value": 100.57,
+      "ease": "hold"
+     },
+     {
+      "frame": 473,
+      "value": 99.8,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 491,
+      "value": 98.47,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 499,
+      "value": 88.69,
+      "ease": "linear"
+     },
+     {
+      "frame": 501,
+      "value": 76.41,
+      "ease": "linear"
+     },
+     {
+      "frame": 502,
+      "value": 63.8,
+      "ease": null
+     }
+    ],
+    "roll": [
+     {
+      "frame": 459,
+      "value": 0.0,
+      "ease": "quad_in"
+     },
+     {
+      "frame": 482,
+      "value": 1.69,
+      "ease": "quad_in"
+     },
+     {
+      "frame": 492,
+      "value": 3.89,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 500,
+      "value": 12.77,
+      "ease": "linear"
+     },
+     {
+      "frame": 501,
+      "value": 18.26,
+      "ease": "linear"
+     },
+     {
+      "frame": 502,
+      "value": 30.35,
+      "ease": null
+     }
+    ]
+   },
+   "camera_confidence": 0.44,
+   "words": [],
+   "luma": 40.2
+  },
+  {
+   "shot": 14,
+   "start": 503,
+   "end": 615,
+   "frames": 113,
+   "seconds": 3.77,
+   "transition_in": [
+    "invert",
+    "blur"
+   ],
+   "camera": {
+    "x": [
+     {
+      "frame": 503,
+      "value": 0.0,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 507,
+      "value": -5.71,
+      "ease": "hold"
+     },
+     {
+      "frame": 520,
+      "value": -2.9,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 534,
+      "value": -15.92,
+      "ease": "quad_in"
+     },
+     {
+      "frame": 539,
+      "value": -65.01,
+      "ease": "linear"
+     },
+     {
+      "frame": 540,
+      "value": -96.17,
+      "ease": "linear"
+     },
+     {
+      "frame": 541,
+      "value": -145.21,
+      "ease": "linear"
+     },
+     {
+      "frame": 543,
+      "value": -317.34,
+      "ease": "linear"
+     },
+     {
+      "frame": 544,
+      "value": -370.79,
+      "ease": "linear"
+     },
+     {
+      "frame": 545,
+      "value": -406.63,
+      "ease": "linear"
+     },
+     {
+      "frame": 547,
+      "value": -454.68,
+      "ease": "linear"
+     },
+     {
+      "frame": 549,
+      "value": -487.05,
+      "ease": "cubic_out"
+     },
+     {
+      "frame": 563,
+      "value": -538.82,
+      "ease": "quad_in"
+     },
+     {
+      "frame": 567,
+      "value": -524.83,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 574,
+      "value": -491.15,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 584,
+      "value": -482.6,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 592,
+      "value": -407.68,
+      "ease": "linear"
+     },
+     {
+      "frame": 593,
+      "value": -370.42,
+      "ease": "linear"
+     },
+     {
+      "frame": 594,
+      "value": -316.69,
+      "ease": "linear"
+     },
+     {
+      "frame": 595,
+      "value": -218.27,
+      "ease": "linear"
+     },
+     {
+      "frame": 596,
+      "value": -138.96,
+      "ease": "linear"
+     },
+     {
+      "frame": 597,
+      "value": -71.6,
+      "ease": "linear"
+     },
+     {
+      "frame": 598,
+      "value": -23.59,
+      "ease": "linear"
+     },
+     {
+      "frame": 600,
+      "value": 43.39,
+      "ease": "linear"
+     },
+     {
+      "frame": 602,
+      "value": 85.83,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 614,
+      "value": 181.23,
+      "ease": "hold"
+     },
+     {
+      "frame": 615,
+      "value": 184.17,
+      "ease": null
+     }
+    ],
+    "y": [
+     {
+      "frame": 503,
+      "value": 0.0,
+      "ease": "hold"
+     },
+     {
+      "frame": 506,
+      "value": -1.08,
+      "ease": "pop"
+     },
+     {
+      "frame": 517,
+      "value": -43.77,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 523,
+      "value": -40.16,
+      "ease": "quad_in"
+     },
+     {
+      "frame": 528,
+      "value": -7.14,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 534,
+      "value": 17.06,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 540,
+      "value": -16.54,
+      "ease": "linear"
+     },
+     {
+      "frame": 541,
+      "value": -41.02,
+      "ease": "linear"
+     },
+     {
+      "frame": 543,
+      "value": -124.42,
+      "ease": "linear"
+     },
+     {
+      "frame": 544,
+      "value": -149.7,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 555,
+      "value": -204.18,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 562,
+      "value": -210.58,
+      "ease": "ae_easy"
+     },
+     {
+      "frame": 577,
+      "value": -228.41,
+      "ease": "hold"
+     },
+     {
+      "frame": 585,
+      "value": -226.72,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 594,
+      "value": -315.92,
+      "ease": "linear"
+     },
+     {
+      "frame": 595,
+      "value": -366.48,
+      "ease": "linear"
+     },
+     {
+      "frame": 596,
+      "value": -405.0,
+      "ease": "linear"
+     },
+     {
+      "frame": 597,
+      "value": -431.97,
+      "ease": "linear"
+     },
+     {
+      "frame": 598,
+      "value": -451.47,
+      "ease": "linear"
+     },
+     {
+      "frame": 600,
+      "value": -475.18,
+      "ease": "linear"
+     },
+     {
+      "frame": 603,
+      "value": -492.49,
+      "ease": "ae_easy"
+     },
+     {
+      "frame": 607,
+      "value": -520.59,
+      "ease": "linear"
+     },
+     {
+      "frame": 610,
+      "value": -536.08,
+      "ease": "linear"
+     },
+     {
+      "frame": 615,
+      "value": -551.68,
+      "ease": null
+     }
+    ],
+    "zoom": [
+     {
+      "frame": 503,
+      "value": 100.0,
+      "ease": "hold"
+     },
+     {
+      "frame": 506,
+      "value": 100.18,
+      "ease": "cubic_out"
+     },
+     {
+      "frame": 521,
+      "value": 90.93,
+      "ease": "quad_in"
+     },
+     {
+      "frame": 526,
+      "value": 95.03,
+      "ease": "cubic_out"
+     },
+     {
+      "frame": 538,
+      "value": 111.12,
+      "ease": "quad_inout"
+     },
+     {
+      "frame": 546,
+      "value": 99.72,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 552,
+      "value": 95.79,
+      "ease": "linear"
+     },
+     {
+      "frame": 562,
+      "value": 93.67,
+      "ease": "quad_in"
+     },
+     {
+      "frame": 569,
+      "value": 81.41,
+      "ease": "cubic_out"
+     },
+     {
+      "frame": 583,
+      "value": 72.27,
+      "ease": "quad_in"
+     },
+     {
+      "frame": 594,
+      "value": 69.52,
+      "ease": "out"
+     },
+     {
+      "frame": 597,
+      "value": 66.75,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 604,
+      "value": 64.92,
+      "ease": "linear"
+     },
+     {
+      "frame": 612,
+      "value": 58.06,
+      "ease": "quad_in"
+     },
+     {
+      "frame": 615,
+      "value": 51.97,
+      "ease": null
+     }
+    ],
+    "roll": [
+     {
+      "frame": 503,
+      "value": 0.0,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 507,
+      "value": 3.32,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 521,
+      "value": 9.96,
+      "ease": "quad_inout"
+     },
+     {
+      "frame": 534,
+      "value": 12.45,
+      "ease": "hold"
+     },
+     {
+      "frame": 544,
+      "value": 11.89,
+      "ease": "quart_out"
+     },
+     {
+      "frame": 558,
+      "value": 15.17,
+      "ease": "cubic_inout"
+     },
+     {
+      "frame": 581,
+      "value": 13.17,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 595,
+      "value": 9.68,
+      "ease": "pop"
+     },
+     {
+      "frame": 615,
+      "value": 1.68,
+      "ease": null
+     }
+    ]
+   },
+   "camera_confidence": 0.79,
+   "words": [],
+   "luma": 235.3
+  },
+  {
+   "shot": 15,
+   "start": 616,
+   "end": 675,
+   "frames": 60,
+   "seconds": 2.0,
+   "transition_in": [
+    "blur"
+   ],
+   "camera": {
+    "x": [
+     {
+      "frame": 616,
+      "value": 0.0,
+      "ease": "ae_easy"
+     },
+     {
+      "frame": 635,
+      "value": -1.97,
+      "ease": "hold"
+     },
+     {
+      "frame": 645,
+      "value": -1.6,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 650,
+      "value": -5.38,
+      "ease": "quad_in"
+     },
+     {
+      "frame": 653,
+      "value": -22.86,
+      "ease": "hold"
+     },
+     {
+      "frame": 659,
+      "value": -23.75,
+      "ease": "linear"
+     },
+     {
+      "frame": 660,
+      "value": -31.9,
+      "ease": "linear"
+     },
+     {
+      "frame": 662,
+      "value": -39.6,
+      "ease": "linear"
+     },
+     {
+      "frame": 665,
+      "value": -45.12,
+      "ease": "quad_in"
+     },
+     {
+      "frame": 669,
+      "value": -67.42,
+      "ease": "hold"
+     },
+     {
+      "frame": 675,
+      "value": -67.98,
+      "ease": null
+     }
+    ],
+    "zoom": [
+     {
+      "frame": 616,
+      "value": 100.0,
+      "ease": "ae_easy"
+     },
+     {
+      "frame": 639,
+      "value": 95.65,
+      "ease": "ae_easy"
+     },
+     {
+      "frame": 662,
+      "value": 94.09,
+      "ease": "hold"
+     },
+     {
+      "frame": 675,
+      "value": 94.55,
+      "ease": null
+     }
+    ]
+   },
+   "camera_confidence": 0.67,
+   "words": [],
+   "luma": 232.3
+  },
+  {
+   "shot": 16,
+   "start": 676,
+   "end": 747,
+   "frames": 72,
+   "seconds": 2.4,
+   "transition_in": [
+    "invert",
+    "whip"
+   ],
+   "camera": {
+    "x": [
+     {
+      "frame": 676,
+      "value": 0.0,
+      "ease": "snap"
+     },
+     {
+      "frame": 696,
+      "value": -412.14,
+      "ease": "hold"
+     },
+     {
+      "frame": 703,
+      "value": -412.98,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 713,
+      "value": -470.77,
+      "ease": "linear"
+     },
+     {
+      "frame": 714,
+      "value": -496.81,
+      "ease": "linear"
+     },
+     {
+      "frame": 716,
+      "value": -561.52,
+      "ease": "linear"
+     },
+     {
+      "frame": 717,
+      "value": -586.98,
+      "ease": "linear"
+     },
+     {
+      "frame": 719,
+      "value": -623.91,
+      "ease": "linear"
+     },
+     {
+      "frame": 721,
+      "value": -650.03,
+      "ease": "linear"
+     },
+     {
+      "frame": 724,
+      "value": -678.45,
+      "ease": "linear"
+     },
+     {
+      "frame": 729,
+      "value": -713.23,
+      "ease": "linear"
+     },
+     {
+      "frame": 734,
+      "value": -742.6,
+      "ease": "linear"
+     },
+     {
+      "frame": 740,
+      "value": -771.44,
+      "ease": "linear"
+     },
+     {
+      "frame": 747,
+      "value": -796.34,
+      "ease": null
+     }
+    ],
+    "y": [
+     {
+      "frame": 676,
+      "value": 0.0,
+      "ease": "hold"
+     },
+     {
+      "frame": 680,
+      "value": -0.82,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 703,
+      "value": -5.22,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 712,
+      "value": -27.2,
+      "ease": "linear"
+     },
+     {
+      "frame": 713,
+      "value": -37.05,
+      "ease": "linear"
+     },
+     {
+      "frame": 714,
+      "value": -51.58,
+      "ease": "linear"
+     },
+     {
+      "frame": 716,
+      "value": -88.46,
+      "ease": "linear"
+     },
+     {
+      "frame": 717,
+      "value": -102.78,
+      "ease": "linear"
+     },
+     {
+      "frame": 718,
+      "value": -114.43,
+      "ease": "linear"
+     },
+     {
+      "frame": 719,
+      "value": -123.81,
+      "ease": "linear"
+     },
+     {
+      "frame": 721,
+      "value": -139.0,
+      "ease": "linear"
+     },
+     {
+      "frame": 723,
+      "value": -150.47,
+      "ease": "linear"
+     },
+     {
+      "frame": 727,
+      "value": -167.43,
+      "ease": "linear"
+     },
+     {
+      "frame": 731,
+      "value": -182.5,
+      "ease": "linear"
+     },
+     {
+      "frame": 735,
+      "value": -195.54,
+      "ease": "linear"
+     },
+     {
+      "frame": 740,
+      "value": -210.02,
+      "ease": "linear"
+     },
+     {
+      "frame": 745,
+      "value": -221.34,
+      "ease": "linear"
+     },
+     {
+      "frame": 747,
+      "value": -224.57,
+      "ease": null
+     }
+    ],
+    "zoom": [
+     {
+      "frame": 676,
+      "value": 100.0,
+      "ease": "hold"
+     },
+     {
+      "frame": 686,
+      "value": 99.69,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 695,
+      "value": 93.53,
+      "ease": "push"
+     },
+     {
+      "frame": 702,
+      "value": 81.24,
+      "ease": "quart_out"
+     },
+     {
+      "frame": 736,
+      "value": 79.27,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 745,
+      "value": 76.59,
+      "ease": "quad_in"
+     },
+     {
+      "frame": 747,
+      "value": 72.14,
+      "ease": null
+     }
+    ]
+   },
+   "camera_confidence": 0.84,
+   "words": [],
+   "luma": 61.0
+  },
+  {
+   "shot": 17,
+   "start": 748,
+   "end": 774,
+   "frames": 27,
+   "seconds": 0.9,
+   "transition_in": [
+    "hard_cut"
+   ],
+   "camera": {
+    "zoom": [
+     {
+      "frame": 748,
+      "value": 100.0,
+      "ease": "snap"
+     },
+     {
+      "frame": 766,
+      "value": 88.92,
+      "ease": "hold"
+     },
+     {
+      "frame": 774,
+      "value": 88.93,
+      "ease": null
+     }
+    ]
+   },
+   "camera_confidence": 0.99,
+   "words": [],
+   "luma": 36.4
+  },
+  {
+   "shot": 18,
+   "start": 775,
+   "end": 796,
+   "frames": 22,
+   "seconds": 0.73,
+   "transition_in": [
+    "flash_white"
+   ],
+   "camera": {
+    "x": [
+     {
+      "frame": 775,
+      "value": 0.0,
+      "ease": "hold"
+     },
+     {
+      "frame": 779,
+      "value": -0.96,
+      "ease": "linear"
+     },
+     {
+      "frame": 780,
+      "value": 1371.56,
+      "ease": "hold"
+     },
+     {
+      "frame": 786,
+      "value": 1372.27,
+      "ease": "pop"
+     },
+     {
+      "frame": 789,
+      "value": 1389.31,
+      "ease": "linear"
+     },
+     {
+      "frame": 790,
+      "value": 753.79,
+      "ease": "hold"
+     },
+     {
+      "frame": 794,
+      "value": 753.19,
+      "ease": "expo_out"
+     },
+     {
+      "frame": 796,
+      "value": 772.9,
+      "ease": null
+     }
+    ],
+    "y": [
+     {
+      "frame": 775,
+      "value": 0.0,
+      "ease": "hold"
+     },
+     {
+      "frame": 777,
+      "value": 0.78,
+      "ease": "hold"
+     },
+     {
+      "frame": 786,
+      "value": 0.11,
+      "ease": "expo_out"
+     },
+     {
+      "frame": 789,
+      "value": 9.58,
+      "ease": "linear"
+     },
+     {
+      "frame": 790,
+      "value": 212.2,
+      "ease": "hold"
+     },
+     {
+      "frame": 794,
+      "value": 212.63,
+      "ease": "expo_out"
+     },
+     {
+      "frame": 796,
+      "value": 222.64,
+      "ease": null
+     }
+    ],
+    "zoom": [
+     {
+      "frame": 775,
+      "value": 100.0,
+      "ease": "hold"
+     },
+     {
+      "frame": 779,
+      "value": 100.08,
+      "ease": "linear"
+     },
+     {
+      "frame": 780,
+      "value": 95.2,
+      "ease": "hold"
+     },
+     {
+      "frame": 786,
+      "value": 95.31,
+      "ease": "pop"
+     },
+     {
+      "frame": 789,
+      "value": 97.49,
+      "ease": "expo_out"
+     },
+     {
+      "frame": 791,
+      "value": 100.25,
+      "ease": "quad_in"
+     },
+     {
+      "frame": 796,
+      "value": 99.02,
+      "ease": null
+     }
+    ],
+    "roll": [
+     {
+      "frame": 775,
+      "value": 0.0,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 786,
+      "value": 1.29,
+      "ease": "pop"
+     },
+     {
+      "frame": 789,
+      "value": 2.9,
+      "ease": "hold"
+     },
+     {
+      "frame": 796,
+      "value": 3.74,
+      "ease": null
+     }
+    ]
+   },
+   "camera_confidence": 0.74,
+   "words": [],
+   "luma": 137.3
+  },
+  {
+   "shot": 19,
+   "start": 797,
+   "end": 821,
+   "frames": 25,
+   "seconds": 0.83,
+   "transition_in": [
+    "flash_white",
+    "invert",
+    "blur"
+   ],
+   "camera": {
+    "y": [
+     {
+      "frame": 797,
+      "value": 0.0,
+      "ease": "hold"
+     },
+     {
+      "frame": 808,
+      "value": 0.03,
+      "ease": "quad_inout"
+     },
+     {
+      "frame": 816,
+      "value": -1.14,
+      "ease": "linear"
+     },
+     {
+      "frame": 817,
+      "value": -15.78,
+      "ease": "hold"
+     },
+     {
+      "frame": 821,
+      "value": -15.5,
+      "ease": null
+     }
+    ]
+   },
+   "camera_confidence": 0.81,
+   "words": [],
+   "luma": 83.3
+  },
+  {
+   "shot": 20,
+   "start": 822,
+   "end": 876,
+   "frames": 55,
+   "seconds": 1.83,
+   "transition_in": [
+    "flash_white",
+    "blur"
+   ],
+   "camera": {},
+   "camera_confidence": 1.0,
+   "words": [],
+   "luma": 44.8
+  },
+  {
+   "shot": 21,
+   "start": 877,
+   "end": 929,
+   "frames": 53,
+   "seconds": 1.77,
+   "transition_in": [
+    "hard_cut"
+   ],
+   "camera": {
+    "zoom": [
+     {
+      "frame": 877,
+      "value": 100.0,
+      "ease": "linear"
+     },
+     {
+      "frame": 916,
+      "value": 102.17,
+      "ease": "quad_in"
+     },
+     {
+      "frame": 927,
+      "value": 105.06,
+      "ease": "expo_out"
+     },
+     {
+      "frame": 929,
+      "value": 108.11,
+      "ease": null
+     }
+    ]
+   },
+   "camera_confidence": 0.87,
+   "words": [],
+   "luma": 127.8
+  },
+  {
+   "shot": 22,
+   "start": 930,
+   "end": 1066,
+   "frames": 137,
+   "seconds": 4.57,
+   "transition_in": [
+    "zoom_punch"
+   ],
+   "camera": {
+    "x": [
+     {
+      "frame": 930,
+      "value": 0.0,
+      "ease": "quad_in"
+     },
+     {
+      "frame": 932,
+      "value": 2.44,
+      "ease": "dolly"
+     },
+     {
+      "frame": 938,
+      "value": 4.1,
+      "ease": "out"
+     },
+     {
+      "frame": 943,
+      "value": 2.19,
+      "ease": "ae_easy"
+     },
+     {
+      "frame": 946,
+      "value": -1.09,
+      "ease": "linear"
+     },
+     {
+      "frame": 947,
+      "value": 0.25,
+      "ease": "linear"
+     },
+     {
+      "frame": 948,
+      "value": -1.79,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 951,
+      "value": -0.08,
+      "ease": "back_out"
+     },
+     {
+      "frame": 962,
+      "value": -1.93,
+      "ease": "hold"
+     },
+     {
+      "frame": 980,
+      "value": -1.06,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 982,
+      "value": 0.22,
+      "ease": "linear"
+     },
+     {
+      "frame": 983,
+      "value": 61.98,
+      "ease": "expo_out"
+     },
+     {
+      "frame": 986,
+      "value": 60.89,
+      "ease": "quad_in"
+     },
+     {
+      "frame": 992,
+      "value": 59.07,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 996,
+      "value": 37.23,
+      "ease": "linear"
+     },
+     {
+      "frame": 997,
+      "value": 8.5,
+      "ease": "linear"
+     },
+     {
+      "frame": 999,
+      "value": -157.26,
+      "ease": "linear"
+     },
+     {
+      "frame": 1000,
+      "value": -161.83,
+      "ease": "linear"
+     },
+     {
+      "frame": 1001,
+      "value": -181.42,
+      "ease": "quart_out"
+     },
+     {
+      "frame": 1003,
+      "value": -208.6,
+      "ease": "back_out"
+     },
+     {
+      "frame": 1006,
+      "value": -212.4,
+      "ease": "snap"
+     },
+     {
+      "frame": 1034,
+      "value": -210.45,
+      "ease": "linear"
+     },
+     {
+      "frame": 1035,
+      "value": 5.96,
+      "ease": "hold"
+     },
+     {
+      "frame": 1066,
+      "value": 5.27,
+      "ease": null
+     }
+    ],
+    "y": [
+     {
+      "frame": 930,
+      "value": 0.0,
+      "ease": "hold"
+     },
+     {
+      "frame": 934,
+      "value": 1.57,
+      "ease": "linear"
+     },
+     {
+      "frame": 943,
+      "value": -1.03,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 947,
+      "value": -15.34,
+      "ease": "linear"
+     },
+     {
+      "frame": 950,
+      "value": -44.64,
+      "ease": "push"
+     },
+     {
+      "frame": 952,
+      "value": -59.42,
+      "ease": "quad_in"
+     },
+     {
+      "frame": 954,
+      "value": -47.37,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 958,
+      "value": -25.73,
+      "ease": "ae_easy"
+     },
+     {
+      "frame": 964,
+      "value": -31.5,
+      "ease": "cubic_inout"
+     },
+     {
+      "frame": 973,
+      "value": -27.06,
+      "ease": "quad_in"
+     },
+     {
+      "frame": 983,
+      "value": -31.69,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 985,
+      "value": -84.76,
+      "ease": "quart_out"
+     },
+     {
+      "frame": 994,
+      "value": -104.82,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 998,
+      "value": -107.79,
+      "ease": "dolly"
+     },
+     {
+      "frame": 1001,
+      "value": -122.36,
+      "ease": "quart_out"
+     },
+     {
+      "frame": 1008,
+      "value": -133.56,
+      "ease": "hold"
+     },
+     {
+      "frame": 1025,
+      "value": -133.84,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 1033,
+      "value": -147.38,
+      "ease": "quad_in"
+     },
+     {
+      "frame": 1035,
+      "value": -174.28,
+      "ease": "linear"
+     },
+     {
+      "frame": 1036,
+      "value": -196.98,
+      "ease": "linear"
+     },
+     {
+      "frame": 1037,
+      "value": -209.86,
+      "ease": "linear"
+     },
+     {
+      "frame": 1038,
+      "value": -218.34,
+      "ease": "linear"
+     },
+     {
+      "frame": 1040,
+      "value": -228.51,
+      "ease": "linear"
+     },
+     {
+      "frame": 1043,
+      "value": -236.51,
+      "ease": "linear"
+     },
+     {
+      "frame": 1055,
+      "value": -255.8,
+      "ease": "quad_in"
+     },
+     {
+      "frame": 1062,
+      "value": -303.84,
+      "ease": "linear"
+     },
+     {
+      "frame": 1063,
+      "value": -322.41,
+      "ease": "linear"
+     },
+     {
+      "frame": 1064,
+      "value": -349.82,
+      "ease": "expo_out"
+     },
+     {
+      "frame": 1066,
+      "value": -417.33,
+      "ease": null
+     }
+    ],
+    "zoom": [
+     {
+      "frame": 930,
+      "value": 100.0,
+      "ease": "linear"
+     },
+     {
+      "frame": 931,
+      "value": 110.3,
+      "ease": "linear"
+     },
+     {
+      "frame": 932,
+      "value": 118.37,
+      "ease": "linear"
+     },
+     {
+      "frame": 933,
+      "value": 124.56,
+      "ease": "linear"
+     },
+     {
+      "frame": 937,
+      "value": 140.52,
+      "ease": "linear"
+     },
+     {
+      "frame": 939,
+      "value": 145.21,
+      "ease": "linear"
+     },
+     {
+      "frame": 944,
+      "value": 151.05,
+      "ease": "linear"
+     },
+     {
+      "frame": 946,
+      "value": 165.25,
+      "ease": "linear"
+     },
+     {
+      "frame": 948,
+      "value": 176.94,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 951,
+      "value": 188.29,
+      "ease": "linear"
+     },
+     {
+      "frame": 957,
+      "value": 185.76,
+      "ease": "push"
+     },
+     {
+      "frame": 965,
+      "value": 187.84,
+      "ease": "standard"
+     },
+     {
+      "frame": 973,
+      "value": 192.69,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 980,
+      "value": 170.07,
+      "ease": "linear"
+     },
+     {
+      "frame": 981,
+      "value": 157.78,
+      "ease": "linear"
+     },
+     {
+      "frame": 982,
+      "value": 135.49,
+      "ease": "linear"
+     },
+     {
+      "frame": 983,
+      "value": 109.56,
+      "ease": "snap"
+     },
+     {
+      "frame": 990,
+      "value": 147.23,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 993,
+      "value": 148.25,
+      "ease": "out"
+     },
+     {
+      "frame": 998,
+      "value": 144.47,
+      "ease": "hold"
+     },
+     {
+      "frame": 999,
+      "value": 143.62,
+      "ease": "linear"
+     },
+     {
+      "frame": 1000,
+      "value": 146.44,
+      "ease": "standard"
+     },
+     {
+      "frame": 1003,
+      "value": 136.57,
+      "ease": "expo_out"
+     },
+     {
+      "frame": 1008,
+      "value": 133.44,
+      "ease": "linear"
+     },
+     {
+      "frame": 1034,
+      "value": 134.94,
+      "ease": "linear"
+     },
+     {
+      "frame": 1035,
+      "value": 187.27,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 1045,
+      "value": 188.95,
+      "ease": "linear"
+     },
+     {
+      "frame": 1066,
+      "value": 192.61,
+      "ease": null
+     }
+    ],
+    "roll": [
+     {
+      "frame": 930,
+      "value": 0.0,
+      "ease": "hold"
+     },
+     {
+      "frame": 946,
+      "value": -0.75,
+      "ease": "back_out"
+     },
+     {
+      "frame": 949,
+      "value": -1.86,
+      "ease": "dolly"
+     },
+     {
+      "frame": 952,
+      "value": -2.99,
+      "ease": "ae_easy"
+     },
+     {
+      "frame": 958,
+      "value": -1.1,
+      "ease": "hold"
+     },
+     {
+      "frame": 976,
+      "value": -1.38,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 982,
+      "value": -2.6,
+      "ease": "expo_out"
+     },
+     {
+      "frame": 984,
+      "value": 3.7,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 997,
+      "value": 4.85,
+      "ease": "dolly"
+     },
+     {
+      "frame": 1002,
+      "value": 2.74,
+      "ease": "push"
+     },
+     {
+      "frame": 1010,
+      "value": 1.23,
+      "ease": "hold"
+     },
+     {
+      "frame": 1066,
+      "value": 0.66,
+      "ease": null
+     }
+    ]
+   },
+   "camera_confidence": 0.86,
+   "words": [],
+   "luma": 17.2
+  },
+  {
+   "shot": 23,
+   "start": 1067,
+   "end": 1103,
+   "frames": 37,
+   "seconds": 1.23,
+   "transition_in": [
+    "invert",
+    "whip"
+   ],
+   "camera": {
+    "x": [
+     {
+      "frame": 1067,
+      "value": 0.0,
+      "ease": "expo_out"
+     },
+     {
+      "frame": 1072,
+      "value": 5.09,
+      "ease": "hold"
+     },
+     {
+      "frame": 1092,
+      "value": 4.43,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 1097,
+      "value": -38.4,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 1103,
+      "value": -26.14,
+      "ease": null
+     }
+    ],
+    "y": [
+     {
+      "frame": 1067,
+      "value": 0.0,
+      "ease": "snap"
+     },
+     {
+      "frame": 1088,
+      "value": -449.18,
+      "ease": "linear"
+     },
+     {
+      "frame": 1091,
+      "value": -459.54,
+      "ease": "ae_easy"
+     },
+     {
+      "frame": 1095,
+      "value": -552.77,
+      "ease": "linear"
+     },
+     {
+      "frame": 1099,
+      "value": -607.59,
+      "ease": "linear"
+     },
+     {
+      "frame": 1101,
+      "value": -650.87,
+      "ease": "linear"
+     },
+     {
+      "frame": 1102,
+      "value": -687.68,
+      "ease": "linear"
+     },
+     {
+      "frame": 1103,
+      "value": -770.22,
+      "ease": null
+     }
+    ],
+    "zoom": [
+     {
+      "frame": 1067,
+      "value": 100.0,
+      "ease": "ae_easy"
+     },
+     {
+      "frame": 1083,
+      "value": 97.14,
+      "ease": "hold"
+     },
+     {
+      "frame": 1087,
+      "value": 96.59,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 1092,
+      "value": 99.43,
+      "ease": "linear"
+     },
+     {
+      "frame": 1093,
+      "value": 82.51,
+      "ease": "out"
+     },
+     {
+      "frame": 1096,
+      "value": 85.71,
+      "ease": "linear"
+     },
+     {
+      "frame": 1103,
+      "value": 83.08,
+      "ease": null
+     }
+    ],
+    "roll": [
+     {
+      "frame": 1067,
+      "value": 0.0,
+      "ease": "linear"
+     },
+     {
+      "frame": 1074,
+      "value": 1.2,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 1092,
+      "value": -0.45,
+      "ease": "out"
+     },
+     {
+      "frame": 1094,
+      "value": -4.07,
+      "ease": "linear"
+     },
+     {
+      "frame": 1100,
+      "value": -6.31,
+      "ease": "quad_in"
+     },
+     {
+      "frame": 1103,
+      "value": -9.68,
+      "ease": null
+     }
+    ]
+   },
+   "camera_confidence": 0.71,
+   "words": [],
+   "luma": 231.8
+  },
+  {
+   "shot": 24,
+   "start": 1104,
+   "end": 1134,
+   "frames": 31,
+   "seconds": 1.03,
+   "transition_in": [
+    "whip"
+   ],
+   "camera": {
+    "x": [
+     {
+      "frame": 1104,
+      "value": 0.0,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 1111,
+      "value": -4.51,
+      "ease": "hold"
+     },
+     {
+      "frame": 1125,
+      "value": -3.69,
+      "ease": "quad_in"
+     },
+     {
+      "frame": 1134,
+      "value": -17.03,
+      "ease": null
+     }
+    ],
+    "y": [
+     {
+      "frame": 1104,
+      "value": 0.0,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 1106,
+      "value": -6.08,
+      "ease": "pop"
+     },
+     {
+      "frame": 1111,
+      "value": -10.42,
+      "ease": "dolly"
+     },
+     {
+      "frame": 1116,
+      "value": -11.66,
+      "ease": "linear"
+     },
+     {
+      "frame": 1133,
+      "value": -13.53,
+      "ease": "linear"
+     },
+     {
+      "frame": 1134,
+      "value": -19.75,
+      "ease": null
+     }
+    ],
+    "zoom": [
+     {
+      "frame": 1104,
+      "value": 100.0,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 1106,
+      "value": 79.5,
+      "ease": "linear"
+     },
+     {
+      "frame": 1108,
+      "value": 73.91,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 1120,
+      "value": 65.64,
+      "ease": "linear"
+     },
+     {
+      "frame": 1125,
+      "value": 64.36,
+      "ease": "quad_in"
+     },
+     {
+      "frame": 1132,
+      "value": 60.26,
+      "ease": "quad_in"
+     },
+     {
+      "frame": 1134,
+      "value": 49.93,
+      "ease": null
+     }
+    ],
+    "roll": [
+     {
+      "frame": 1104,
+      "value": 0.0,
+      "ease": "pop"
+     },
+     {
+      "frame": 1107,
+      "value": -1.69,
+      "ease": "quart_out"
+     },
+     {
+      "frame": 1133,
+      "value": -3.84,
+      "ease": "linear"
+     },
+     {
+      "frame": 1134,
+      "value": -6.22,
+      "ease": null
+     }
+    ]
+   },
+   "camera_confidence": 0.55,
+   "words": [],
+   "luma": 222.7
+  },
+  {
+   "shot": 25,
+   "start": 1135,
+   "end": 1167,
+   "frames": 33,
+   "seconds": 1.1,
+   "transition_in": [
+    "invert"
+   ],
+   "camera": {
+    "x": [
+     {
+      "frame": 1135,
+      "value": 0.0,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 1138,
+      "value": 40.08,
+      "ease": "linear"
+     },
+     {
+      "frame": 1141,
+      "value": 55.77,
+      "ease": "linear"
+     },
+     {
+      "frame": 1156,
+      "value": 101.4,
+      "ease": "ae_easy"
+     },
+     {
+      "frame": 1159,
+      "value": 115.64,
+      "ease": "linear"
+     },
+     {
+      "frame": 1163,
+      "value": 138.77,
+      "ease": "linear"
+     },
+     {
+      "frame": 1165,
+      "value": 153.06,
+      "ease": "linear"
+     },
+     {
+      "frame": 1166,
+      "value": 163.91,
+      "ease": "linear"
+     },
+     {
+      "frame": 1167,
+      "value": 189.25,
+      "ease": null
+     }
+    ],
+    "zoom": [
+     {
+      "frame": 1135,
+      "value": 100.0,
+      "ease": "expo_out"
+     },
+     {
+      "frame": 1140,
+      "value": 105.93,
+      "ease": "quad_in"
+     },
+     {
+      "frame": 1156,
+      "value": 101.89,
+      "ease": "linear"
+     },
+     {
+      "frame": 1161,
+      "value": 97.62,
+      "ease": "linear"
+     },
+     {
+      "frame": 1164,
+      "value": 92.06,
+      "ease": "linear"
+     },
+     {
+      "frame": 1165,
+      "value": 88.92,
+      "ease": "linear"
+     },
+     {
+      "frame": 1166,
+      "value": 84.05,
+      "ease": "linear"
+     },
+     {
+      "frame": 1167,
+      "value": 72.42,
+      "ease": null
+     }
+    ]
+   },
+   "camera_confidence": 0.74,
+   "words": [],
+   "luma": 17.9
+  },
+  {
+   "shot": 26,
+   "start": 1168,
+   "end": 1262,
+   "frames": 95,
+   "seconds": 3.17,
+   "transition_in": [
+    "invert"
+   ],
+   "camera": {
+    "x": [
+     {
+      "frame": 1168,
+      "value": 0.0,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 1171,
+      "value": 27.39,
+      "ease": "linear"
+     },
+     {
+      "frame": 1175,
+      "value": 35.5,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 1182,
+      "value": -40.09,
+      "ease": "linear"
+     },
+     {
+      "frame": 1183,
+      "value": -85.2,
+      "ease": "linear"
+     },
+     {
+      "frame": 1184,
+      "value": -42.24,
+      "ease": "linear"
+     },
+     {
+      "frame": 1185,
+      "value": -90.16,
+      "ease": "linear"
+     },
+     {
+      "frame": 1186,
+      "value": -154.66,
+      "ease": "linear"
+     },
+     {
+      "frame": 1187,
+      "value": -191.48,
+      "ease": "linear"
+     },
+     {
+      "frame": 1188,
+      "value": -213.36,
+      "ease": "quart_out"
+     },
+     {
+      "frame": 1198,
+      "value": -252.92,
+      "ease": "hold"
+     },
+     {
+      "frame": 1231,
+      "value": -254.05,
+      "ease": "linear"
+     },
+     {
+      "frame": 1232,
+      "value": -321.32,
+      "ease": "linear"
+     },
+     {
+      "frame": 1236,
+      "value": -315.93,
+      "ease": "linear"
+     },
+     {
+      "frame": 1243,
+      "value": -309.46,
+      "ease": "quad_in"
+     },
+     {
+      "frame": 1253,
+      "value": -345.08,
+      "ease": "linear"
+     },
+     {
+      "frame": 1255,
+      "value": -376.75,
+      "ease": "linear"
+     },
+     {
+      "frame": 1257,
+      "value": -420.68,
+      "ease": "linear"
+     },
+     {
+      "frame": 1258,
+      "value": -449.45,
+      "ease": "linear"
+     },
+     {
+      "frame": 1259,
+      "value": -484.86,
+      "ease": "linear"
+     },
+     {
+      "frame": 1260,
+      "value": -529.39,
+      "ease": "linear"
+     },
+     {
+      "frame": 1261,
+      "value": -600.4,
+      "ease": "linear"
+     },
+     {
+      "frame": 1262,
+      "value": -758.41,
+      "ease": null
+     }
+    ],
+    "y": [
+     {
+      "frame": 1168,
+      "value": 0.0,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 1170,
+      "value": 7.3,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 1172,
+      "value": 11.29,
+      "ease": "back_out"
+     },
+     {
+      "frame": 1177,
+      "value": 8.49,
+      "ease": "hold"
+     },
+     {
+      "frame": 1183,
+      "value": 8.63,
+      "ease": "linear"
+     },
+     {
+      "frame": 1184,
+      "value": 5.65,
+      "ease": "linear"
+     },
+     {
+      "frame": 1185,
+      "value": -86.94,
+      "ease": "pop"
+     },
+     {
+      "frame": 1190,
+      "value": -85.66,
+      "ease": "hold"
+     },
+     {
+      "frame": 1218,
+      "value": -85.56,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 1231,
+      "value": -87.18,
+      "ease": "snap"
+     },
+     {
+      "frame": 1233,
+      "value": -7.09,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 1245,
+      "value": 21.13,
+      "ease": "hold"
+     },
+     {
+      "frame": 1248,
+      "value": 21.1,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 1253,
+      "value": 24.97,
+      "ease": "hold"
+     },
+     {
+      "frame": 1262,
+      "value": 24.69,
+      "ease": null
+     }
+    ],
+    "zoom": [
+     {
+      "frame": 1168,
+      "value": 100.0,
+      "ease": "linear"
+     },
+     {
+      "frame": 1173,
+      "value": 90.93,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 1176,
+      "value": 88.7,
+      "ease": "quad_in"
+     },
+     {
+      "frame": 1183,
+      "value": 90.73,
+      "ease": "linear"
+     },
+     {
+      "frame": 1186,
+      "value": 86.76,
+      "ease": "linear"
+     },
+     {
+      "frame": 1219,
+      "value": 81.43,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 1230,
+      "value": 68.79,
+      "ease": "back_out"
+     },
+     {
+      "frame": 1232,
+      "value": 63.59,
+      "ease": "linear"
+     },
+     {
+      "frame": 1233,
+      "value": 75.22,
+      "ease": "linear"
+     },
+     {
+      "frame": 1234,
+      "value": 81.7,
+      "ease": "pop"
+     },
+     {
+      "frame": 1258,
+      "value": 107.99,
+      "ease": "hold"
+     },
+     {
+      "frame": 1262,
+      "value": 107.67,
+      "ease": null
+     }
+    ],
+    "roll": [
+     {
+      "frame": 1168,
+      "value": 0.0,
+      "ease": "hold"
+     },
+     {
+      "frame": 1170,
+      "value": -0.57,
+      "ease": "quart_out"
+     },
+     {
+      "frame": 1183,
+      "value": 2.27,
+      "ease": "linear"
+     },
+     {
+      "frame": 1184,
+      "value": 1.19,
+      "ease": "hold"
+     },
+     {
+      "frame": 1230,
+      "value": 1.13,
+      "ease": "dolly"
+     },
+     {
+      "frame": 1233,
+      "value": -3.22,
+      "ease": "hold"
+     },
+     {
+      "frame": 1248,
+      "value": -3.12,
+      "ease": "ae_easy"
+     },
+     {
+      "frame": 1262,
+      "value": 0.38,
+      "ease": null
+     }
+    ]
+   },
+   "camera_confidence": 0.8,
+   "words": [],
+   "luma": 216.5
+  },
+  {
+   "shot": 27,
+   "start": 1263,
+   "end": 1293,
+   "frames": 31,
+   "seconds": 1.03,
+   "transition_in": [
+    "whip"
+   ],
+   "camera": {
+    "x": [
+     {
+      "frame": 1263,
+      "value": 0.0,
+      "ease": "linear"
+     },
+     {
+      "frame": 1264,
+      "value": -44.3,
+      "ease": "linear"
+     },
+     {
+      "frame": 1265,
+      "value": -65.67,
+      "ease": "linear"
+     },
+     {
+      "frame": 1267,
+      "value": -96.75,
+      "ease": "linear"
+     },
+     {
+      "frame": 1269,
+      "value": -118.11,
+      "ease": "linear"
+     },
+     {
+      "frame": 1271,
+      "value": -132.61,
+      "ease": "linear"
+     },
+     {
+      "frame": 1275,
+      "value": -150.14,
+      "ease": "linear"
+     },
+     {
+      "frame": 1283,
+      "value": -168.9,
+      "ease": "linear"
+     },
+     {
+      "frame": 1286,
+      "value": -180.86,
+      "ease": "linear"
+     },
+     {
+      "frame": 1288,
+      "value": -194.19,
+      "ease": "linear"
+     },
+     {
+      "frame": 1290,
+      "value": -214.85,
+      "ease": "linear"
+     },
+     {
+      "frame": 1292,
+      "value": -247.99,
+      "ease": "linear"
+     },
+     {
+      "frame": 1293,
+      "value": -274.14,
+      "ease": null
+     }
+    ],
+    "zoom": [
+     {
+      "frame": 1263,
+      "value": 100.0,
+      "ease": "linear"
+     },
+     {
+      "frame": 1266,
+      "value": 98.48,
+      "ease": "expo_out"
+     },
+     {
+      "frame": 1287,
+      "value": 90.21,
+      "ease": "hold"
+     },
+     {
+      "frame": 1293,
+      "value": 90.53,
+      "ease": null
+     }
+    ]
+   },
+   "camera_confidence": 0.99,
+   "words": [],
+   "luma": 240.8
+  },
+  {
+   "shot": 28,
+   "start": 1294,
+   "end": 1324,
+   "frames": 31,
+   "seconds": 1.03,
+   "transition_in": [
+    "invert",
+    "whip"
+   ],
+   "camera": {
+    "x": [
+     {
+      "frame": 1294,
+      "value": 0.0,
+      "ease": "linear"
+     },
+     {
+      "frame": 1295,
+      "value": -66.28,
+      "ease": "linear"
+     },
+     {
+      "frame": 1296,
+      "value": -98.38,
+      "ease": "linear"
+     },
+     {
+      "frame": 1297,
+      "value": -121.85,
+      "ease": "linear"
+     },
+     {
+      "frame": 1298,
+      "value": -140.43,
+      "ease": "linear"
+     },
+     {
+      "frame": 1301,
+      "value": -182.99,
+      "ease": "cubic_out"
+     },
+     {
+      "frame": 1317,
+      "value": -239.93,
+      "ease": "hold"
+     },
+     {
+      "frame": 1324,
+      "value": -240.1,
+      "ease": null
+     }
+    ],
+    "y": [
+     {
+      "frame": 1294,
+      "value": 0.0,
+      "ease": "hold"
+     },
+     {
+      "frame": 1313,
+      "value": -0.17,
+      "ease": "cubic_in"
+     },
+     {
+      "frame": 1319,
+      "value": -26.02,
+      "ease": "linear"
+     },
+     {
+      "frame": 1320,
+      "value": -40.47,
+      "ease": "linear"
+     },
+     {
+      "frame": 1321,
+      "value": -60.07,
+      "ease": "linear"
+     },
+     {
+      "frame": 1322,
+      "value": -87.44,
+      "ease": "linear"
+     },
+     {
+      "frame": 1323,
+      "value": -129.44,
+      "ease": "linear"
+     },
+     {
+      "frame": 1324,
+      "value": -233.57,
+      "ease": null
+     }
+    ],
+    "zoom": [
+     {
+      "frame": 1294,
+      "value": 100.0,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 1300,
+      "value": 95.65,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 1305,
+      "value": 89.26,
+      "ease": "cubic_out"
+     },
+     {
+      "frame": 1324,
+      "value": 87.42,
+      "ease": null
+     }
+    ]
+   },
+   "camera_confidence": 0.99,
+   "words": [],
+   "luma": 11.2
+  },
+  {
+   "shot": 29,
+   "start": 1325,
+   "end": 1360,
+   "frames": 36,
+   "seconds": 1.2,
+   "transition_in": [
+    "invert",
+    "whip"
+   ],
+   "camera": {
+    "x": [
+     {
+      "frame": 1325,
+      "value": 0.0,
+      "ease": "linear"
+     },
+     {
+      "frame": 1326,
+      "value": -8.6,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 1329,
+      "value": -13.06,
+      "ease": "push"
+     },
+     {
+      "frame": 1332,
+      "value": -19.03,
+      "ease": "hold"
+     },
+     {
+      "frame": 1360,
+      "value": -19.41,
+      "ease": null
+     }
+    ],
+    "y": [
+     {
+      "frame": 1325,
+      "value": 0.0,
+      "ease": "linear"
+     },
+     {
+      "frame": 1326,
+      "value": -89.03,
+      "ease": "linear"
+     },
+     {
+      "frame": 1327,
+      "value": -131.21,
+      "ease": "linear"
+     },
+     {
+      "frame": 1328,
+      "value": -161.9,
+      "ease": "linear"
+     },
+     {
+      "frame": 1330,
+      "value": -211.17,
+      "ease": "linear"
+     },
+     {
+      "frame": 1331,
+      "value": -230.37,
+      "ease": "linear"
+     },
+     {
+      "frame": 1332,
+      "value": -245.64,
+      "ease": "cubic_out"
+     },
+     {
+      "frame": 1349,
+      "value": -320.29,
+      "ease": "hold"
+     },
+     {
+      "frame": 1360,
+      "value": -320.79,
+      "ease": null
+     }
+    ],
+    "roll": [
+     {
+      "frame": 1325,
+      "value": 0.0,
+      "ease": "quad_out"
+     },
+     {
+      "frame": 1329,
+      "value": -3.24,
+      "ease": "snap"
+     },
+     {
+      "frame": 1356,
+      "value": -9.71,
+      "ease": "hold"
+     },
+     {
+      "frame": 1360,
+      "value": -9.72,
+      "ease": null
+     }
+    ]
+   },
+   "camera_confidence": 0.98,
+   "words": [],
+   "luma": 240.0
+  },
+  {
+   "shot": 30,
+   "start": 1361,
+   "end": 1361,
+   "frames": 1,
+   "seconds": 0.03,
+   "transition_in": [
+    "invert"
+   ],
+   "camera": {},
+   "camera_confidence": 0,
+   "words": [],
+   "luma": 0.0
+  }
+ ],
+ "archetype": null,
+ "timing_s": {
+  "ingest": 4.6,
+  "measure": 17.7,
+  "text": 0.0
+ }
+}

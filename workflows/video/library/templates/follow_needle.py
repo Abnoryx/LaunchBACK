@@ -121,7 +121,8 @@ def build(proj, name='follow_needle', **params):
         pos, ori = pen[0], pen[1]
         f3, sc3 = (pen[2], pen[3]) if len(pen) > 2 else ((pf, pw, ph), 55)
         L = c.footage(proj.still(*f3), 0, end, three_d_layer=True)
-        c.transform(L, pos=pos, scale=[sc3, sc3, sc3], ori=[0, 0, ori])
+        po = T.get('props_out')   # optional (from, to) fade-out, e.g. when another template takes over mid-shot
+        c.transform(L, pos=pos, scale=[sc3, sc3, sc3], ori=[0, 0, ori], op=K((po[0] * F, 100.0, EASE), (po[1] * F, 0.0)) if po else None)
         c.effects(L, P('Curves', 'ADBE CurvesCustom', children=[P('Curves', 'ADBE CurvesCustom-0001', v={'_curves': 1, 'channels': {'rgb': [[0, 0], [182, 92], [255, 178]]}})]),
                   gaussian(42.1))
     # ---- accent word: rises in per word, dark band through the lower x-height

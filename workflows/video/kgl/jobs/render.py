@@ -12,12 +12,16 @@ if os.path.isdir('video/tplfonts') and not os.path.exists('/home/user/tpl/fonts'
 os.chdir('video'); r = sh(f'{NPM} ci --silent && {NPM} i --no-save --silent playwright@1.63.0 && {NPX} playwright install --with-deps chromium')   # playwright is global locally, not in package.json; print('setup', r.returncode, r.stderr[-300:])
 os.environ['RENDER_GPU'] = '1'
 lst = []
-for name, dur in cfg['comps']:
-    t = time.time(); o = f'/kaggle/working/shots/{name}.mp4'; os.makedirs('/kaggle/working/shots', exist_ok=True)
-    r = subprocess.run(['node', 'engine/render.mjs', '--project', cfg['project'], '--footage', cfg['footage'], '--comp', name, '--from', '0',
-                        '--to', str(dur), '--fps', '30', *cfg.get('extra', []), '--out', o], capture_output=True, text=True)
-    print(name, r.returncode, f'{time.time() - t:.0f}s', r.stdout[-200:].replace('\n', ' | '), r.stderr[-300:], flush=True)
-    lst.append(f"file '{o}'")
+# entries: [comp, dur] (whole comp) or [comp, from, to, label] (one scene); each scene is kept as its own file in OUT
+for e in cfg['comps']:
+    name, a, b, label = (e[0], 0, e[1], e[0]) if len(e) == 2 else e
+    t = time.time(); o = f"{os.environ['OUT']}/{label}.mp4"
+    r = subprocess.run(['node', 'engine/render.mjs', '--project', cfg['project'], '--footage', cfg['footage'], '--comp', name, '--from', str(a),
+                        '--to', str(b), '--fps', '30', *cfg.get('extra', []), '--out', o], capture_output=True, text=True)
+    ok = r.returncode == 0 and os.path.exists(o)
+    print(label, 'ok' if ok else 'FAILED', f'{time.time() - t:.0f}s', r.stdout[-200:].replace('\n', ' | '), '' if ok else r.stderr[-600:], flush=True)
+    if ok: lst.append(f"file '{o}'")
 open('/kaggle/working/list.txt', 'w').write('\n'.join(lst))
-sh(f"ffmpeg -v error -y -f concat -safe 0 -i /kaggle/working/list.txt -c:v libx264 -crf {cfg.get('crf', 17)} -pix_fmt yuv420p {os.environ['OUT']}/{cfg['out']}")
+if cfg.get('out') and lst:   # showcase: the scenes stitched together
+    sh(f"ffmpeg -v error -y -f concat -safe 0 -i /kaggle/working/list.txt -c:v libx264 -crf {cfg.get('crf', 17)} -pix_fmt yuv420p {os.environ['OUT']}/{cfg['out']}")
 print('done', os.listdir(os.environ['OUT']))

@@ -484,6 +484,20 @@
     }
    }
   },
+  "needle_wave": {
+   "file": "templates/needle_wave.py",
+   "source": "reel S9 f845-933",
+   "slots": [
+    "cta",
+    "accent",
+    "small",
+    "big",
+    "needle.assets (hand, plate, logo, pen)",
+    "needle.layout/timing/wave"
+   ],
+   "status": "draft",
+   "notes": "follow_needle head (f845-882) dissolving over 3 f into the user-supplied move_the_needle recreation (templates/move_the_needle: measured wavy white reveal + halo, arm grip, dark wipe). Replaces follow_needle in Michelin S20 (user, 2026-11-21)."
+  },
   "flare_script": {
    "file": "templates/flare_script.py",
    "status": "draft",

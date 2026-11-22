@@ -89,6 +89,10 @@ export class Engine {
         const p = e?.c?.find((x) => !x.c);
         return p ? evalProp(p, self._t) : 0;
       },
+      effectProp(name) {
+        const fx = findM(L, 'ADBE Effect Parade');
+        return fx?.c?.find((x) => x.n === name)?.c?.find((x) => !x.c);
+      },
       ctrl(compName, layerName, effName) {
         const c = self.compsByName.get(compName);
         const l = c?.layers.find((x) => x.name === layerName);
@@ -264,7 +268,7 @@ export class Engine {
     const ev = (p, d) => (p ? evalProp(p, t, ctxE) : d);
     const draws = []; // {path:Path2D in layer coords, fill, stroke, width, m:DOMMatrix}
     const pts = [];
-    const walk = (grp, mat, opacity) => {
+    const walk = (grp, mat, opacity, inTrim = null) => {
       const items = findM(grp, 'ADBE Vectors Group')?.c || grp.c || [];
       const paths = [];
       let localM = mat;
@@ -275,11 +279,11 @@ export class Engine {
         opacity *= ev(findM(vt, 'ADBE Vector Group Opacity'), 100) / 100;
         localM = mat.multiply(new DOMMatrix().translate(p[0], p[1]).rotate(r).scale(s[0] / 100, s[1] / 100).translate(-a[0], -a[1]));
       }
-      let trim = null;
-      for (const it of items) if (it.m === 'ADBE Vector Filter - Trim') trim = { s: ev(findM(it, 'ADBE Vector Trim Start'), 0), e: ev(findM(it, 'ADBE Vector Trim End'), 100), o: ev(findM(it, 'ADBE Vector Trim Offset'), 0) };
+      let trim = inTrim; // AE: a Trim Paths also trims the groups above it in its parent
+      for (const it of items) if (it.m === 'ADBE Vector Filter - Trim' && !it.off) trim = { s: ev(findM(it, 'ADBE Vector Trim Start'), 0), e: ev(findM(it, 'ADBE Vector Trim End'), 100), o: ev(findM(it, 'ADBE Vector Trim Offset'), 0) };
       for (const it of items) {
         if (it.off) continue; // disabled in AE
-        if (it.m === 'ADBE Vector Group') { walk(it, localM, opacity); continue; }
+        if (it.m === 'ADBE Vector Group') { walk(it, localM, opacity, trim); continue; }
         if (it.m === 'ADBE Vector Shape - Rect') {
           const sz = ev(findM(it, 'ADBE Vector Rect Size'), [100, 100]), ps = ev(findM(it, 'ADBE Vector Rect Position'), [0, 0]);
           const rd = Math.min(ev(findM(it, 'ADBE Vector Rect Roundness'), 0), sz[0] / 2, sz[1] / 2);
@@ -304,11 +308,23 @@ export class Engine {
         } else if (it.m === 'ADBE Vector Shape - Group') {
           const sh = ev(findM(it, 'ADBE Vector Shape'), null);
           if (sh && sh._shape) { const bp = bezPath(sh); bp._len = bezLen(sh); paths.push(bp); for (const v of sh.vtx) pts.push([localM, v[0], v[1]]); }
+        } else if (it.m === 'ADBE Vector Filter - Merge') {   // Merge Paths: 1 merge, 2 add, 3 subtract, 4 intersect, 5 exclude
+          if (paths.length > 1) { const parts = paths.splice(0); paths.push({ merge: ev(findM(it, 'ADBE Vector Merge Type'), 2), parts }); }
         } else if (it.m === 'ADBE Vector Graphic - Fill' || it.m === 'ADBE Vector Graphic - Stroke') {
           const col = ev(findM(it, it.m.endsWith('Fill') ? 'ADBE Vector Fill Color' : 'ADBE Vector Stroke Color'), [1, 1, 1, 1]);
           const o = ev(findM(it, it.m.endsWith('Fill') ? 'ADBE Vector Fill Opacity' : 'ADBE Vector Stroke Opacity'), 100) / 100;
           const w = it.m.endsWith('Stroke') ? ev(findM(it, 'ADBE Vector Stroke Width'), 2) : 0;
+          if (it.m.endsWith('Stroke') && w <= 0) continue;   // AE draws nothing; canvas would ignore lineWidth 0 and draw 1px
           for (const p of paths) draws.push({ p, m: localM, col, o: o * opacity, stroke: it.m.endsWith('Stroke'), w, trim });
+        } else if (it.m === 'ADBE Vector Graphic - G-Fill' || it.m === 'ADBE Vector Graphic - G-Stroke') {
+          const stroke = it.m.endsWith('Stroke');
+          const w = stroke ? ev(findM(it, 'ADBE Vector Stroke Width'), 2) : 0;
+          if (stroke && w <= 0) continue;
+          const g = ev(findM(it, 'ADBE Vector Grad Colors'), null);
+          const o = ev(findM(it, stroke ? 'ADBE Vector Stroke Opacity' : 'ADBE Vector Fill Opacity'), 100) / 100;
+          const grad = { type: ev(findM(it, 'ADBE Vector Grad Type'), 1), s: ev(findM(it, 'ADBE Vector Grad Start Pt'), [0, 0]),
+                         e: ev(findM(it, 'ADBE Vector Grad End Pt'), [100, 0]), stops: gradStops(g) };
+          for (const p of paths) draws.push({ p, m: localM, col: [1, 1, 1, 1], o: o * opacity, stroke, w, trim, grad });
         }
       }
     };
@@ -326,15 +342,21 @@ export class Engine {
       c.save();
       c.setTransform(new DOMMatrix().scale(ss, ss).translate(-x0, -y0).multiply(d.m));
       c.globalAlpha = Math.max(0, Math.min(1, d.o * (d.col[3] ?? 1)));
-      const css = `rgb(${d.col.slice(0, 3).map((v) => Math.round(v * 255)).join(',')})`;
+      let css = `rgb(${d.col.slice(0, 3).map((v) => Math.round(v * 255)).join(',')})`;
+      if (d.grad) {   // in layer coords: the transform above is already set
+        const { s: a, e: b } = d.grad;
+        css = d.grad.type === 2 ? c.createRadialGradient(a[0], a[1], 0, a[0], a[1], Math.hypot(b[0] - a[0], b[1] - a[1]) || 1)
+                                : c.createLinearGradient(a[0], a[1], b[0], b[1]);
+        for (const [pos, col] of d.grad.stops) css.addColorStop(pos, col);
+      }
       if (d.stroke) {
         c.strokeStyle = css; c.lineWidth = d.w; c.lineCap = 'round'; c.lineJoin = 'round';
         if (d.trim && (d.trim.s !== 0 || d.trim.e !== 100)) { // approximate trim with dash
           const L = d.p._len || 4000, s = (Math.min(d.trim.s, d.trim.e) / 100) * L, e = (Math.max(d.trim.s, d.trim.e) / 100) * L;
           c.setLineDash([Math.max(0.001, e - s), L * 2]); c.lineDashOffset = -s;
         }
-        c.stroke(d.p);
-      } else { c.fillStyle = css; c.fill(d.p); }
+        if (d.p.merge) for (const q of d.p.parts) c.stroke(q); else c.stroke(d.p);
+      } else if (d.p.merge) { c.fillStyle = css; fillMerged(c, d.p, W, H); } else { c.fillStyle = css; c.fill(d.p); }
       c.restore();
     }
     const tex = this.g.texFromImage(cv.transferToImageBitmap());
@@ -474,7 +496,12 @@ export class Engine {
         case 'S_Gradient': {
           const a = P('Start XY', [0, 0]), b = P('End XY', [0, rect[3]]);
           const toPx = (p) => [(p[0] - rect[0]) * sx, (p[1] - rect[1]) * sx];
-          swap(g.color(cur, 7, { uA: [...toPx(a), 0, 0], uB: [...toPx(b), 0, 0], uK: 0.6 }));
+          // Sapphire Gradient, Combine 2 = multiply by a ramp from Start Color (at Start XY) to End Color (at End XY);
+          // colours are greys in our projects, so their luma is used (was: fixed black->white at 60%, i.e. reversed)
+          const lum = (c) => 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+          let c0 = lum(P('Start Color', [1, 1, 1, 1])), c1 = lum(P('End Color', [0, 0, 0, 1]));
+          if (P('Swap Colors', 0)) [c0, c1] = [c1, c0];
+          swap(g.color(cur, 7, { uA: [...toPx(a), c0, c1], uB: [...toPx(b), 0, 0], uK: 1 }));
           break;
         }
         case 'ADBE Linear Wipe': {
@@ -594,8 +621,88 @@ export class Engine {
           swap(o);
           break;
         }
+
+        // --- added for the Sells project (Route A step 2); approximations are marked ---
+        case 'ADBE Ramp': {
+          const L2 = (q) => [(q[0] - rect[0]) * sx, (q[1] - rect[1]) * sx];
+          const o = g.target(cur.w, cur.h);
+          g.run('ramp', o, { uS: L2(PM('0001', [0, 0])), uE: L2(PM('0003', [0, 100])), uA: PM('0002', [0, 0, 0, 1]), uB: PM('0004', [1, 1, 1, 1]),
+            uRad: PM('0005', 1) === 2 ? 1 : 0, uBlend: PM('0007', 0) / 100 }, { uTex: cur });
+          swap(o); break;
+        }
+        case 'ADBE Fractal Noise': { // value-noise fbm stand-in for AE's noise; contrast/brightness/scale/complexity/evolution honoured
+          const o = g.target(cur.w, cur.h), sc = PM('0010', 100), off = PM('0013', [0, 0]);
+          g.run('fractal', o, { uOff: [(off[0] - rect[0]) * sx, (off[1] - rect[1]) * sx], uScale: Math.max(0.5, sc * sx), uContrast: PM('0004', 100) / 100,
+            uBright: PM('0005', 0) / 100, uEvo: PM('0023', 0) / 360, uOp: PM('0029', 100) / 100, uOct: Math.min(8, Math.max(1, Math.round(PM('0015', 6)))),
+            uTurb: PM('0001', 1) === 2 ? 1 : 0, uInv: PM('0003', 0) ? 1 : 0 }, { uTex: cur });
+          swap(o); break;
+        }
+        case 'ADBE Find Edges': { const o = g.target(cur.w, cur.h); g.run('findedges', o, { uInv: PM('0001', 0), uBlend: PM('0002', 0) / 100 }, { uTex: cur }); swap(o); break; }
+        case 'ADBE Radial Blur': { // Type 1 = spin (amount in degrees), 2 = zoom
+          const amt = PM('0001', 0), c = PM('0002', [540, 960]), zoom = PM('0003', 1) === 2;
+          if (amt > 0) { const o = g.target(cur.w, cur.h); g.run('spinblur', o, { uC: [(c[0] - rect[0]) * sx, (c[1] - rect[1]) * sx], uAng: zoom ? 0 : amt * Math.PI / 180, uZoom: zoom ? amt / 100 : 0 }, { uTex: cur }); swap(o); }
+          break;
+        }
+        case 'ADBE Roughen Edges': { // approx: noisy threshold of the blurred alpha
+          const bd = PM('0002', 8) * sx, B = g.blur(cur, Math.max(0.5, bd * 0.5), Math.max(0.5, bd * 0.5)), off = PM('0007', [0, 0]);
+          const o = g.target(cur.w, cur.h);
+          g.run('roughen', o, { uScale: Math.max(1, PM('0005', 100) * sx * 0.25), uSharp: Math.max(0.2, PM('0003', 1)), uEvo: PM('0009', 0) / 360, uOff: [off[0] * sx, off[1] * sx] }, { uTex: cur, uBlur: B });
+          g.release(B); swap(o); break;
+        }
+        case 'ADBE Turbulent Displace': {
+          const o = g.target(cur.w, cur.h), off = PM('0004', [0, 0]);
+          g.run('turbdisp', o, { uAmt: PM('0002', 50) * sx * 0.6, uSize: Math.max(1, PM('0003', 100) * sx), uEvo: PM('0006', 0) / 360, uOct: Math.max(1, Math.round(PM('0005', 1))),
+            uOff: [(off[0] - rect[0]) * sx, (off[1] - rect[1]) * sx] }, { uTex: cur });
+          swap(o); break;
+        }
+        case 'ADBE Noise HLS2': case 'ADBE Noise HLS': {
+          const o = g.target(cur.w, cur.h), auto = e.m === 'ADBE Noise HLS2' && PM('0006', 0) === 0;
+          g.run('noisehls', o, { uL: PM('0003', 0) / 100, uPh: auto ? Math.floor(t * comp.fps) : PM('0006', 0), uGrain: Math.max(1, PM('0005', 1) * sx) }, { uTex: cur });
+          swap(o); break;
+        }
+        case 'S_Glow': { // approx: threshold, blur by glow width, add back * brightness
+          const bt = g.target(cur.w, cur.h); g.run('bright', bt, { uT: PM('0052', 0.6) }, { uTex: cur });
+          const w = PM('0054', 96) * sx * 0.25, bl = g.blur(bt, w, w); g.release(bt);
+          const o = g.target(cur.w, cur.h); g.run('add', o, { uK: PM('0050', 1) * 0.5 }, { uTex: bl, uDst: cur });
+          g.release(bl); swap(o); break;
+        }
+        case 'ADBE Compound Blur': { // approx: blur map = the layer itself (luma), max blur at white
+          const r = PM('0002', 20) * sx * 0.5, bl = g.blur(cur, r, r), o = g.target(cur.w, cur.h);
+          g.run('lumamix', o, {}, { uTex: cur, uB: bl }); g.release(bl); swap(o); break;
+        }
+        case 'CC Cylinder': {
+          const D = Math.PI / 180, rx = PM('0009', 0) * D, ry = PM('0010', 0) * D, rz = PM('0011', 0) * D;
+          const cx = Math.cos(rx), sxr = Math.sin(rx), cy = Math.cos(ry), sy = Math.sin(ry), cz = Math.cos(rz), sz = Math.sin(rz);
+          // R = Rz*Ry*Rx (column-major for GLSL mat3)
+          const m = [cy * cz, cy * sz, -sy, sxr * sy * cz - cx * sz, sxr * sy * sz + cx * cz, sxr * cy, cx * sy * cz + sxr * sz, cx * sy * sz - sxr * cz, cx * cy];
+          const o = g.target(cur.w, cur.h);
+          g.run('cylinder', o, { uR: m, uRad: (PM('0002', 100) / 100) * cur.w / (2 * Math.PI), uSize: [cur.w, cur.h] }, { uTex: cur });
+          swap(o); break;
+        }
+        case 'CC Page Turn': { // approx: flat fold (no curl radius / lighting)
+          const f = PM('0001', [0, 0]), a = (PM('0002', 0) - 90) * Math.PI / 180, o = g.target(cur.w, cur.h);
+          g.run('pageturn', o, { uF: [(f[0] - rect[0]) * sx, (f[1] - rect[1]) * sx], uN: [-Math.cos(a), -Math.sin(a)], uPaper: PM('0006', [1, 1, 1, 1]), uBackOp: PM('0009', 100) / 100 }, { uTex: cur });
+          swap(o); break;
+        }
+        case 'ADBE BEZMESH': { // approx: corner vertices only (tangents ignored), bilinear
+          const L2 = (q) => [(q[0] - rect[0]) * sx, (q[1] - rect[1]) * sx];
+          const tl = PM('0001', [0, 0]), tr = PM('0004', [100, 0]), br = PM('0007', [100, 100]), bl = PM('0010', [0, 100]);
+          const src0 = L2([0, 0]), src1 = L2([tr[0], bl[1]]);
+          const o = g.target(cur.w, cur.h);
+          g.run('bezwarp', o, { uP0: L2(tl), uP1: L2(tr), uP2: L2(br), uP3: L2(bl), uQ0: src0, uQs: [src1[0] - src0[0], src1[1] - src0[1]] }, { uTex: cur });
+          swap(o); break;
+        }
+        case 'ADBE Posterize Time': if (isAdjustment && this._adj?.L === L) { // re-render what's below at the stepped time
+          const fr = PM('0001', 12), tq = Math.floor(t * fr + 1e-6) / fr;
+          if (Math.abs(tq - t) > 1e-6) {
+            const { comp: ac } = this._adj, saveT = this._t, saveAdj = this._adj; this._adj = null;
+            const A = this.renderComp(ac, tq, { tc: tq, onlyBelow: L.i }); this._adj = saveAdj; this._t = saveT; swap(A);
+          }
+        } break;
+        // identity at the values these projects use, or a <=5 px shift: deliberately a no-op
+        case 'ADBE Easy Levels2': case 'ADBE Displacement Map': break;
         case 'ADBE Slider Control': case 'ADBE Checkbox Control': case 'ADBE Layer Control': case 'ADBE Color Control': case 'ADBE Point Control': case 'ADBE Angle Control': break;
-        default: this.warn('effect not implemented: ' + e.m + ' (' + e.n + ')');
+        default: if (!e.m.startsWith('Pseudo/')) this.warn('effect not implemented: ' + e.m + ' (' + e.n + ')'); // Pseudo/ = control-only presets
       }
     }
     return cur;
@@ -636,9 +743,22 @@ export class Engine {
       run.forEach((it) => {
         const w = this.worldOf(comp, it.L, it.t, it.cache);
         const [sw, sh] = it.L.type === 'TextLayer' || it.L.type === 'ShapeLayer' || it.L.type === 'ThreeDModelLayer' ? [0, 0] : this.sourceSize(it.L);
-        it.z = xf(it.cam.view, xf(w.m, [sw / 2, sh / 2, 0, 1]))[2];
+        const c = xf(it.cam.view, xf(w.m, [sw / 2, sh / 2, 0, 1])), q = xf(it.cam.view, xf(w.m, [sw / 2, sh / 2, 1, 1]));
+        it.z = c[2]; it.p = c.slice(0, 3);
+        const n = [q[0] - c[0], q[1] - c[1], q[2] - c[2]], ln = Math.hypot(...n) || 1; it.n = n.map((v) => v / ln);
       });
-      run.sort((a, b) => (Math.abs(b.z - a.z) > 2 ? b.z - a.z : 0) || b.L.i - a.L.i);
+      // Parallel layers (text floating on a tilted card): order by offset along the shared normal, not by centre depth;
+      // coplanar ones keep layer order (AE). Other pairs: centre depth, far first.
+      const dot = (u, v) => u[0] * v[0] + u[1] * v[1] + u[2] * v[2];
+      const cmp = (a, b) => {
+        if (Math.abs(dot(a.n, b.n)) > 0.999) {
+          const n = dot(a.n, a.p) > 0 ? a.n.map((v) => -v) : a.n;   // a's normal pointing at the camera (view origin)
+          const s = dot(n, [b.p[0] - a.p[0], b.p[1] - a.p[1], b.p[2] - a.p[2]]);
+          return Math.abs(s) < 2 ? 0 : -Math.sign(s);
+        }
+        return Math.abs(b.z - a.z) > 2 ? b.z - a.z : 0;
+      };
+      run.sort((a, b) => cmp(a, b) || b.L.i - a.L.i);
       ordered.push(...run);
     }
     for (const it of ordered) this.drawLayer(comp, it.L, it.t, out, it.cam, it.cache, { ...opts, tcL: tc });
@@ -906,6 +1026,33 @@ function bezLen(sh) {
   return L;
 }
 
+// AE gradient stops {colors:[[pos, mid, r, g, b]...], alphas:[[pos, mid, a]...]} -> [[pos, css]] (midpoints taken as 0.5)
+// Merge Paths fill on a 2D canvas whose transform and fillStyle are set: union modes fill every part; intersect clips the
+// first part by the others; subtract/exclude go through a scratch canvas so other shapes already drawn are untouched
+function fillMerged(c, m, W, H) {
+  const [first, ...rest] = m.parts;
+  if (m.merge === 4) { c.save(); for (const q of rest) c.clip(q); c.fill(first); c.restore(); return; }
+  if (m.merge !== 3 && m.merge !== 5) { for (const q of m.parts) c.fill(q); return; }
+  const t = new OffscreenCanvas(W, H).getContext('2d');
+  t.setTransform(c.getTransform()); t.fillStyle = c.fillStyle; t.fill(first);
+  t.globalCompositeOperation = m.merge === 3 ? 'destination-out' : 'xor';
+  for (const q of rest) t.fill(q);
+  c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.drawImage(t.canvas, 0, 0); c.restore();
+}
+function gradStops(g) {
+  if (!g || !g.colors || !g.colors.length) return [[0, 'rgba(255,255,255,1)'], [1, 'rgba(0,0,0,1)']];
+  const cs = [...g.colors].sort((x, y) => x[0] - y[0]), as = g.alphas && g.alphas.length ? [...g.alphas].sort((x, y) => x[0] - y[0]) : [[0, 0.5, 1]];
+  const at = (arr, pos, n) => {
+    if (pos <= arr[0][0]) return arr[0].slice(2, 2 + n);
+    for (let i = 1; i < arr.length; i++) if (pos <= arr[i][0]) {
+      const f = (pos - arr[i - 1][0]) / ((arr[i][0] - arr[i - 1][0]) || 1);
+      return arr[i].slice(2, 2 + n).map((v, k) => arr[i - 1][2 + k] + (v - arr[i - 1][2 + k]) * f);
+    }
+    return arr[arr.length - 1].slice(2, 2 + n);
+  };
+  const ps = [...new Set([...cs.map((x) => x[0]), ...as.map((x) => x[0])])].map((v) => Math.min(1, Math.max(0, v))).sort((x, y) => x - y);
+  return ps.map((p) => { const [r, gg, b] = at(cs, p, 3), [a] = at(as, p, 1); return [p, `rgba(${Math.round(r * 255)},${Math.round(gg * 255)},${Math.round(b * 255)},${a})`]; });
+}
 function bezPath(sh) {
   const p = new Path2D(), v = sh.vtx, ti = sh.in, to = sh.out, n = v.length;
   if (!n) return p;

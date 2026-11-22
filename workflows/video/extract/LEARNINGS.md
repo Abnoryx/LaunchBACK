@@ -36,3 +36,42 @@ Rules here override defaults in the code until they are folded into it.
   v2 0.555 (3/23 pass). Measured camera keys at shot ends are whip/flash, not camera: clamp and skip the last 4
   frames. Auto hero-font guess (big = serif) was wrong for this reel: pick fonts per reel. With only the video (no
   project files) and our own props, SSIM is capped by prop/layout differences: score layout/timing, not pixels.
+
+## 2026-11-21 — Route A step 1: .aep dumper (extract/aep_dump.py)
+- The original dump script was never saved; rebuilt on py_aep 0.19. Same format the engine reads. Psych re-dump renders
+  identical to the old dump (8 sample frames, mean abs diff <= 0.002).
+- Gains over the old dumps: text layout (per-glyph advances) for projects whose old dump lacked it (sells: 110 layers),
+  mixed-style text runs, box text position, spatial tangents (in_st/out_st, used by anim.js), gradients, markers, curves.
+- Layers py_aep can't decode `enabled` for are dumped as disabled (same as before: engine needs enabled === true).
+  Earlier note (stop): such a layer can be the one actually rendered — check against the mp4 when a shot is missing.
+
+## 2026-11-21 — Route A step 2 on Sells: coverage + engine gaps
+- Coverage found 16 effects + 2 expressions missing. Added: Gradient Ramp, Fractal Noise (fbm stand-in), Find Edges,
+  Radial Blur, Roughen Edges, Turbulent Displace, Noise HLS, S_Glow, Compound Blur, CC Cylinder, CC Page Turn (flat
+  fold), Bezier Warp (corners only), Posterize Time (adjustment re-render); Levels/Displacement Map no-ops at the values
+  used; typewriter text + blinking cursor expressions; Pseudo/ effects are controls.
+- Engine bug found by the first 5-frame look: a Trim Paths at a shape layer's root must also trim its child groups
+  (AE behaviour). Fixing it also corrected r1 f510 ("100" now drawn like the reel; old render showed "1").
+- Still approximate on Sells: overall grade (needs fitted LUTs, step 6), CC Cylinder money bill too small, page fold
+  ignores curl radius.
+
+## 2026-11-21 — Route A step 3 on Sells: harvest
+- 125 footage files linked, 0 missing once zip `#UXXXX` names are decoded. Fonts: .aep PostScript names
+  `Helvetica`, `Helvetica-Bold(Oblique)` now map to the real Helvetica files (was the Inter stand-in; only our own
+  templates' `HelvReal-*` names got the real font). r1 check: no frame worse, f30 SSIM 0.836 -> 0.882.
+- Still stand-ins: HelveticaNowText-Black/Bold (3 comps), Coolvetica Heavy (paid), SF Pro -> Inter Tight, InkFree -> Patrick Hand.
+
+## 2026-11-21 — Route A steps 4–5 on Sells
+- Shots: 23, time offset 0; detector whip cuts +2 f, crossfades ±5 f, shot 22's momentum-matched whip not detected.
+- Templates: 23 private JSONs (13 MB); shot 1 template renders pixel-identical to the full project. Accent = hue band
+  100–170 (green family, measured from non-default colours); apply() rotates that band to the new hue. Images/footage
+  keep their own colours (logos, UI screenshots) — tell the user when the accent lives in pictures.
+
+## 2026-11-21 — engine: 3D sort for parallel layers (Sells shot 18)
+- Text floating 16 px in front of a tilting card vanished: sorting by centre depth put it behind the card. Parallel
+  layers are now ordered by their offset along the shared normal (coplanar = layer order). r1: no frame changed.
+
+## 2026-11-21 — engine: expression selectors (Sells shot 18)
+- Small text never appeared: bounce selectors with Based On = Words used the character index as textIndex (huge
+  delays), and every selector was combined by Add. Now textIndex follows Based On, and an Expression Selector
+  intersects (AE default) with the selectors above it. r1 sample frames unchanged.

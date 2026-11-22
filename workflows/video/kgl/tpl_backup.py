@@ -1,6 +1,6 @@
 """Back up / restore /home/user/tpl (the bought templates: fonts, reels, zips, analysis notes) as a PRIVATE Kaggle
 dataset (<user>/launchback-tpl). Not in git on purpose (licence: use, not redistribution).
-usage: python3 -m kgl.tpl_backup backup     (fonts, reels, zips, an/**/*.md|json|tsv|py; skips regenerable x/ and frames)
+usage: python3 -m kgl.tpl_backup backup     (fonts, reels, zips, an/ + lib/ notes and dumps; skips regenerable x/, lib/*/assets, frames)
        python3 -m kgl.tpl_backup restore    (downloads and unpacks into /home/user/tpl)"""
 import os, sys, tarfile, time, urllib.request, zipfile, io
 from .run import call, user
@@ -14,7 +14,7 @@ def backup():
     with tarfile.open(tgz, 'w:gz') as t:
         for d in ('fonts', 'reels', 'zips'):
             if os.path.isdir(f'{TPL}/{d}'): t.add(f'{TPL}/{d}', arcname=d)
-        for root, _, files in os.walk(f'{TPL}/an'):
+        for root, _, files in [*os.walk(f'{TPL}/an'), *((r, _, f) for r, _, f in os.walk(f'{TPL}/lib') if '/assets' not in r)]:
             for f in files:
                 if f.endswith(KEEP_EXT): p = os.path.join(root, f); t.add(p, arcname=os.path.relpath(p, TPL))
     n = os.path.getsize(tgz); print('archive', n // 2**20, 'MB', flush=True)

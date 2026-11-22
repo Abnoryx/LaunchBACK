@@ -93,9 +93,11 @@ def main():
     r = call('POST', '/kernels/push', meta)
     if r.get('error'): sys.exit(f'push failed: {r["error"]}')
     print('running', r.get('url'), flush=True)
+    t0, last = time.time(), None
     while True:
         time.sleep(20)
         s = call('GET', f'/kernels/status?userName={owner}&kernelSlug={a.name}')['status'].lower()
+        if s != last: print(f'STATUS {s} after {time.time() - t0:.0f}s', flush=True); last = s   # e.g. 'STATUS running' = GPU started
         if s in ('complete', 'error', 'cancelacknowledged', 'cancelrequested'): break
     out = call('GET', f'/kernels/output?userName={owner}&kernelSlug={a.name}')
     os.makedirs(a.out, exist_ok=True)

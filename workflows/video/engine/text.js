@@ -13,6 +13,10 @@ const FONT_MAP = [
   [/^GFSDidot/, () => ({ family: 'GFS Didot', weight: 700 })],
   // Inter Tight at 0.975x matches SF Pro Display's set width (calibrated on "Solutions" in the 7th-reel render).
   [/^SFPro(Display|Text|Rounded)-(\w+)/, (m) => ({ family: 'Inter Tight Variable', weight: W[m[2]] ?? 500, sizeScale: 0.975 })],
+  // the real Helvetica files are in /home/user/tpl/fonts/helv (page.html) — use them for the .aep PostScript names
+  [/^Helvetica-BoldOblique$/, () => ({ family: 'Helvetica Real', weight: 700, italic: true })],
+  [/^Helvetica-Bold$/, () => ({ family: 'Helvetica Real', weight: 700 })],
+  [/^Helvetica(-Oblique)?$/, () => ({ family: 'Helvetica Real', weight: 400 })],
   [/^Helvetica(Neue)?-?Bold/, () => ({ family: 'Inter Variable', weight: 700, tracking: -0.01 })],
   [/^HelveticaNow\w*-Black/, () => ({ family: 'Inter Variable', weight: 900 })],
   [/^HelveticaNow\w*-Bold/, () => ({ family: 'Inter Variable', weight: 800 })],
@@ -158,7 +162,12 @@ export function textAnimation(layer, tComp, ctx) {
   const docProp = find(textGrp, 'ADBE Text Document');
   const doc = docProp ? evalProp(docProp, tComp) : null;
   const base = layer.text || {};
-  const text = (doc && doc._text ? doc.text : base.text) ?? '';
+  let text = (doc && doc._text ? doc.text : base.text) ?? '';
+  const tw = docProp && exprOf(docProp);
+  if (tw && tw.kind === 'typewriter') { // AE: t.slice(0, l*linear(a,0,100,0,1)) + cursor
+    const a = Math.min(1, Math.max(0, (ctx.effectValue?.(tw.anim) ?? 100) / 100));
+    text = text.slice(0, Math.trunc(text.length * a)) + (tw.cursors[(ctx.effectValue?.(tw.shape) ?? 1) - 1] ?? '');
+  }
   const font = (doc && doc._text && doc.font) || base.font;
   const size = (doc && doc._text && doc.size) || base.font_size || 72;
   const fill = (doc && doc._text && doc.fill) || base.fill_color || [1, 1, 1];
@@ -184,15 +193,23 @@ export function textAnimation(layer, tComp, ctx) {
         const ap = findDeep(sel, 'ADBE Text Expressible Amount');
         const e = ap && exprOf(ap);
         const tLocal = tComp - (layer.in_point ?? 0);
-        if (e && e.kind === 'textBounce') a = chars.map((_, i) => textBounceAmount(e, i, chars.length, tLocal, ctx) / 100);
+        const bo = evalProp(find(sel, 'ADBE Text Range Type2'), tComp) ?? 1;   // Based On: textIndex counts these units
+        const { idx: ui, n: un } = unitIndex(text, bo);
+        const unitOf = (i) => (ui[i] >= 0 ? ui[i] : (ui.slice(i).find((k) => k >= 0) ?? un - 1));
+        if (e && e.kind === 'textBounce') a = chars.map((_, i) => textBounceAmount(e, unitOf(i), un, tLocal, ctx) / 100);
         else if (e && e.kind === 'lastChar') a = chars.map((_, i) => (i === chars.length - 1 ? 1 : 0));
         else a = chars.map(() => (ap ? (evalProp(ap, tComp) ?? 100) : 100) / 100);
       } else continue; // wiggly selectors: ignored
-      amt = first ? a : amt.map((v, i) => Math.min(1, v + a[i]));
+      // AE default modes: Range Selector = Add, Expression Selector = Intersect
+      const intersect = sel.m === 'ADBE Text Expressible Selector';
+      amt = first ? a : amt.map((v, i) => (intersect ? v * a[i] : Math.min(1, v + a[i])));
       first = false;
     }
+    // an animator with no real properties had one the creator left at its default value (e.g. Fill Color at AE's
+    // default red; Sells scene 5): then every property counts, which is harmless since the rest are identity defaults
+    const anyReal = (props?.c || []).some((p) => !p.syn);
     for (const p of props?.c || []) {
-      if (p.syn) continue; // filler default the creator never added
+      if (p.syn && anyReal) continue; // filler default the creator never added
       const v = evalProp(p, tComp, ctx);
       chars.forEach((c, i) => {
         const k = amt[i];

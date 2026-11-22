@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Move the Needle</title>
+<style>
+  @font-face{font-family:Arimo;src:url('/node_modules/@fontsource/arimo/files/arimo-latin-700-normal.woff2');font-weight:700}
+  @font-face{font-family:'Bodoni Moda';src:url('/node_modules/@fontsource/bodoni-moda/files/bodoni-moda-latin-700-italic.woff2');font-weight:700;font-style:italic}
+  body{margin:0;background:#111716;color:#ebf3ee;font:14px system-ui;display:grid;place-items:center;min-height:100vh}
+  main{display:grid;gap:12px;width:min(calc(100vw - 24px), 450px);justify-items:center}
+  canvas{display:block;width:auto;object-fit:contain;height:min(85vh, calc((100vw - 24px) * 16 / 9));max-width:100%;background:#001011}
+  #controls{width:100%;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px}
+  button{background:#1e342b;color:#ebf3ee;border:1px solid #547264;border-radius:4px;padding:7px 12px;font:inherit}
+  input{width:100%;min-width:0;accent-color:#80c798} output{font-variant-numeric:tabular-nums}
+  .capture main{display:block;width:auto}.capture canvas{width:720px;height:1280px;max-width:none}.capture #controls{display:none}
+</style>
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js"}}</script>
+</head>
+<body>
+<main>
+  <canvas aria-label="Move the Needle shot"></canvas>
+  <div id="controls">
+    <button id="play" type="button">Play</button>
+    <input type="range" aria-label="Frame" min="0" value="0" step="1">
+    <output aria-live="off"></output>
+  </div>
+</main>
+<script type="module" src="/src/preview.mjs"></script>
+</body>
+</html>
