@@ -11,11 +11,21 @@ def prior(st):   # Laplace-smoothed approval rate, -0.15 per rejection
     return (st.get('approved', 0) + 1) / (st.get('picked', 0) + 2) - 0.15 * st.get('rejected', 0)
 
 
+def features(k, t):
+    """Every catalog entry is usable: tagged ones use their 'gen' features, the rest get features derived from the
+    catalog fields (e.g. .aep scenes: text/footage slot counts) so nothing in the library is left out."""
+    if t.get('gen'): return t['gen']
+    sl = t.get('slots', {}); nt = sl.get('texts', len(sl) if isinstance(sl, list) else 3) if isinstance(sl, dict) else len(sl)
+    prop = (sl.get('footage', 0) > 0) if isinstance(sl, dict) else any(w in ' '.join(map(str, sl)) for w in ('prop', 'asset', 'model'))
+    return dict(world='any', words=[1, max(2, min(6, nt))], hero=False, prop=prop, use=t.get('source', '') + ' ' + t.get('notes', '')[:80],
+                stats=dict(picked=0, approved=0, rejected=0))
+
+
 def rank_templates(beat, world=None, prev=None):
     T = json.load(open(CAT))['templates']; n = len(beat['text'].split()); out = []
     for k, t in T.items():
-        g = t.get('gen')
-        if not g or k == 'logo_reveal': continue
+        g = features(k, t)
+        if k == 'logo_reveal': continue
         s = 0.0
         lo, hi = g['words']; s += 1.0 if lo <= n <= hi else -0.5 * min(abs(n - lo), abs(n - hi))
         if world and g['world'] not in (world, 'any'): s -= 0.6
@@ -28,8 +38,28 @@ def rank_templates(beat, world=None, prev=None):
     return sorted(out, reverse=True)
 
 
+ROOTS = [os.path.join(VID, 'library', 'assets'), '/home/user/tpl/lib']   # our library + the bought .aep libraries
+EXT = ('.png', '.jpg', '.jpeg', '.webp', '.glb', '.gltf', '.mp4', '.mov', '.webm', '.svg')
+
+
+def sync_index():
+    """Add every asset file in the library (recursively, incl. bought .aep libraries) to the index; keep stats."""
+    I = json.load(open(IDX)) if os.path.exists(IDX) else {}
+    for root in ROOTS:
+        for d, _, fs in os.walk(root):
+            for f in fs:
+                if not f.lower().endswith(EXT): continue
+                rel = os.path.relpath(os.path.join(d, f), os.path.join(VID, 'library', 'assets')) if root == ROOTS[0] else os.path.join(d, f)
+                if rel in I: continue
+                kind = '3d' if f.endswith(('.glb', '.gltf')) else 'video' if f.lower().endswith(('.mp4', '.mov', '.webm')) else 'image'
+                tags = [x for x in os.path.splitext(rel)[0].replace('-', '_').replace('/', '_').split('_') if x and x not in ('m', 'z', 'src', 'home', 'user', 'tpl', 'lib')]
+                I[rel] = dict(kind=kind, tags=tags, private=root != ROOTS[0], stats=dict(used=0, approved=0, rejected=0))
+    json.dump(I, open(IDX, 'w'), indent=1)
+    return I
+
+
 def find_assets(tags):
-    I = json.load(open(IDX)); tags = [t.lower() for t in tags]; hits = []
+    I = sync_index(); tags = [t.lower() for t in tags]; hits = []
     for f, e in I.items():
         m = sum(any(t in x.lower() for x in e['tags'] + [f.lower()]) for t in tags)
         if m: hits.append((m + prior(e['stats']), f, e.get('kind'), e.get('cutout')))

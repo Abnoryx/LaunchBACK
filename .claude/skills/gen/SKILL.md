@@ -34,15 +34,17 @@ silently).
 - Brand care: commentary words only — no third-party logos, mascots or marks.
 
 ## 4. Shot list -> `gen/runs/<name>/plan.json` + sign-off
-`python3 -m gen.shotlist gen/runs/<name>/beats.json` ranks templates per beat from features + learned stats (approved
-shots rise, rejected sink, no repeats). Pick with judgement, write `plan.json`:
+`python3 -m gen.shotlist gen/runs/<name>/beats.json` ranks EVERY template in the library per beat
+(hand-built templates, bought .aep scenes like `sells/sNN`, anything in `library/catalog.json`; untagged ones get
+features from their catalog fields) using features + learned stats (approved shots rise, rejected sink, no repeats). Pick with judgement, write `plan.json`:
 `{"shots":[{"template","text","seconds","world","invert","text_px","elements","assets":[...],"params":{...}}]}`,
 last shot `logo_reveal`. Gaps -> `cine_scene` (data-driven) or a new template (flag it).
 `python3 -m gen.score gen/runs/<name>/plan.json` must say OK (rules + everything learned). Fix, then show the user a
 shot table + the brief. **No spend and no build before the user signs off.**
 
 ## 5. Assets — reuse first
-For each prop: `python3 -m gen.shotlist --assets <tags>` searches `library/assets/index.json`. Reuse, re-tint or
+For each prop: `python3 -m gen.shotlist --assets <tags>` searches every asset in the library (`library/assets/**`
+and bought .aep libraries in `/home/user/tpl/lib`, private: use, never commit); the index refreshes itself. Reuse, re-tint or
 re-light what exists. Only gaps: quote Higgsfield credits, generate in one consistent prop look (pick #4), cut out,
 check (turntable for 3D: `scratch/model_turntable_all.py`), add to the index.
 

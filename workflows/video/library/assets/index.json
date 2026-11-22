@@ -1485,5 +1485,410 @@
    1344
   ],
   "cutout": true
+ },
+ "needle_plate.png": {
+  "kind": "image",
+  "tags": [
+   "needle",
+   "plate"
+  ],
+  "private": false,
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "needle_logo.png": {
+  "kind": "image",
+  "tags": [
+   "needle",
+   "logo"
+  ],
+  "private": false,
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "needle_plate_red.png": {
+  "kind": "image",
+  "tags": [
+   "needle",
+   "plate",
+   "red"
+  ],
+  "private": false,
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "needle_pen.png": {
+  "kind": "image",
+  "tags": [
+   "needle",
+   "pen"
+  ],
+  "private": false,
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "needle_hand.png": {
+  "kind": "image",
+  "tags": [
+   "needle",
+   "hand"
+  ],
+  "private": false,
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "logo/l_K.png": {
+  "kind": "image",
+  "tags": [
+   "logo",
+   "l",
+   "K"
+  ],
+  "private": false,
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "logo/l_L.png": {
+  "kind": "image",
+  "tags": [
+   "logo",
+   "l",
+   "L"
+  ],
+  "private": false,
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "logo/l_C2.png": {
+  "kind": "image",
+  "tags": [
+   "logo",
+   "l",
+   "C2"
+  ],
+  "private": false,
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "logo/mark_bowl.png": {
+  "kind": "image",
+  "tags": [
+   "logo",
+   "mark",
+   "bowl"
+  ],
+  "private": false,
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "logo/l_C.png": {
+  "kind": "image",
+  "tags": [
+   "logo",
+   "l",
+   "C"
+  ],
+  "private": false,
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "logo/l_H.png": {
+  "kind": "image",
+  "tags": [
+   "logo",
+   "l",
+   "H"
+  ],
+  "private": false,
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "logo/l_A2.png": {
+  "kind": "image",
+  "tags": [
+   "logo",
+   "l",
+   "A2"
+  ],
+  "private": false,
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "logo/mark_arrow.png": {
+  "kind": "image",
+  "tags": [
+   "logo",
+   "mark",
+   "arrow"
+  ],
+  "private": false,
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "logo/launchback_src.png": {
+  "kind": "image",
+  "tags": [
+   "logo",
+   "launchback"
+  ],
+  "private": false,
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "logo/l_N.png": {
+  "kind": "image",
+  "tags": [
+   "logo",
+   "l",
+   "N"
+  ],
+  "private": false,
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "logo/l_A.png": {
+  "kind": "image",
+  "tags": [
+   "logo",
+   "l",
+   "A"
+  ],
+  "private": false,
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "logo/l_U.png": {
+  "kind": "image",
+  "tags": [
+   "logo",
+   "l",
+   "U"
+  ],
+  "private": false,
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "logo/l_B.png": {
+  "kind": "image",
+  "tags": [
+   "logo",
+   "l",
+   "B"
+  ],
+  "private": false,
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "logo/mark_up.png": {
+  "kind": "image",
+  "tags": [
+   "logo",
+   "mark",
+   "up"
+  ],
+  "private": false,
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "z_src/z_tv.png": {
+  "kind": "image",
+  "tags": [
+   "tv"
+  ],
+  "private": false,
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "z_src/z_vase.png": {
+  "kind": "image",
+  "tags": [
+   "vase"
+  ],
+  "private": false,
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "z_src/z_clipboard.png": {
+  "kind": "image",
+  "tags": [
+   "clipboard"
+  ],
+  "private": false,
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "z_src/z_lock.png": {
+  "kind": "image",
+  "tags": [
+   "lock"
+  ],
+  "private": false,
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "z_src/z_clock.png": {
+  "kind": "image",
+  "tags": [
+   "clock"
+  ],
+  "private": false,
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "z_src/z_sword.png": {
+  "kind": "image",
+  "tags": [
+   "sword"
+  ],
+  "private": false,
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "z_src/z_cliff.png": {
+  "kind": "image",
+  "tags": [
+   "cliff"
+  ],
+  "private": false,
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "z_src/z_sneaker.png": {
+  "kind": "image",
+  "tags": [
+   "sneaker"
+  ],
+  "private": false,
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "z_src/z_ui.png": {
+  "kind": "image",
+  "tags": [
+   "ui"
+  ],
+  "private": false,
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "z_src/z_card.png": {
+  "kind": "image",
+  "tags": [
+   "card"
+  ],
+  "private": false,
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "z_src/z_hands.png": {
+  "kind": "image",
+  "tags": [
+   "hands"
+  ],
+  "private": false,
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
+ },
+ "z_src/z_sketch.png": {
+  "kind": "image",
+  "tags": [
+   "sketch"
+  ],
+  "private": false,
+  "stats": {
+   "used": 0,
+   "approved": 0,
+   "rejected": 0
+  }
  }
 }
