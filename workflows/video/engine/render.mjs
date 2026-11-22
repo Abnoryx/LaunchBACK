@@ -52,6 +52,13 @@ await page.route('http://engine.local/**', async (route) => {
       if (!fs.existsSync(out)) { try { execFileSync('convert', [f + '[0]', '-background', 'none', out], { stdio: 'ignore' }); } catch { return route.fulfill({ status: 404 }); } }
       return route.fulfill({ path: out, contentType: 'image/png' });
     }
+    if (p.startsWith('/pcm/')) {   // mono float32 samples at 22050 Hz, for audio-driven effects (Audio Spectrum)
+      const f = findFile(p.slice(5));
+      if (!f) return route.fulfill({ status: 404 });
+      const out = path.join(cacheDir, 'pcm_' + path.basename(f).replace(/[^\w.-]/g, '_') + '.f32');
+      if (!fs.existsSync(out)) { try { execFileSync('ffmpeg', ['-v', 'error', '-y', '-i', f, '-ac', '1', '-ar', '22050', '-f', 'f32le', out]); } catch { return route.fulfill({ status: 404 }); } }
+      return route.fulfill({ path: out, contentType: 'application/octet-stream' });
+    }
     if (p.startsWith('/vid/')) {
       const [, , id, ms] = p.split('/');
       const name = u.searchParams.get('name');

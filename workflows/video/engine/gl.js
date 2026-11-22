@@ -48,6 +48,9 @@ const SHADERS = {
     o = vec4(clamp(c.rgb + n*uL*c.a, 0.0, 1.0), c.a); }`,
   bright: `${FS_HEAD} uniform float uT; void main(){ vec4 c = texture(uTex, vUV); float l = dot(c.rgb, vec3(0.299,0.587,0.114));
     o = c * smoothstep(uT - 0.05, uT + 0.05, l); }`,
+  mapmix: `${FS_HEAD} uniform sampler2D uB, uMap; uniform int uInv; void main(){ vec4 m = texture(uMap, vUV);
+    float k = clamp(dot(m.rgb, vec3(0.299,0.587,0.114))/max(m.a,1e-4), 0.0, 1.0) * m.a; if (uInv == 1) k = 1.0 - k;
+    o = mix(texture(uTex, vUV), texture(uB, vUV), k); }`,   // Compound Blur: sharp -> max blur by the map layer's luma
   lumamix: `${FS_HEAD} uniform sampler2D uB; void main(){ vec4 a = texture(uTex, vUV), b = texture(uB, vUV);
     float k = clamp(dot(a.rgb, vec3(0.299,0.587,0.114))/max(a.a,1e-4), 0.0, 1.0); o = mix(a, b, k); }`,
   fourcolor: `${FS_HEAD} uniform vec2 uP0, uP1, uP2, uP3; uniform vec4 uC0, uC1, uC2, uC3; uniform float uPow, uK; void main(){
@@ -215,7 +218,8 @@ const SHADERS = {
   mix: `${FS_HEAD} uniform sampler2D uDst, uMask; uniform float uK; uniform int uHasMask;
   void main(){ float m = uK * (uHasMask==1 ? texture(uMask, vUV).a : 1.0); o = mix(texture(uDst, vUV), texture(uTex, vUV), m); }`,
   accum: `${FS_HEAD} uniform float uK; void main(){ o = texture(uTex, vUV) * uK; }`,
-  transform: `${FS_HEAD} uniform mat3 uM; uniform float uK; void main(){ vec3 p = uM * vec3(vUV*uRes, 1.0); vec2 q = p.xy/uRes;
+  transform: `${FS_HEAD} uniform mat3 uM; uniform float uK; uniform int uClamp; void main(){ vec3 p = uM * vec3(vUV*uRes, 1.0); vec2 q = p.xy/uRes;
+    if (uClamp == 1) q = clamp(q, vec2(0.0), vec2(1.0));
     o = (q.x<0.0||q.y<0.0||q.x>1.0||q.y>1.0) ? vec4(0.0) : texture(uTex, q) * uK; }`,
 };
 

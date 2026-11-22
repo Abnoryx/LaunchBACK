@@ -192,6 +192,33 @@ export class Engine {
     this.images.set(url, im);
     return im;
   }
+  // the source picture (still or video frame) of a layer referenced by an effect (1-based index), whether or not it is shown
+  layerSourceRef(comp, idx, t) {
+    const RL = comp.layers.find((x) => x.i === idx - 1), f = RL && this.footage.get(RL.src_id);
+    if (!f || f.source_type === 'SolidSource') return null;
+    return f.is_still || !f.duration ? this.assetUrl(f) : this.videoFrameUrl(f, this.localTime(RL, t));
+  }
+  layerSourceImage(comp, idx, t) {
+    const u = this.layerSourceRef(comp, idx, t), im = u && this.images.get(u);
+    return im && !(im instanceof Promise) ? im : null;
+  }
+  // Audio Spectrum: the audio layer it listens to (param 1 = 1-based layer index in the same comp) and its footage
+  audSpectSource(comp, e) {
+    const idx = findM(e, 'ADBE AudSpect-0001')?.v;
+    const AL = comp.layers.find((x) => x.i === idx - 1);
+    const f = AL && this.footage.get(AL.src_id);
+    return f?.file ? { L: AL, url: '/pcm/' + encodeURIComponent(f.file.split(/[\\/]/).pop()) } : null;
+  }
+  async loadPcm(src) {
+    if (!src) return;
+    this.pcm = this.pcm || new Map();
+    if (this.pcm.has(src.url)) return this.pcm.get(src.url);
+    const pr = fetch(src.url).then((r) => (r.ok ? r.arrayBuffer() : null)).then((b) => (b ? new Float32Array(b) : null)).catch(() => null);
+    this.pcm.set(src.url, pr);
+    const a = await pr; this.pcm.set(src.url, a);
+    if (!a) this.warn('missing audio ' + src.url);
+    return a;
+  }
   async loadModel(f) {
     if (!this.models) this.models = new ModelRenderer(1080, 1920);
     const url = this.assetUrl(f);
@@ -210,6 +237,11 @@ export class Engine {
     }
     for (const L of comp.layers) {
       if (!this.active(L, t) && !(L.is_track_matte && t >= L.in_point && t < L.out_point)) continue;
+      for (const e of findM(L, 'ADBE Effect Parade')?.c || []) {
+        if (e.off) continue;
+        if (e.m === 'ADBE AudSpect') await this.loadPcm(this.audSpectSource(comp, e));
+        if (e.m === 'ADBE Compound Blur') { const u = this.layerSourceRef(comp, findM(e, 'ADBE Compound Blur-0001')?.v, t); if (u) await this.loadImage(u); }
+      }
       if (L.src_id == null) continue;
       const lt = this.localTime(L, t);
       const sub = this.comps.get(L.src_id);
@@ -569,7 +601,9 @@ export class Engine {
           // inverse map: dst px → src px
           const m = new DOMMatrix().translate((ps[0] - rect[0]) * sx, (ps[1] - rect[1]) * sx).rotate(rot).scale(scx, scy).translate(-(an[0] - rect[0]) * sx, -(an[1] - rect[1]) * sx).inverse();
           const o = g.target(cur.w, cur.h);
-          g.run('transform', o, { uM: [m.a, m.b, 0, m.c, m.d, 0, m.e, m.f, 1], uK: op }, { uTex: cur });
+          // on an adjustment layer AE transforms the layers below including what lies past the frame edge (Stop s17's
+          // 166% background shrinks with no border); we only have the frame, so repeat its edge pixels
+          g.run('transform', o, { uM: [m.a, m.b, 0, m.c, m.d, 0, m.e, m.f, 1], uK: op, uClamp: isAdjustment ? 1 : 0 }, { uTex: cur });
           swap(o);
           break;
         }
@@ -696,9 +730,15 @@ export class Engine {
           const o = g.target(cur.w, cur.h); g.run('add', o, { uK: PM('0050', 1) * 0.5 }, { uTex: bl, uDst: cur });
           g.release(bl); swap(o); break;
         }
-        case 'ADBE Compound Blur': { // approx: blur map = the layer itself (luma), max blur at white
+        case 'ADBE Compound Blur': { // blur map = the referenced layer's source (used even when that layer is hidden, as AE
+          // does), stretched to the layer; white = Maximum Blur, black = sharp. Variable radius approximated by a mix.
           const r = PM('0002', 20) * sx * 0.5, bl = g.blur(cur, r, r), o = g.target(cur.w, cur.h);
-          g.run('lumamix', o, {}, { uTex: cur, uB: bl }); g.release(bl); swap(o); break;
+          const map = this.layerSourceImage(comp, PM('0001', 0), t);
+          if (map) {
+            const tex = g.texFromImage(map);
+            g.run('mapmix', o, { uInv: PM('0004', 0) ? 1 : 0 }, { uTex: cur, uB: bl, uMap: tex }); g.deleteTex(tex);
+          } else g.run('lumamix', o, {}, { uTex: cur, uB: bl });   // no map layer: the layer's own luma
+          g.release(bl); swap(o); break;
         }
         case 'ADBE 4ColorGradient': {
           const L2 = (q) => [(q[0] - rect[0]) * sx, (q[1] - rect[1]) * sx];
@@ -725,9 +765,52 @@ export class Engine {
             uCol: PM('0012', [1, 1, 1, 1]), uK: PM('0013', 100) / 100, uOnly: PM('0014', 2) === 1 ? 1 : 0 }, { uTex: cur });
           swap(o); break;
         }
-        // Echo at the ~1 ms echo time used here is invisible; Colorama's output palette is not decodable from the .aep (left to
-        // the fitted grade); CC Glass bevel lighting not implemented yet: all three pass through unchanged
-        case 'ADBE Echo': case 'APC Colorama': case 'CC Glass': break;
+        case 'APC Colorama': { // custom Output Cycle palettes aren't decodable from the .aep: use a LUT measured from the reel
+          // (luts.json key colorama|<comp id>|<layer i>, input = what reaches Colorama); without one, pass through
+          const key = `colorama|${comp.id}|${L.i}`, lut = this.luts?.[key];
+          if (!lut) break;
+          this._lutTex = this._lutTex || new Map();
+          if (!this._lutTex.has(key)) this._lutTex.set(key, g.lut3dTex(lut.data, lut.n));
+          const o = g.target(cur.w, cur.h);
+          g.run('lut3d', o, { uN: lut.n, uK: 1 }, { uTex: cur, uLut: this._lutTex.get(key) });
+          swap(o); break;
+        }
+        // Echo at the ~1 ms echo time used here is invisible; CC Glass bevel lighting not implemented yet: both pass through
+        case 'ADBE Echo': case 'CC Glass': break;
+        case 'ADBE AudSpect': { // Digital display (bars) along Start->End; Side 1 = A (left of the line), 2 = B (right), 3 = both
+          const src = this.audSpectSource(comp, e), pcm = src && this.pcm?.get(src.url);
+          const SR = 22050, N = Math.max(1, Math.round(PM('0008', 64))), f0 = PM('0006', 20), f1 = PM('0007', 2000);
+          const maxH = PM('0009', 1000), win = Math.max(8, Math.round((PM('0010', 90) / 1000) * SR)), side = PM('0021', 3);
+          // the analysed window is centred one window length after the frame (best fit on the Stop reel: 0.14 s at 140 ms)
+          const at = src ? (t - (src.L.start_time || 0)) + PM('0011', 0) / 1000 + win / SR : 0;
+          const S = PM('0002', [0, 0]), E = PM('0003', [100, 0]), col = PM('0015', [1, 1, 1, 1]);
+          const cv = new OffscreenCanvas(cur.w, cur.h), c = cv.getContext('2d');
+          if (pcm) {
+            const i0 = Math.round(at * SR - win / 2);
+            const toPx = (q) => [(q[0] - rect[0]) * sx, (q[1] - rect[1]) * sx];
+            const [ax, ay] = toPx(S), [bx, by] = toPx(E), len = Math.hypot(bx - ax, by - ay) || 1;
+            const nx = -(by - ay) / len, ny = (bx - ax) / len;   // right-hand normal (down for a left->right line)
+            c.strokeStyle = `rgba(${col[0] * 255},${col[1] * 255},${col[2] * 255},1)`; c.lineWidth = Math.max(1, PM('0012', 3) * sx); c.lineCap = 'butt';
+            if (PM('0013', 0) > 0) c.filter = `blur(${PM('0013', 0) * sx}px)`;
+            c.beginPath();
+            for (let k = 0; k < N; k++) {
+              const fq = N > 1 ? f0 + ((f1 - f0) * k) / (N - 1) : f0, w = (2 * Math.PI * fq) / SR;
+              let re = 0, im = 0, ws = 0;   // Hann-windowed DFT at the band frequency, amplitude-normalised
+              for (let j = 0; j < win; j++) { const x = pcm[i0 + j] || 0, h = 0.5 - 0.5 * Math.cos((2 * Math.PI * j) / (win - 1)); re += x * h * Math.cos(w * j); im -= x * h * Math.sin(w * j); ws += h; }
+              // AE's band magnitude isn't documented: fitted on the Stop reel (78 bars x 51 frames, log-corr 0.74) as
+              // maxH * 0.0404 * amplitude^0.5; a zero bar still draws a dot of the line thickness (the reel's dotted baseline)
+              const hgt = Math.max(PM('0012', 3), maxH * 0.0404 * Math.sqrt((2 * Math.hypot(re, im)) / ws)) * sx;
+              const px = ax + ((bx - ax) * (k + 0.5)) / N, py = ay + ((by - ay) * (k + 0.5)) / N;
+              if (side !== 1) { c.moveTo(px, py); c.lineTo(px + nx * hgt, py + ny * hgt); }
+              if (side !== 2) { c.moveTo(px, py); c.lineTo(px - nx * hgt, py - ny * hgt); }
+            }
+            c.stroke();
+          }
+          const tex = g.texFromImage(cv.transferToImageBitmap()), o = g.target(cur.w, cur.h);
+          g.copy(tex, o); g.deleteTex(tex);
+          if (PM('0023', 0)) this.warn('Audio Spectrum: Composite On Original not implemented');
+          swap(o); break;
+        }
         case 'CC Cylinder': {
           const D = Math.PI / 180, rx = PM('0009', 0) * D, ry = PM('0010', 0) * D, rz = PM('0011', 0) * D;
           const cx = Math.cos(rx), sxr = Math.sin(rx), cy = Math.cos(ry), sy = Math.sin(ry), cz = Math.cos(rz), sz = Math.sin(rz);

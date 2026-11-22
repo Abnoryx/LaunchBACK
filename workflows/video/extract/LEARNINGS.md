@@ -119,3 +119,15 @@ Rules here override defaults in the code until they are folded into it.
   applied their effects to the whole frame (s10 ui scene blurred all over) -> now only inside the layer's own drawn
   alpha (masks/opacity included). Coverage skipped `ADBE AudSpect` as an audio effect (regex `^ADBE Aud`) -> the
   Audio Spectrum solid drew as a grey slab over s17; regex now excludes AudSpect/AudWave.
+- User round-1 notes (2026-11-22): "last scene doesn't exist" (s17 grey slab), "Get to know has no contrast" (s12),
+  "text blurry where the cursor ticks" (s10). Causes + fixes:
+  - s12: Compound Blur used the layer's own luma as the blur map, so white text got the MAXIMUM blur. Now the map is
+    the referenced layer's source (a hidden scratch png / dust video — AE uses it even when hidden), stretched.
+  - s17: Audio Spectrum implemented (renderer serves /pcm/<file> as 22.05 kHz mono f32; Hann DFT per band). AE's
+    maths is undocumented: fitted on this reel (78 bars x 51 frames) -> window centred one window length after the
+    frame, height = maxH * 0.0404 * amp^0.5 (log-corr 0.24 -> 0.74), min bar = thickness (dotted baseline).
+  - s17 black border: a Transform adjustment shrinks the frame to 95% and AE fills the edge from the 166% background
+    beyond the frame; we only have the frame, so adjustment Transform now repeats edge pixels.
+  - s10: shape adjustment layers fixed (see round 1). Colorama: palette not in the .aep (py_aep and the raw RIFX cdat
+    hold nothing) -> measured LUT `colorama|<comp>|<layer>` in the reel's luts.json, fitted from the analytic 4-Color
+    input vs reel / (our post-Colorama gain): frame MAE 32.8 -> 4.4. Generic hook; the fit itself was by hand.
