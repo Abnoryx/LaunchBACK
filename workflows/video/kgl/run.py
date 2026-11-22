@@ -19,11 +19,15 @@ def user():
 def call(method, path, body=None, raw=False):
     req = urllib.request.Request(API + path, method=method, headers={'Authorization': AUTH, 'Content-Type': 'application/json'},
                                  data=json.dumps(body).encode() if body is not None else None)
-    try:
-        with urllib.request.urlopen(req, timeout=300) as r:
-            d = r.read()
-    except urllib.error.HTTPError as e:   # say which step failed (a bare 403 traceback hid it)
-        print(f'{method} {path} -> {e.code} {e.read()[:300]!r}', file=sys.stderr); raise
+    for attempt in range(8):   # long queues mean hours of polling: Kaggle answers 429 (rate limit) -> back off, retry
+        try:
+            with urllib.request.urlopen(req, timeout=300) as r:
+                d = r.read()
+            break
+        except urllib.error.HTTPError as e:   # say which step failed (a bare 403 traceback hid it)
+            if e.code in (429, 500, 502, 503, 504) and attempt < 7:
+                time.sleep(min(600, 30 * 2 ** attempt)); continue
+            print(f'{method} {path} -> {e.code} {e.read()[:300]!r}', file=sys.stderr); raise
     return d if raw else json.loads(d or b'{}')
 
 
