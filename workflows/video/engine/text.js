@@ -205,8 +205,11 @@ export function textAnimation(layer, tComp, ctx) {
       amt = first ? a : amt.map((v, i) => (intersect ? v * a[i] : Math.min(1, v + a[i])));
       first = false;
     }
+    // an animator with no real properties had one the creator left at its default value (e.g. Fill Color at AE's
+    // default red; Sells scene 5): then every property counts, which is harmless since the rest are identity defaults
+    const anyReal = (props?.c || []).some((p) => !p.syn);
     for (const p of props?.c || []) {
-      if (p.syn) continue; // filler default the creator never added
+      if (p.syn && anyReal) continue; // filler default the creator never added
       const v = evalProp(p, tComp, ctx);
       chars.forEach((c, i) => {
         const k = amt[i];

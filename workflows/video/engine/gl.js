@@ -125,7 +125,7 @@ const SHADERS = {
     else if (uOp == 4) { rgb = vec3(texture(uLut, vec2(rgb.r,.5)).r, texture(uLut, vec2(rgb.g,.5)).g, texture(uLut, vec2(rgb.b,.5)).b); } // curves
     else if (uOp == 5) { float l = dot(rgb, vec3(.2126,.7152,.0722)); rgb = vec3(step(uK, l)); }                 // threshold
     else if (uOp == 6) { rgb = 1.0 - rgb; }                                                                       // invert
-    else if (uOp == 7) { vec2 p = vUV*uRes; vec2 d = uB.xy-uA.xy; float f = clamp(dot(p-uA.xy,d)/max(dot(d,d),1e-3),0.0,1.0); rgb *= mix(vec3(0.0), vec3(1.0), f) * uK + (1.0-uK); } // gradient multiply
+    else if (uOp == 7) { vec2 p = vUV*uRes; vec2 d = uB.xy-uA.xy; float f = clamp(dot(p-uA.xy,d)/max(dot(d,d),1e-3),0.0,1.0); rgb *= mix(mix(vec3(uA.z), vec3(uA.w), f), vec3(1.0), 1.0-uK); } // gradient multiply: start value uA.z -> end value uA.w (S_Gradient, Combine=Multiply)
     else if (uOp == 8) { vec2 p = vUV - 0.5; float v = 1.0 - uK*dot(p,p)*2.0; rgb *= clamp(v,0.0,1.0); }         // vignette
     else if (uOp == 9) { // dot halftone (AM, 45 deg): uK = cell px, uA = ink, uB = paper
       vec2 p = vUV*uRes; float c = 0.70710678; mat2 R = mat2(c,-c,c,c); vec2 q = R*p; vec2 cell = floor(q/uK)*uK + 0.5*uK;
@@ -370,8 +370,11 @@ export class GL {
   readPixels(r) {
     const gl = this.gl;
     gl.bindFramebuffer(gl.FRAMEBUFFER, r.fb);
-    const out = new Uint8Array(r.w * r.h * 4);
-    gl.readPixels(0, 0, r.w, r.h, gl.RGBA, gl.UNSIGNED_BYTE, out);
+    // targets are RGBA16F: WebGL2 only allows reading them as RGBA/FLOAT (UNSIGNED_BYTE failed and returned zeros,
+    // which emptied every large-feather mask)
+    const f = new Float32Array(r.w * r.h * 4), out = new Uint8Array(r.w * r.h * 4);
+    gl.readPixels(0, 0, r.w, r.h, gl.RGBA, gl.FLOAT, f);
+    for (let i = 0; i < f.length; i++) out[i] = Math.max(0, Math.min(255, Math.round(f[i] * 255)));
     return out;
   }
 }

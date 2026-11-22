@@ -308,6 +308,8 @@ export class Engine {
         } else if (it.m === 'ADBE Vector Shape - Group') {
           const sh = ev(findM(it, 'ADBE Vector Shape'), null);
           if (sh && sh._shape) { const bp = bezPath(sh); bp._len = bezLen(sh); paths.push(bp); for (const v of sh.vtx) pts.push([localM, v[0], v[1]]); }
+        } else if (it.m === 'ADBE Vector Filter - Merge') {   // Merge Paths: 1 merge, 2 add, 3 subtract, 4 intersect, 5 exclude
+          if (paths.length > 1) { const parts = paths.splice(0); paths.push({ merge: ev(findM(it, 'ADBE Vector Merge Type'), 2), parts }); }
         } else if (it.m === 'ADBE Vector Graphic - Fill' || it.m === 'ADBE Vector Graphic - Stroke') {
           const col = ev(findM(it, it.m.endsWith('Fill') ? 'ADBE Vector Fill Color' : 'ADBE Vector Stroke Color'), [1, 1, 1, 1]);
           const o = ev(findM(it, it.m.endsWith('Fill') ? 'ADBE Vector Fill Opacity' : 'ADBE Vector Stroke Opacity'), 100) / 100;
@@ -353,8 +355,8 @@ export class Engine {
           const L = d.p._len || 4000, s = (Math.min(d.trim.s, d.trim.e) / 100) * L, e = (Math.max(d.trim.s, d.trim.e) / 100) * L;
           c.setLineDash([Math.max(0.001, e - s), L * 2]); c.lineDashOffset = -s;
         }
-        c.stroke(d.p);
-      } else { c.fillStyle = css; c.fill(d.p); }
+        if (d.p.merge) for (const q of d.p.parts) c.stroke(q); else c.stroke(d.p);
+      } else if (d.p.merge) { c.fillStyle = css; fillMerged(c, d.p, W, H); } else { c.fillStyle = css; c.fill(d.p); }
       c.restore();
     }
     const tex = this.g.texFromImage(cv.transferToImageBitmap());
@@ -494,7 +496,12 @@ export class Engine {
         case 'S_Gradient': {
           const a = P('Start XY', [0, 0]), b = P('End XY', [0, rect[3]]);
           const toPx = (p) => [(p[0] - rect[0]) * sx, (p[1] - rect[1]) * sx];
-          swap(g.color(cur, 7, { uA: [...toPx(a), 0, 0], uB: [...toPx(b), 0, 0], uK: 0.6 }));
+          // Sapphire Gradient, Combine 2 = multiply by a ramp from Start Color (at Start XY) to End Color (at End XY);
+          // colours are greys in our projects, so their luma is used (was: fixed black->white at 60%, i.e. reversed)
+          const lum = (c) => 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+          let c0 = lum(P('Start Color', [1, 1, 1, 1])), c1 = lum(P('End Color', [0, 0, 0, 1]));
+          if (P('Swap Colors', 0)) [c0, c1] = [c1, c0];
+          swap(g.color(cur, 7, { uA: [...toPx(a), c0, c1], uB: [...toPx(b), 0, 0], uK: 1 }));
           break;
         }
         case 'ADBE Linear Wipe': {
@@ -1020,6 +1027,18 @@ function bezLen(sh) {
 }
 
 // AE gradient stops {colors:[[pos, mid, r, g, b]...], alphas:[[pos, mid, a]...]} -> [[pos, css]] (midpoints taken as 0.5)
+// Merge Paths fill on a 2D canvas whose transform and fillStyle are set: union modes fill every part; intersect clips the
+// first part by the others; subtract/exclude go through a scratch canvas so other shapes already drawn are untouched
+function fillMerged(c, m, W, H) {
+  const [first, ...rest] = m.parts;
+  if (m.merge === 4) { c.save(); for (const q of rest) c.clip(q); c.fill(first); c.restore(); return; }
+  if (m.merge !== 3 && m.merge !== 5) { for (const q of m.parts) c.fill(q); return; }
+  const t = new OffscreenCanvas(W, H).getContext('2d');
+  t.setTransform(c.getTransform()); t.fillStyle = c.fillStyle; t.fill(first);
+  t.globalCompositeOperation = m.merge === 3 ? 'destination-out' : 'xor';
+  for (const q of rest) t.fill(q);
+  c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.drawImage(t.canvas, 0, 0); c.restore();
+}
 function gradStops(g) {
   if (!g || !g.colors || !g.colors.length) return [[0, 'rgba(255,255,255,1)'], [1, 'rgba(0,0,0,1)']];
   const cs = [...g.colors].sort((x, y) => x[0] - y[0]), as = g.alphas && g.alphas.length ? [...g.alphas].sort((x, y) => x[0] - y[0]) : [[0, 0.5, 1]];
