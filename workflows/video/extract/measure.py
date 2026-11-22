@@ -81,7 +81,11 @@ def detect_cuts(S, H, min_gap=6, win_thr=0.33):
     thr = max(0.2, med + 10 * mad)
     cand = [i for i in range(1, len(d)) if d[i] > thr and d[i] >= d[i - 1] and d[i] >= d[min(len(d) - 1, i + 1)]]
     cand = [(i, window_dist(H, i)) for i in cand]
-    cand = [c for c in cand if c[1] >= win_thr]
+    # same-palette cuts (light page -> light page) have similar window histograms: also accept a pixel-difference
+    # spike far above the frames just before it (Sells f1232, '1thing' -> 'TRUST')
+    M = S['mad']
+    spike = lambda i: M[i] > max(15.0, 6 * np.median(M[max(1, i - 8):i]))
+    cand = [c for c in cand if c[1] >= win_thr or spike(c[0])]
     cuts = []
     for i, w in cand:
         if cuts and i - cuts[-1][0] < min_gap:
