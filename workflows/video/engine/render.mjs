@@ -61,6 +61,9 @@ await page.route('http://engine.local/**', async (route) => {
       if (!fs.existsSync(out)) {
         const alpha = /\.(gif|mov|webm|png)$/i.test(f);
         try { execFileSync('ffmpeg', ['-v', 'error', '-y', '-ss', String(parseInt(ms) / 1000), '-i', f, '-frames:v', '1', ...(alpha ? ['-pix_fmt', 'rgba', '-f', 'image2', '-c:v', 'png'] : ['-q:v', '2', '-f', 'image2', '-c:v', 'mjpeg']), out]); } catch { return route.fulfill({ status: 404 }); }
+        // a seek past the clip's end writes nothing: hold its last frame
+        if (!fs.existsSync(out)) try { execFileSync('ffmpeg', ['-v', 'error', '-y', '-sseof', '-0.2', '-i', f, '-update', '1', ...(alpha ? ['-pix_fmt', 'rgba', '-f', 'image2', '-c:v', 'png'] : ['-q:v', '2', '-f', 'image2', '-c:v', 'mjpeg']), out]); } catch {}
+        if (!fs.existsSync(out)) return route.fulfill({ status: 404 });
       }
       return route.fulfill({ path: out, contentType: /\.(gif|mov|webm|png)$/i.test(f) ? 'image/png' : 'image/jpeg' });
     }
