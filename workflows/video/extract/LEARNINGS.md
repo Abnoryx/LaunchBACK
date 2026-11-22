@@ -94,3 +94,24 @@ Rules here override defaults in the code until they are folded into it.
   rule found Sells f1232 (cut recall 0.86 -> 0.91). Cuts inside white flashes are still found ~5 f off.
 - Known open gaps: s09 'Why' faces 0.50, s16 'People don't care' 0.57, s22 camera runs ahead 0.72; scene 5 glow too
   big; box blur sigma (0.6 R) likely too small; s01 underline should be red, bills out of sync.
+
+## 2026-11-22 — Stop ("Stop Trying to Please Everyone"), Route A steps 1–5 + engine gaps
+- Which render is the target: the posted reel (`tpl/reels/stop_ig.mp4`) == the project's later render `7th reel_1.mp4`
+  (luma diff 0.7 at offset 0) == the saved .aep. The old breakdown's "0–10.6 s differs" note was about `7th reel.mp4`.
+  Always compare the posted reel against every render in the footage folder before trusting the project.
+- Harvest: zip tools store astral characters (emoji) as `#LXXXXXX` (6 hex), not `#UXXXX`: 1 missing clip -> 0.
+- Fonts: `Coolvetica-Cram` is the free regular Crammed cut the user supplied -> real font (was League Gothic).
+- Coverage now also checks shape items (Sells lesson); Stop needs none.
+- **Effect masks** (Compositing Options > Mask Reference): masks an effect references limit only that effect and do
+  not cut the layer. The engine cut the layer -> Stop's centre logo coin vanished (its shine masks hid it). Now the
+  layer skips referenced masks and the effect's result is mixed in inside them (x Effect Opacity). psych scene 8
+  SSIM +0.004/+0.005 on 3 frames; Sells s01 f30 0.904 -> 0.899 (its LUT was fitted to the old look; refit if Sells
+  is re-rendered).
+- New effects: Optics Compensation (reverse off; barrel with unit centre scale, source r = tan(r*FOV/2)/(FOV/2) in
+  half-width units, edge-clamped; checked by eye on f790), 4-Color Gradient (inverse-distance, replaces colour), Grid
+  (blending mode 1 = None: lines only — the grid comp is then filled and multiplied, so Normal-over hid the lines).
+- Pass-through for now: Echo (1.3 ms echo time, invisible), CC Glass (frosted cards in ui scene look too light),
+  APC Colorama (custom Output Cycle not decodable by py_aep: the "Something" glow shows white instead of dim
+  olive, ui-scene background too cyan). Needs a measured palette per layer (fit from reel pixels), not a frame LUT.
+- Debug recipe that found the logo bug in minutes: render the precomp alone, then log per-layer content alpha
+  (readPixels FLOAT) + mask presence from drawLayer via console.warn (render.mjs only forwards warnings/errors).
