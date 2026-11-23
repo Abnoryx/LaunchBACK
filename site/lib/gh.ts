@@ -11,7 +11,9 @@ async function gh(path: string, init: RequestInit = {}) {
 }
 
 export async function tree(): Promise<{ path: string; size?: number; type: string }[]> {
-  const j = await (await gh(`/git/trees/${BRANCH}?recursive=1`)).json()
+  const head = (await (await gh(`/git/ref/heads/${BRANCH}`)).json()).object.sha   // branch names with '/' break /trees/<branch>
+  const root = (await (await gh(`/git/commits/${head}`)).json()).tree.sha
+  const j = await (await gh(`/git/trees/${root}?recursive=1`)).json()
   return j.tree.filter((t: any) => t.path.startsWith(LIB + '/'))
 }
 export async function raw(path: string): Promise<Response> {
