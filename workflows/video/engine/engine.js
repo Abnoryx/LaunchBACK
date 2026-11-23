@@ -266,7 +266,7 @@ export class Engine {
       const tex = g.texFromImage(r.canvas);
       const tg = g.target(r.canvas.width, r.canvas.height);
       g.copy(tex, tg); g.deleteTex(tex);
-      return { tg, rect: [-r.ox, -r.oy, -r.ox + r.canvas.width / ss, -r.oy + r.canvas.height / ss] };
+      return { tg, rect: [-r.ox, -r.oy, -r.ox + r.canvas.width / r.scale, -r.oy + r.canvas.height / r.scale] };   // drawText may lower ss (8000 px cap)
     }
     if (L.type === 'ShapeLayer') return this.shapeContent(comp, L, t, opts);
     if (L.src_id == null) return null;

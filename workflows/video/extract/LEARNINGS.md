@@ -135,3 +135,9 @@ Rules here override defaults in the code until they are folded into it.
   s12 0.728 -> 0.745 (looks matched by eye: the random film-dust overlay on black dominates SSIM there).
 - Step 7 (Stop gt from the dump): Route B cut recall 0.938 (only the invisible whip at 929 missed), precision 0.833
   (extras 59, 201, 779 are visual beats inside AE shots). Added to the baseline.
+- Full-res final: s07 0.873 -> 0.768 and s12 0.745 -> 0.691 vs the 540p rounds. Cause: drawText caps its canvas at
+  8000 px by lowering ss, but content() divided by the caller's ss -> very large text (2.4x scale x 2x supersample)
+  came out ~6% small, only at full res. content() now uses the returned scale. Previews can't catch this class of
+  bug: before a final, render 1-2 full-res frames of the biggest-text scenes and compare to the 540p ones.
+- Kaggle queue: the final sat ~7 h "queued" (job later ran fine); polling every 20 s for hours got HTTP 429 and
+  killed the watcher. kgl.run now backs off on 429/5xx; kgl.fetch collects an already-pushed job.
