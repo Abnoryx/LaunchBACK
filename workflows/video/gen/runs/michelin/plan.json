@@ -1,0 +1,188 @@
+{
+ "shots": [
+  {
+   "template": "hero_word",
+   "text": "TYRES",
+   "seconds": 2.0,
+   "world": "paper",
+   "invert": false,
+   "text_px": 110
+  },
+  {
+   "template": "brain_words",
+   "text": "CHEFS",
+   "seconds": 1.9,
+   "world": "dark",
+   "invert": false,
+   "text_px": 110
+  },
+  {
+   "template": "flare_script",
+   "text": "ANY CRITIC ALIVE",
+   "seconds": 1.5,
+   "world": "dark",
+   "invert": false,
+   "text_px": 110
+  },
+  {
+   "template": "share_card",
+   "text": "FREE GIVEAWAY",
+   "seconds": 2.7,
+   "world": "paper",
+   "invert": false,
+   "text_px": 110
+  },
+  {
+   "template": "calendar_flip",
+   "text": "1900",
+   "seconds": 1.8,
+   "world": "dark",
+   "invert": false,
+   "text_px": 110
+  },
+  {
+   "template": "flythrough_words",
+   "text": "THE PROBLEM",
+   "seconds": 1.6,
+   "world": "dark",
+   "invert": false,
+   "text_px": 110
+  },
+  {
+   "template": "word_prop_pop",
+   "text": "A CAR?",
+   "seconds": 1.9,
+   "world": "paper",
+   "invert": false,
+   "text_px": 110
+  },
+  {
+   "template": "pill_diagram",
+   "text": "TYRES NEED MOVEMENT",
+   "seconds": 1.9,
+   "world": "paper",
+   "invert": false,
+   "text_px": 110
+  },
+  {
+   "template": "dark_docs",
+   "text": "AD BUDGET: 0",
+   "seconds": 2.3,
+   "world": "dark",
+   "invert": false,
+   "text_px": 110
+  },
+  {
+   "template": "brain_collage",
+   "text": "A MAP.",
+   "seconds": 1.5,
+   "world": "paper",
+   "invert": false,
+   "text_px": 110
+  },
+  {
+   "template": "word_panel",
+   "text": "FREE GUIDE",
+   "seconds": 2.9,
+   "world": "dark",
+   "invert": true,
+   "text_px": 110
+  },
+  {
+   "template": "desk_flatlay",
+   "text": "FUEL \u00b7 SLEEP \u00b7 EAT",
+   "seconds": 3.8,
+   "world": "paper",
+   "invert": false,
+   "text_px": 110
+  },
+  {
+   "template": "hand_flame",
+   "text": "THIS ROAD GOES SOMEWHERE",
+   "seconds": 4.4,
+   "world": "dark",
+   "invert": true,
+   "text_px": 110
+  },
+  {
+   "template": "statement_flip",
+   "text": "THE EATING",
+   "seconds": 3.5,
+   "world": "paper",
+   "invert": false,
+   "text_px": 110
+  },
+  {
+   "template": "gen/s10",
+   "text": "1 MEAL. NO APPEAL.",
+   "seconds": 2.7,
+   "world": "dark",
+   "invert": true,
+   "text_px": 110
+  },
+  {
+   "template": "sells/s14",
+   "text": "THE MARK",
+   "seconds": 2.9,
+   "world": "paper",
+   "invert": false,
+   "text_px": 110
+  },
+  {
+   "template": "gen/s07",
+   "text": "A TYRE COMPANY INVENTED IT",
+   "seconds": 2.1,
+   "world": "dark",
+   "invert": false,
+   "text_px": 110
+  },
+  {
+   "template": "disc_brain",
+   "text": "THEY SOLD TYRES",
+   "seconds": 1.9,
+   "world": "paper",
+   "invert": false,
+   "text_px": 110
+  },
+  {
+   "template": "gen/s09",
+   "text": "SOMEWHERE TO GO",
+   "seconds": 2.0,
+   "world": "dark",
+   "invert": false,
+   "text_px": 110
+  },
+  {
+   "template": "gen/s02",
+   "text": "EVERY BUSINESS",
+   "seconds": 1.7,
+   "world": "paper",
+   "invert": false,
+   "text_px": 110
+  },
+  {
+   "template": "stop/s02",
+   "text": "YOUR GUIDEBOOK?",
+   "seconds": 1.7,
+   "world": "dark",
+   "invert": false,
+   "text_px": 110
+  },
+  {
+   "template": "follow_needle",
+   "text": "ONE AT A TIME",
+   "seconds": 2.7,
+   "world": "dark",
+   "invert": false,
+   "text_px": 110
+  },
+  {
+   "template": "logo_reveal",
+   "text": "LaunchBack",
+   "seconds": 2.0,
+   "world": "dark",
+   "invert": false,
+   "text_px": 110
+  }
+ ]
+}
