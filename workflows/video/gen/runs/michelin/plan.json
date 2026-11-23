@@ -9,7 +9,7 @@
    "text_px": 110
   },
   {
-   "template": "brain_words",
+   "template": "gen/s12",
    "text": "CHEFS",
    "seconds": 1.9,
    "world": "dark",
@@ -17,7 +17,7 @@
    "text_px": 110
   },
   {
-   "template": "flare_script",
+   "template": "gen/s08",
    "text": "ANY CRITIC ALIVE",
    "seconds": 1.5,
    "world": "dark",
@@ -57,7 +57,7 @@
    "text_px": 110
   },
   {
-   "template": "pill_diagram",
+   "template": "sells/s22",
    "text": "TYRES NEED MOVEMENT",
    "seconds": 1.9,
    "world": "paper",
@@ -89,7 +89,7 @@
    "text_px": 110
   },
   {
-   "template": "desk_flatlay",
+   "template": "sells/s20",
    "text": "FUEL \u00b7 SLEEP \u00b7 EAT",
    "seconds": 3.8,
    "world": "paper",
@@ -129,7 +129,7 @@
    "text_px": 110
   },
   {
-   "template": "gen/s07",
+   "template": "gen/s01",
    "text": "A TYRE COMPANY INVENTED IT",
    "seconds": 2.1,
    "world": "dark",
@@ -169,7 +169,7 @@
    "text_px": 110
   },
   {
-   "template": "follow_needle",
+   "template": "needle_wave",
    "text": "ONE AT A TIME",
    "seconds": 2.7,
    "world": "dark",
