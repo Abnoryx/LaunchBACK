@@ -10,7 +10,7 @@ def probe(src):
     num, den = map(int, v['r_frame_rate'].split('/'))
     pts = subprocess.check_output(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries', 'frame=pts_time',
                                    '-of', 'csv=p=0', src]).decode().split()
-    pts = [float(p) for p in pts if p.strip() not in ('', 'N/A')]
+    pts = [float(p.strip(',')) for p in pts if p.strip(', ') not in ('', 'N/A')]   # some muxers print 'x,' (side data column)
     d = np.diff(pts) if len(pts) > 1 else np.array([den / num])
     return dict(w=int(v['width']), h=int(v['height']), fps=num / den, frames=len(pts), dur=float(j['format']['duration']),
                 vfr=bool(len(d) and (d.max() - d.min()) > 0.25 * np.median(d)), color_space=v.get('color_space', '?'),

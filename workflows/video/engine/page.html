@@ -43,7 +43,10 @@ const engOpts = {
   mbSamples: cfg.samples,
   ...(cfg.supersample ? { supersample: cfg.supersample } : {}),
   assetUrl: (f) => (f.file ? '/asset/' + encodeURIComponent(f.file.split(/[\\/]/).pop()) : null),
-  videoFrameUrl: (f, t) => (f.file ? `/vid/${f.id}/${Math.max(0, Math.round(((f.loop && f.duration) ? (t % (f.duration - 0.05)) : t) * 1000))}.jpg?name=${encodeURIComponent(f.file.split(/[\\/]/).pop())}` : null),
+  // footage Loop = 1 means play once (AE interpretation); only > 1 wraps, for that many passes.
+  // AE shows the source frame that started at or before t (floor); ffmpeg -ss returns the first frame at or after the
+  // seek time, so seek to just before that frame's start
+  videoFrameUrl: (f, t) => (f.file ? `/vid/${f.id}/${Math.max(0, Math.round((((tt) => (f.frame_rate > 0 ? Math.floor(tt * f.frame_rate + 1e-4) / f.frame_rate - 0.001 : tt))((f.loop > 1 && f.duration) ? (t < f.duration * f.loop ? t % (f.duration - 0.05) : t) : t)) * 1000))}.jpg?name=${encodeURIComponent(f.file.split(/[\\/]/).pop())}` : null),
 };
 let eng = new Engine(project, engOpts);
 eng.modelOpts = cfg.modelOpts || {};

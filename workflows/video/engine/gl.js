@@ -66,7 +66,7 @@ const SHADERS = {
     vec4 front = d < 0.0 ? src : vec4(0.0);
     if (flap) { vec4 b = vec4(uPaper.rgb, 1.0)*back.a*uBackOp; o = b + front*(1.0 - b.a); } else o = front; }`,
   twirl: `${FS_HEAD} uniform vec2 uC; uniform float uAng, uR; void main(){ vec2 p = vUV*uRes - uC; float d = length(p), k = 1.0 - d/uR;
-    float a = k > 0.0 ? uAng*k*k : 0.0; o = texture(uTex, (mat2(cos(a), sin(a), -sin(a), cos(a))*p + uC)/uRes); }`,
+    float a = k > 0.0 ? uAng*k : 0.0; o = texture(uTex, (mat2(cos(a), sin(a), -sin(a), cos(a))*p + uC)/uRes); }`,
   noisergb: `${FS_HEAD} uniform float uAmt, uPh, uColor, uClip; void main(){ vec4 c = texture(uTex, vUV); vec2 q = floor(vUV*uRes);
     vec3 n = fract(sin(vec3(dot(q + uPh*7.13, vec2(12.9898, 78.233)), dot(q + uPh*3.71, vec2(39.346, 11.135)), dot(q + uPh*5.27, vec2(73.156, 52.235))))*43758.5453) - 0.5;
     if (uColor < 0.5) n = vec3(n.x); vec3 r = c.rgb + n*uAmt*c.a; o = vec4(uClip > 0.5 ? clamp(r, 0.0, c.a) : r, c.a); }`,

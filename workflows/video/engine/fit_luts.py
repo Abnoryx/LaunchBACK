@@ -1,6 +1,6 @@
 """Fit one 3D LUT per Magic Bullet Looks layer from (engine frame without Looks, reel frame) pixel pairs.
-usage: python3 -I fit_luts.py <project.json> <frames_dir> <reel.mp4> <out luts.json> [root comp=transition]
-Frames are f%05d.png at 30 fps numbering (render.mjs). Engine frames must be rendered WITHOUT luts.
+usage: python3 -I fit_luts.py <project.json> <frames_dir> <reel.mp4> <out luts.json> [root comp=transition] [fps=30]
+Frames are f%05d.png numbered at <fps> (render.mjs). Fits Magic Bullet Looks and Magic Bullet Film layers. Engine frames must be rendered WITHOUT luts.
 Model: affine RGB fit + binned residual on a 17^3 grid (only bins with enough samples), lightly smoothed."""
 import glob, json, os, subprocess, sys
 import numpy as np
@@ -8,6 +8,9 @@ from PIL import Image
 
 proj, frames_dir, reel, out = sys.argv[1:5]
 ROOT = sys.argv[5] if len(sys.argv) > 5 else "transition"
+FPS = float(sys.argv[6]) if len(sys.argv) > 6 else 30.0   # frame numbering rate of the engine frames and the reel
+QUANT = len(sys.argv) > 7 and sys.argv[7] == "quantile"   # per-channel distribution match: immune to misalignment/softness
+                                                          # (pixel-pair regression lifted sharp dark text to grey in gen s09)
 N, W, H = 17, 180, 320
 d = json.load(open(proj))
 comps = {c["id"]: c for c in d["comps"]}
@@ -52,13 +55,13 @@ luts = {}
 for c in d["comps"]:
     for L in c["layers"]:
         fx = [e for p in L.get("props", []) if p["m"] == "ADBE Effect Parade" for e in p.get("c", [])]
-        if not any(e["m"] == "MB LookSuite3" and not e.get("off") for e in fx) or not L.get("enabled", True):
+        if not any(e["m"] in ("MB LookSuite3", "Magic_Bullet_Suite_Magic_Bullet") and not e.get("off") for e in fx) or not L.get("enabled", True):
             continue
         E, Rr = [], []
         for a, b, off in acc.get(c["name"], []):
             r0, r1 = max(a, L["in_point"] - off), min(b, L["out_point"] - off)
             for n, f in frames.items():
-                t = n / 30
+                t = n / FPS
                 if r0 + 0.05 <= t < r1 - 0.05 and n < len(R):
                     e = np.asarray(Image.open(f).convert("RGB").resize((W, H), Image.BILINEAR)).astype(np.float64)
                     E.append(e.reshape(-1, 3)); Rr.append(R[n].reshape(-1, 3).astype(np.float64))
@@ -66,6 +69,26 @@ for c in d["comps"]:
         if not E:
             print(key, "no frames"); continue
         E, Rr = np.concatenate(E) / 255, np.concatenate(Rr) / 255
+        if QUANT:   # separable curves: map each channel's quantiles of ours onto the reel's
+            # one tone curve shared by R, G, B (from luma quantiles: keeps darks dark, no hue shift) + a per-channel
+            # gain that matches the reel's mean tint (per-channel quantile curves tinted grey bubbles purple)
+            q = np.linspace(0, 1, 257); lw = np.array([0.2126, 0.7152, 0.0722])
+            xe, xr = np.quantile(E @ lw, q), np.quantile(Rr @ lw, q)
+            tone = lambda v: np.interp(v, np.maximum.accumulate(xe + np.arange(257) * 1e-9), xr)
+            T = tone(E)
+            gain = Rr.mean(0) / np.maximum(T.mean(0), 1e-4)
+            g = np.stack(np.meshgrid(np.arange(N), np.arange(N), np.arange(N), indexing="ij"), -1)[..., ::-1].reshape(-1, 3) / (N - 1)
+            lut = tone(g) * gain
+            fit = np.clip(T * gain, 0, 1)
+            mae0, mae1 = np.abs(E - Rr).mean() * 255, np.abs(fit - Rr).mean() * 255
+            print(f"{key} ({c['name']}): {len(E) // (W * H)} frames, mean abs diff {mae0:.1f} -> {mae1:.1f} (quantile)")
+            lum = lambda a: a.reshape(-1, H, W, 3) @ np.array([0.2126, 0.7152, 0.0722]) * 255
+            s0 = np.mean([ssim(a, b) for a, b in zip(lum(E), lum(Rr))]); s1 = np.mean([ssim(a, b) for a, b in zip(lum(fit), lum(Rr))])
+            print(f"   luma SSIM {s0:.3f} -> {s1:.3f}")
+            if mae1 > 0.8 * mae0 or s1 < s0 - 0.005:
+                print("   skipped (no clear gain)"); continue
+            luts[key] = {"n": N, "data": [int(round(v * 255)) for v in np.clip(lut, 0, 1).reshape(-1)]}
+            continue
         X = np.c_[E, np.ones(len(E))]
         A, *_ = np.linalg.lstsq(X, Rr, rcond=None)
         res = Rr - X @ A

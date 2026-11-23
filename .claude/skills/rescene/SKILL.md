@@ -119,6 +119,14 @@ assets in `/home/user/tpl/lib/<project>/`, scores per shot. Read LEARNINGS.md fi
    → send the showcase beside the reel and ask the user for changes, and also fix whatever is wrong by my own review →
    round 2 at 540p, re-rendering only the changed scenes (`--only s06,s09`) → changes if needed → final at full
    resolution. Never full-res before the final; never re-render unchanged scenes.
+   **Round 2 scope (user rule, 2026-11-22):** the user's round-1 notes AND every fix from my own review both go into
+   round 2, unless the user says to leave one out. Never wait for a separate yes on my own fixes.
+   **Motion + transition check before showing any round (user rule, 2026-11-22; missed in gen r1 on EMOTION/story):**
+   SSIM and still sheets don't catch missing animation. For every scene, compare motion against the reel: a strip of
+   every frame across each cut (±6 frames) and a per-scene motion curve (mean abs frame-to-frame difference, ours vs
+   reel). Flag any element that sits still or pops in where the reel animates it, any keyframed move/twirl/wipe that
+   is weaker or missing, and any cut that is hard in ours but transitioned in the reel. Zero hard cuts that the reel
+   doesn't have. Fix these before sending the round; list what was checked in the report.
 7. **Free ground truth for Route B**: write `extract/gt/<reel>.json` (cuts, transitions, camera, eases, text timing)
    from the dump, run `python3 -m extract.check --remeasure`, and fix Route B wherever it misses. Every owned project
    makes the video-only route better.

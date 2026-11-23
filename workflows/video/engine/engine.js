@@ -714,14 +714,14 @@ export class Engine {
             const A = this.renderComp(ac, tq, { tc: tq, onlyBelow: L.i }); this._adj = saveAdj; this._t = saveT; swap(A);
           }
         } break;
-        case 'ADBE Twirl': { // angle falls off as (1-d/r)^2; radius: 50 = the layer diagonal (fit to Comp 1_2.mp4 f627)
+        case 'ADBE Twirl': { // angle falls off as (1-d/r)^2; radius is % of the larger layer side (AE docs; matches gen reel f628 spiral)
           const ang = PM('0001', 0) * Math.PI / 180, c = PM('0003', [540, 960]);
-          if (Math.abs(ang) > 1e-4) { const o = g.target(cur.w, cur.h); g.run('twirl', o, { uC: [(c[0] - rect[0]) * sx, (c[1] - rect[1]) * sx], uAng: ang, uR: Math.max(1, PM('0002', 50) / 50 * Math.hypot(...this.sourceSize(L).map((v, i) => v || (i ? comp.h : comp.w))) * sx) }, { uTex: cur }); swap(o); }
+          if (Math.abs(ang) > 1e-4) { const o = g.target(cur.w, cur.h); g.run('twirl', o, { uC: [(c[0] - rect[0]) * sx, (c[1] - rect[1]) * sx], uAng: ang, uR: Math.max(1, PM('0002', 50) / 100 * Math.max(...this.sourceSize(L).map((v, i) => v || (i ? comp.h : comp.w))) * sx) }, { uTex: cur }); swap(o); }
           break;
         }
-        case 'CC Radial Fast Blur': { // zoom blur; Amount 100 ~ a 10 % streak (fit to Comp 1_2.mp4 f321)
+        case 'CC Radial Fast Blur': { // zoom blur; Amount 100 ~ a 33 % streak (fit to gen reel f321, the Amount 60 peak)
           const amt = PM('0002', 0), c = PM('0001', [540, 960]);
-          if (amt > 0.1) { const o = g.target(cur.w, cur.h); g.run('spinblur', o, { uC: [(c[0] - rect[0]) * sx, (c[1] - rect[1]) * sx], uAng: 0, uZoom: amt / 1000 }, { uTex: cur }); swap(o); }
+          if (amt > 0.1) { const o = g.target(cur.w, cur.h); g.run('spinblur', o, { uC: [(c[0] - rect[0]) * sx, (c[1] - rect[1]) * sx], uAng: 0, uZoom: amt / 300 }, { uTex: cur }); swap(o); }
           break;
         }
         case 'ADBE Noise2': { // Amount %, Use Color Noise, Clip; new pattern every frame

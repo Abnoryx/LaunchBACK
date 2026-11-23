@@ -95,3 +95,19 @@ Rules here override defaults in the code until they are folded into it.
   now adjust only inside their content (drawn without effects); solid adjustment layers keep the comp-rect + masks
   path. Sells/r1 have no such layers (unchanged); Stop has 17.
 - CPU render speed here (4 cores, 540p, 1 sample): 12 s/frame on light scenes, 25–32 s/frame on heavy ones.
+
+## 2026-11-23 — gen round 1 review → round 2 fixes (user: EMOTION/story not animated/transitioned; bubbles low contrast)
+- The posted reel is the FINAL comp ("sound design"): it re-imports the creator's render of Comp 1 and adds overlays
+  (a bokeh flash into the football shot). extract/aep_relink.py swaps such re-imported renders back to the live comp;
+  render the final comp as root. Missing that made cut 215 a hard cut in ours.
+- Footage Loop = 1 means play once (was treated as "loop forever": a light leak wrapped to its bright first frame).
+- Video frames: AE shows the source frame that started at or before t (floor); ffmpeg -ss returns the next one.
+- .ai/.pdf/.eps via ghostscript pngalpha (ImageMagick gave opaque, slightly-lifted black: Extract keys then missed).
+- Twirl: radius = % of the larger layer side, angle falloff linear (1-d/r) — matches the reel's spiral frame by frame.
+  CC Radial Fast Blur amount/300. Earlier fits were made against frames past the effect peak: fit at the key frame.
+- Grade: pixel-pair LUT regression lifts sharp dark text to grey when ours is sharper than the reel. fit_luts.py
+  `quantile` mode = one luma tone curve shared by R,G,B + per-channel mean gain (no hue shift, darks kept).
+- Motion/transition check (new rule): run extract.run on our render too and compare transitions per cut, then look at
+  every disputed cut as a ±3-frame strip. Automatic tags alone are noisy (same cut tagged hard_cut vs whip).
+- Open: scene 5 XP wallpaper — AE ignores its alpha matte (matte off: SSIM 0.40 -> 0.55); general rule unknown.
+  EMOTION/STORY need the real font (Round 8 by atipo, all-caps); the tracking animation itself is already there.

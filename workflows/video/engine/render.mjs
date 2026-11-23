@@ -49,7 +49,8 @@ await page.route('http://engine.local/**', async (route) => {
       if (ext === '.glb') return route.fulfill({ path: f, contentType: 'model/gltf-binary' });
       // psd/ai/other stills: rasterise once via ImageMagick
       const out = path.join(cacheDir, 'still_' + path.basename(f) + '.png');
-      if (!fs.existsSync(out)) { try { execFileSync('convert', [f + '[0]', '-background', 'none', out], { stdio: 'ignore' }); } catch { return route.fulfill({ status: 404 }); } }
+      // .ai/.pdf/.eps go straight to ghostscript's alpha device (ImageMagick's default gs device is opaque: black boxes)
+      if (!fs.existsSync(out)) { try { if (/\.(ai|pdf|eps)$/i.test(f)) execFileSync('gs', ['-q', '-dSAFER', '-dBATCH', '-dNOPAUSE', '-dFirstPage=1', '-dLastPage=1', '-dUseCropBox', '-sDEVICE=pngalpha', '-r72', '-o', out, f], { stdio: 'ignore' }); else execFileSync('convert', [f + '[0]', '-background', 'none', out], { stdio: 'ignore' }); } catch { return route.fulfill({ status: 404 }); } }
       return route.fulfill({ path: out, contentType: 'image/png' });
     }
     if (p.startsWith('/vid/')) {
