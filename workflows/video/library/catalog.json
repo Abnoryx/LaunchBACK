@@ -1474,6 +1474,443 @@
     "round": "final full res"
    },
    "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "gen/s01": {
+   "file": "tpl:lib/gen/templates/shot_01.json",
+   "kind": "aep_scene",
+   "source": "Generation Effect reel scene 1 f0-47 (18 fps)",
+   "window": [
+    0.0,
+    2.61111
+   ],
+   "slots": {
+    "texts": 2,
+    "footage": 9,
+    "accent": true
+   },
+   "status": "draft",
+   "score": {
+    "ssim_reel": 0.829,
+    "bar": 0.92,
+    "frames": 47,
+    "round": "final 1080p, user-approved 2026-11-23"
+   },
+   "render": "grade: tpl:lib/gen/luts.json (--luts); the posted reel adds a bokeh overlay in \"sound design\" over s06-s07",
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "gen/s02": {
+   "file": "tpl:lib/gen/templates/shot_02.json",
+   "kind": "aep_scene",
+   "source": "Generation Effect reel scene 2 f47-79 (18 fps)",
+   "window": [
+    2.61111,
+    4.38889
+   ],
+   "slots": {
+    "texts": 18,
+    "footage": 14,
+    "accent": true
+   },
+   "status": "draft",
+   "score": {
+    "ssim_reel": 0.883,
+    "bar": 0.92,
+    "frames": 32,
+    "round": "final 1080p, user-approved 2026-11-23"
+   },
+   "render": "grade: tpl:lib/gen/luts.json (--luts); the posted reel adds a bokeh overlay in \"sound design\" over s06-s07",
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "gen/s03": {
+   "file": "tpl:lib/gen/templates/shot_03.json",
+   "kind": "aep_scene",
+   "source": "Generation Effect reel scene 3 f79-89 (18 fps)",
+   "window": [
+    4.38889,
+    4.94444
+   ],
+   "slots": {
+    "texts": 18,
+    "footage": 12,
+    "accent": true
+   },
+   "status": "draft",
+   "score": {
+    "ssim_reel": 0.776,
+    "bar": 0.85,
+    "frames": 10,
+    "round": "final 1080p, user-approved 2026-11-23"
+   },
+   "render": "grade: tpl:lib/gen/luts.json (--luts); the posted reel adds a bokeh overlay in \"sound design\" over s06-s07",
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "gen/s04": {
+   "file": "tpl:lib/gen/templates/shot_04.json",
+   "kind": "aep_scene",
+   "source": "Generation Effect reel scene 4 f89-115 (18 fps)",
+   "window": [
+    4.94444,
+    6.38889
+   ],
+   "slots": {
+    "texts": 18,
+    "footage": 12,
+    "accent": true
+   },
+   "status": "proven",
+   "score": {
+    "ssim_reel": 0.886,
+    "bar": 0.85,
+    "frames": 26,
+    "round": "final 1080p, user-approved 2026-11-23"
+   },
+   "render": "grade: tpl:lib/gen/luts.json (--luts); the posted reel adds a bokeh overlay in \"sound design\" over s06-s07",
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "gen/s05": {
+   "file": "tpl:lib/gen/templates/shot_05.json",
+   "kind": "aep_scene",
+   "source": "Generation Effect reel scene 5 f115-176 (18 fps)",
+   "window": [
+    6.38889,
+    9.77778
+   ],
+   "slots": {
+    "texts": 33,
+    "footage": 22,
+    "accent": true
+   },
+   "status": "draft",
+   "score": {
+    "ssim_reel": 0.655,
+    "bar": 0.85,
+    "frames": 61,
+    "round": "final 1080p, user-approved 2026-11-23"
+   },
+   "render": "grade: tpl:lib/gen/luts.json (--luts); the posted reel adds a bokeh overlay in \"sound design\" over s06-s07",
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "gen/s06": {
+   "file": "tpl:lib/gen/templates/shot_06.json",
+   "kind": "aep_scene",
+   "source": "Generation Effect reel scene 6 f176-216 (18 fps)",
+   "window": [
+    9.77778,
+    12.0
+   ],
+   "slots": {
+    "texts": 18,
+    "footage": 16,
+    "accent": true
+   },
+   "status": "draft",
+   "score": {
+    "ssim_reel": 0.892,
+    "bar": 0.92,
+    "frames": 40,
+    "round": "final 1080p, user-approved 2026-11-23"
+   },
+   "render": "grade: tpl:lib/gen/luts.json (--luts); the posted reel adds a bokeh overlay in \"sound design\" over s06-s07",
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "gen/s07": {
+   "file": "tpl:lib/gen/templates/shot_07.json",
+   "kind": "aep_scene",
+   "source": "Generation Effect reel Don’t tell @saquon to stay grounded. He knows the sky is the limit..mp4 f216-242 (18 fps)",
+   "window": [
+    12.0,
+    13.44444
+   ],
+   "slots": {
+    "texts": 6,
+    "footage": 8,
+    "accent": true
+   },
+   "status": "proven",
+   "score": {
+    "ssim_reel": 0.911,
+    "bar": 0.85,
+    "frames": 26,
+    "round": "final 1080p, user-approved 2026-11-23"
+   },
+   "render": "grade: tpl:lib/gen/luts.json (--luts); the posted reel adds a bokeh overlay in \"sound design\" over s06-s07",
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "gen/s08": {
+   "file": "tpl:lib/gen/templates/shot_08.json",
+   "kind": "aep_scene",
+   "source": "Generation Effect reel scene 7 f242-270 (18 fps)",
+   "window": [
+    13.44444,
+    15.0
+   ],
+   "slots": {
+    "texts": 4,
+    "footage": 8,
+    "accent": true
+   },
+   "status": "draft",
+   "score": {
+    "ssim_reel": 0.872,
+    "bar": 0.92,
+    "frames": 28,
+    "round": "final 1080p, user-approved 2026-11-23"
+   },
+   "render": "grade: tpl:lib/gen/luts.json (--luts); the posted reel adds a bokeh overlay in \"sound design\" over s06-s07",
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "gen/s09": {
+   "file": "tpl:lib/gen/templates/shot_09.json",
+   "kind": "aep_scene",
+   "source": "Generation Effect reel scene 8 f270-321 (18 fps)",
+   "window": [
+    15.0,
+    17.83333
+   ],
+   "slots": {
+    "texts": 12,
+    "footage": 9,
+    "accent": true
+   },
+   "status": "proven",
+   "score": {
+    "ssim_reel": 0.901,
+    "bar": 0.85,
+    "frames": 51,
+    "round": "final 1080p, user-approved 2026-11-23"
+   },
+   "render": "grade: tpl:lib/gen/luts.json (--luts); the posted reel adds a bokeh overlay in \"sound design\" over s06-s07",
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "gen/s10": {
+   "file": "tpl:lib/gen/templates/shot_10.json",
+   "kind": "aep_scene",
+   "source": "Generation Effect reel White Solid 10 f321-344 (18 fps)",
+   "window": [
+    17.83333,
+    19.11111
+   ],
+   "slots": {
+    "texts": 5,
+    "footage": 3,
+    "accent": true
+   },
+   "status": "proven",
+   "score": {
+    "ssim_reel": 0.992,
+    "bar": 0.92,
+    "frames": 23,
+    "round": "final 1080p, user-approved 2026-11-23"
+   },
+   "render": "grade: tpl:lib/gen/luts.json (--luts); the posted reel adds a bokeh overlay in \"sound design\" over s06-s07",
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "gen/s11": {
+   "file": "tpl:lib/gen/templates/shot_11.json",
+   "kind": "aep_scene",
+   "source": "Generation Effect reel iphone nigga f344-359 (18 fps)",
+   "window": [
+    19.11111,
+    19.94444
+   ],
+   "slots": {
+    "texts": 13,
+    "footage": 7,
+    "accent": true
+   },
+   "status": "proven",
+   "score": {
+    "ssim_reel": 0.955,
+    "bar": 0.85,
+    "frames": 15,
+    "round": "final 1080p, user-approved 2026-11-23"
+   },
+   "render": "grade: tpl:lib/gen/luts.json (--luts); the posted reel adds a bokeh overlay in \"sound design\" over s06-s07",
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "gen/s12": {
+   "file": "tpl:lib/gen/templates/shot_12.json",
+   "kind": "aep_scene",
+   "source": "Generation Effect reel scene9 f359-398 (18 fps)",
+   "window": [
+    19.94444,
+    22.11111
+   ],
+   "slots": {
+    "texts": 14,
+    "footage": 11,
+    "accent": true
+   },
+   "status": "draft",
+   "score": {
+    "ssim_reel": 0.838,
+    "bar": 0.85,
+    "frames": 39,
+    "round": "final 1080p, user-approved 2026-11-23"
+   },
+   "render": "grade: tpl:lib/gen/luts.json (--luts); the posted reel adds a bokeh overlay in \"sound design\" over s06-s07",
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "gen/s13": {
+   "file": "tpl:lib/gen/templates/shot_13.json",
+   "kind": "aep_scene",
+   "source": "Generation Effect reel scene 10 f398-441 (18 fps)",
+   "window": [
+    22.11111,
+    24.5
+   ],
+   "slots": {
+    "texts": 3,
+    "footage": 7,
+    "accent": true
+   },
+   "status": "proven",
+   "score": {
+    "ssim_reel": 0.855,
+    "bar": 0.85,
+    "frames": 43,
+    "round": "final 1080p, user-approved 2026-11-23"
+   },
+   "render": "grade: tpl:lib/gen/luts.json (--luts); the posted reel adds a bokeh overlay in \"sound design\" over s06-s07",
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "gen/s14": {
+   "file": "tpl:lib/gen/templates/shot_14.json",
+   "kind": "aep_scene",
+   "source": "Generation Effect reel White Solid 12 f441-494 (18 fps)",
+   "window": [
+    24.5,
+    27.44444
+   ],
+   "slots": {
+    "texts": 13,
+    "footage": 5,
+    "accent": true
+   },
+   "status": "proven",
+   "score": {
+    "ssim_reel": 0.97,
+    "bar": 0.92,
+    "frames": 53,
+    "round": "final 1080p, user-approved 2026-11-23"
+   },
+   "render": "grade: tpl:lib/gen/luts.json (--luts); the posted reel adds a bokeh overlay in \"sound design\" over s06-s07",
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "gen/s15": {
+   "file": "tpl:lib/gen/templates/shot_15.json",
+   "kind": "aep_scene",
+   "source": "Generation Effect reel scene 11 f494-567 (18 fps)",
+   "window": [
+    27.44444,
+    31.5
+   ],
+   "slots": {
+    "texts": 10,
+    "footage": 5,
+    "accent": true
+   },
+   "status": "proven",
+   "score": {
+    "ssim_reel": 0.938,
+    "bar": 0.85,
+    "frames": 73,
+    "round": "final 1080p, user-approved 2026-11-23"
+   },
+   "render": "grade: tpl:lib/gen/luts.json (--luts); the posted reel adds a bokeh overlay in \"sound design\" over s06-s07",
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "gen/s16": {
+   "file": "tpl:lib/gen/templates/shot_16.json",
+   "kind": "aep_scene",
+   "source": "Generation Effect reel White Solid 14 f567-629 (18 fps)",
+   "window": [
+    31.5,
+    34.94444
+   ],
+   "slots": {
+    "texts": 14,
+    "footage": 4,
+    "accent": true
+   },
+   "status": "proven",
+   "score": {
+    "ssim_reel": 0.915,
+    "bar": 0.85,
+    "frames": 62,
+    "round": "final 1080p, user-approved 2026-11-23"
+   },
+   "render": "grade: tpl:lib/gen/luts.json (--luts); the posted reel adds a bokeh overlay in \"sound design\" over s06-s07",
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "gen/s17": {
+   "file": "tpl:lib/gen/templates/shot_17.json",
+   "kind": "aep_scene",
+   "source": "Generation Effect reel scene 12 f629-668 (18 fps)",
+   "window": [
+    34.94444,
+    37.11111
+   ],
+   "slots": {
+    "texts": 8,
+    "footage": 7,
+    "accent": true
+   },
+   "status": "draft",
+   "score": {
+    "ssim_reel": 0.878,
+    "bar": 0.92,
+    "frames": 39,
+    "round": "final 1080p, user-approved 2026-11-23"
+   },
+   "render": "grade: tpl:lib/gen/luts.json (--luts); the posted reel adds a bokeh overlay in \"sound design\" over s06-s07",
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "gen/s18": {
+   "file": "tpl:lib/gen/templates/shot_18.json",
+   "kind": "aep_scene",
+   "source": "Generation Effect reel scene 13 f668-709 (18 fps)",
+   "window": [
+    37.11111,
+    39.38889
+   ],
+   "slots": {
+    "texts": 3,
+    "footage": 6,
+    "accent": true
+   },
+   "status": "draft",
+   "score": {
+    "ssim_reel": 0.757,
+    "bar": 0.85,
+    "frames": 41,
+    "round": "final 1080p, user-approved 2026-11-23"
+   },
+   "render": "grade: tpl:lib/gen/luts.json (--luts); the posted reel adds a bokeh overlay in \"sound design\" over s06-s07",
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "gen/s19": {
+   "file": "tpl:lib/gen/templates/shot_19.json",
+   "kind": "aep_scene",
+   "source": "Generation Effect reel scene 14 f709-753 (18 fps)",
+   "window": [
+    39.38889,
+    41.83333
+   ],
+   "slots": {
+    "texts": 9,
+    "footage": 6,
+    "accent": true
+   },
+   "status": "proven",
+   "score": {
+    "ssim_reel": 0.911,
+    "bar": 0.85,
+    "frames": 44,
+    "round": "final 1080p, user-approved 2026-11-23"
+   },
+   "render": "grade: tpl:lib/gen/luts.json (--luts); the posted reel adds a bokeh overlay in \"sound design\" over s06-s07",
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
   }
  },
  "transitions": {
@@ -2768,6 +3205,576 @@
    "file": "tpl:lib/stop/assets/Whoosh Main.wav",
    "source": "Stop .aep footage",
    "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/Artwork 1.ai": {
+   "file": "tpl:lib/gen/assets/Artwork 1.ai",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/Artwork 2.ai": {
+   "file": "tpl:lib/gen/assets/Artwork 2.ai",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/Artwork 12.ai": {
+   "file": "tpl:lib/gen/assets/Artwork 12.ai",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/Artwork 14.ai": {
+   "file": "tpl:lib/gen/assets/Artwork 14.ai",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/Artwork 25.ai": {
+   "file": "tpl:lib/gen/assets/Artwork 25.ai",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/Artwork 27.ai": {
+   "file": "tpl:lib/gen/assets/Artwork 27.ai",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/Artwork 28.ai": {
+   "file": "tpl:lib/gen/assets/Artwork 28.ai",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/Artwork 29.ai": {
+   "file": "tpl:lib/gen/assets/Artwork 29.ai",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/Artwork 30.ai": {
+   "file": "tpl:lib/gen/assets/Artwork 30.ai",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/Artwork 31.ai": {
+   "file": "tpl:lib/gen/assets/Artwork 31.ai",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/Artwork 32.ai": {
+   "file": "tpl:lib/gen/assets/Artwork 32.ai",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/Artwork 40.ai": {
+   "file": "tpl:lib/gen/assets/Artwork 40.ai",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/Artwork 41.ai": {
+   "file": "tpl:lib/gen/assets/Artwork 41.ai",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/Artwork 42.ai": {
+   "file": "tpl:lib/gen/assets/Artwork 42.ai",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/11ca41359b9a2f7c5e0b88a300dc0354.gif": {
+   "file": "tpl:lib/gen/assets/11ca41359b9a2f7c5e0b88a300dc0354.gif",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/faefee3b901e16c96abcaaf6a748b0a4.gif": {
+   "file": "tpl:lib/gen/assets/faefee3b901e16c96abcaaf6a748b0a4.gif",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/2025-12-15 14-57-44.mp4": {
+   "file": "tpl:lib/gen/assets/2025-12-15 14-57-44.mp4",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/2025-12-15 15-00-44.mp4": {
+   "file": "tpl:lib/gen/assets/2025-12-15 15-00-44.mp4",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/BEAN LEAK 1.mp4": {
+   "file": "tpl:lib/gen/assets/BEAN LEAK 1.mp4",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/Comp 1_2.mp4": {
+   "file": "tpl:lib/gen/assets/Comp 1_2.mp4",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/Don’t tell @saquon to stay grounded. He knows the sky is the limit..mp4": {
+   "file": "tpl:lib/gen/assets/Don’t tell @saquon to stay grounded. He knows the sky is the limit..mp4",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/FLASH.mp4": {
+   "file": "tpl:lib/gen/assets/FLASH.mp4",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/Free Pack Smoke Cartoon Green Screen _ 2D Smoke _ Comic Smoke Effect Green Scree_1.mp4": {
+   "file": "tpl:lib/gen/assets/Free Pack Smoke Cartoon Green Screen _ 2D Smoke _ Comic Smoke Effect Green Scree_1.mp4",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/impact.mp4": {
+   "file": "tpl:lib/gen/assets/impact.mp4",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/LIGHT BOKEH TRANSITIONS 30.mp4": {
+   "file": "tpl:lib/gen/assets/LIGHT BOKEH TRANSITIONS 30.mp4",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/LightLeakTransition  15.mp4": {
+   "file": "tpl:lib/gen/assets/LightLeakTransition  15.mp4",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/mechanical ui.mp4": {
+   "file": "tpl:lib/gen/assets/mechanical ui.mp4",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/micro whoosh.mp4": {
+   "file": "tpl:lib/gen/assets/micro whoosh.mp4",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/sci fi whoosh.mp4": {
+   "file": "tpl:lib/gen/assets/sci fi whoosh.mp4",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/short wooshes.mp4": {
+   "file": "tpl:lib/gen/assets/short wooshes.mp4",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/Shot on iPhone - Gawx (1080p, h264).mp4": {
+   "file": "tpl:lib/gen/assets/Shot on iPhone - Gawx (1080p, h264).mp4",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/vibrant hit.mp4": {
+   "file": "tpl:lib/gen/assets/vibrant hit.mp4",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/Glass Light Leaks Transition 2-1.m4v": {
+   "file": "tpl:lib/gen/assets/Glass Light Leaks Transition 2-1.m4v",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/02ce45a2a308508dc423cc13fee57b71.jpg": {
+   "file": "tpl:lib/gen/assets/02ce45a2a308508dc423cc13fee57b71.jpg",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/6de6fa1a639cdb4bca127a858d8f39ed.jpg": {
+   "file": "tpl:lib/gen/assets/6de6fa1a639cdb4bca127a858d8f39ed.jpg",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/9f4d2a566f3956ceceb7ddbc4b0b2ef8.jpg": {
+   "file": "tpl:lib/gen/assets/9f4d2a566f3956ceceb7ddbc4b0b2ef8.jpg",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/145eeb690542a79d42e9414c8ea1bf5c.jpg": {
+   "file": "tpl:lib/gen/assets/145eeb690542a79d42e9414c8ea1bf5c.jpg",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/54699de8d8fbbd922cd9762d64097f3c.jpg": {
+   "file": "tpl:lib/gen/assets/54699de8d8fbbd922cd9762d64097f3c.jpg",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/blue tick mark.jpg": {
+   "file": "tpl:lib/gen/assets/blue tick mark.jpg",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/catalog paper.jpg": {
+   "file": "tpl:lib/gen/assets/catalog paper.jpg",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/collage.jpg": {
+   "file": "tpl:lib/gen/assets/collage.jpg",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/d81203a4741e6f1354124823f3976ef1.jpg": {
+   "file": "tpl:lib/gen/assets/d81203a4741e6f1354124823f3976ef1.jpg",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/DownloadGraph_page-0001.jpg": {
+   "file": "tpl:lib/gen/assets/DownloadGraph_page-0001.jpg",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/e7650458fe434cd647eafb289a569fe2.jpg": {
+   "file": "tpl:lib/gen/assets/e7650458fe434cd647eafb289a569fe2.jpg",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/f7e30724b410175a503819b584f3eb1b.jpg": {
+   "file": "tpl:lib/gen/assets/f7e30724b410175a503819b584f3eb1b.jpg",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/glass texture.jpg": {
+   "file": "tpl:lib/gen/assets/glass texture.jpg",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/grunge.jpg": {
+   "file": "tpl:lib/gen/assets/grunge.jpg",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/halftone bigger.jpg": {
+   "file": "tpl:lib/gen/assets/halftone bigger.jpg",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/halftone.jpg": {
+   "file": "tpl:lib/gen/assets/halftone.jpg",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/led.jpg": {
+   "file": "tpl:lib/gen/assets/led.jpg",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/line graph.jpg": {
+   "file": "tpl:lib/gen/assets/line graph.jpg",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/newpaper texture.jpg": {
+   "file": "tpl:lib/gen/assets/newpaper texture.jpg",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/paperr.jpg": {
+   "file": "tpl:lib/gen/assets/paperr.jpg",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/Screenshot_2025-12-14-12-55-19-799_com.instagram.android.jpg": {
+   "file": "tpl:lib/gen/assets/Screenshot_2025-12-14-12-55-19-799_com.instagram.android.jpg",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/stain texture.jpg": {
+   "file": "tpl:lib/gen/assets/stain texture.jpg",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/Texturelabs_Paper_361M.jpg": {
+   "file": "tpl:lib/gen/assets/Texturelabs_Paper_361M.jpg",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/Texturelabs_Paper_381L.jpg": {
+   "file": "tpl:lib/gen/assets/Texturelabs_Paper_381L.jpg",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/windows xp wallpaper.jpg": {
+   "file": "tpl:lib/gen/assets/windows xp wallpaper.jpg",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/brain png.png": {
+   "file": "tpl:lib/gen/assets/brain png.png",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/clippy-2024-11-18-13-34-58-67.png": {
+   "file": "tpl:lib/gen/assets/clippy-2024-11-18-13-34-58-67.png",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/crossed-swords_2694-fe0f.png": {
+   "file": "tpl:lib/gen/assets/crossed-swords_2694-fe0f.png",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/earnera logo.png": {
+   "file": "tpl:lib/gen/assets/earnera logo.png",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/icons.png": {
+   "file": "tpl:lib/gen/assets/icons.png",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/IMG_0264.PNG": {
+   "file": "tpl:lib/gen/assets/IMG_0264.PNG",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/iphone.png": {
+   "file": "tpl:lib/gen/assets/iphone.png",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/led overlay.png": {
+   "file": "tpl:lib/gen/assets/led overlay.png",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/MATH7-5-1-X-2.png": {
+   "file": "tpl:lib/gen/assets/MATH7-5-1-X-2.png",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/micheal jordan.png": {
+   "file": "tpl:lib/gen/assets/micheal jordan.png",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/notepad (1).png": {
+   "file": "tpl:lib/gen/assets/notepad (1).png",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/notepad.png": {
+   "file": "tpl:lib/gen/assets/notepad.png",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/pccc.png": {
+   "file": "tpl:lib/gen/assets/pccc.png",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/Screenshot 2025-12-12 103001.png": {
+   "file": "tpl:lib/gen/assets/Screenshot 2025-12-12 103001.png",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/Screenshot 2025-12-14 104307.png": {
+   "file": "tpl:lib/gen/assets/Screenshot 2025-12-14 104307.png",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/Screenshot 2025-12-14 123914.png": {
+   "file": "tpl:lib/gen/assets/Screenshot 2025-12-14 123914.png",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/Screenshot 2025-12-15 124331.png": {
+   "file": "tpl:lib/gen/assets/Screenshot 2025-12-15 124331.png",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/Screenshot 2025-12-15 125129.png": {
+   "file": "tpl:lib/gen/assets/Screenshot 2025-12-15 125129.png",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/thumb pin.png": {
+   "file": "tpl:lib/gen/assets/thumb pin.png",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/Untitled design.png": {
+   "file": "tpl:lib/gen/assets/Untitled design.png",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/vecteezy_whatsapp-logo-png-whatsapp-icon-png-whatsapp-transparent_18930746.png": {
+   "file": "tpl:lib/gen/assets/vecteezy_whatsapp-logo-png-whatsapp-icon-png-whatsapp-transparent_18930746.png",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/wooden.png": {
+   "file": "tpl:lib/gen/assets/wooden.png",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/160 - 1.mp3": {
+   "file": "tpl:lib/gen/assets/160 - 1.mp3",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/flash-whoosh-swoosh-3-SBA-300463407.mp3": {
+   "file": "tpl:lib/gen/assets/flash-whoosh-swoosh-3-SBA-300463407.mp3",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/Marker.mp3": {
+   "file": "tpl:lib/gen/assets/Marker.mp3",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/Radio.mp3": {
+   "file": "tpl:lib/gen/assets/Radio.mp3",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/impact.aac": {
+   "file": "tpl:lib/gen/assets/impact.aac",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/3.wav": {
+   "file": "tpl:lib/gen/assets/3.wav",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/7.wav": {
+   "file": "tpl:lib/gen/assets/7.wav",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/Cinematic Boom Medium Fast.wav": {
+   "file": "tpl:lib/gen/assets/Cinematic Boom Medium Fast.wav",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/Click sound 2.wav": {
+   "file": "tpl:lib/gen/assets/Click sound 2.wav",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/Healing.wav": {
+   "file": "tpl:lib/gen/assets/Healing.wav",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/iPhone Texting Sound Effect [lSBQE1PNJjk].wav": {
+   "file": "tpl:lib/gen/assets/iPhone Texting Sound Effect [lSBQE1PNJjk].wav",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/Riser Dark.wav": {
+   "file": "tpl:lib/gen/assets/Riser Dark.wav",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/Typewriter 4.wav": {
+   "file": "tpl:lib/gen/assets/Typewriter 4.wav",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/Whoosh Digital 01.wav": {
+   "file": "tpl:lib/gen/assets/Whoosh Digital 01.wav",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
+   "license": "Earn Edits template: use only, private"
+  },
+  "gen/Whoosh Fast 02.wav": {
+   "file": "tpl:lib/gen/assets/Whoosh Fast 02.wav",
+   "source": "Generation Effect .aep footage",
+   "status": "draft",
    "license": "Earn Edits template: use only, private"
   }
  },

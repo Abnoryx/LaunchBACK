@@ -79,6 +79,12 @@ blocker or a decision that is theirs (missing files, licence, taste). Report at 
 Input: `<project>.aep` (+ its footage folder) and the posted mp4. Output: `library/templates/<project>/<shot>` per shot,
 assets in `/home/user/tpl/lib/<project>/`, scores per shot. Read LEARNINGS.md first, as in Route B.
 
+0. **Get the project** (user rule, 2026-11-22) — every .aep project zip is pulled from the user's MEGA folder
+   https://mega.nz/folder/InRm3CQT#xF_C5lxUl2l7TzSSyA_IzQ by its file name:
+   `python3 -m extract.aep_fetch "<zip name>"` (`--list` shows the folder; uses `/home/user/tpl/zips` first; needs
+   `apt-get install -y megatools`, and `ghostscript` for `.ai` footage). Unzip into `/home/user/tpl/src/<project>/`.
+   Then check the posted reel is the same video: contact sheet of the reel next to the project's own render
+   (often in its footage folder) before step 4 — the reel caption/file name can belong to another project.
 1. **Dump** — BUILT: `python3 -m extract.aep_dump <project.aep> /home/user/tpl/lib/<project>/<project>.json`
    (needs `pip install py_aep`; ~6 s). Everything the engine reads: comps, precomps, layers, parenting, keyframes + eases,
    expressions, effects, masks/mattes, mixed-style text runs, fonts, 3D layers, cameras, lights, markers, audio layers.
@@ -113,6 +119,14 @@ assets in `/home/user/tpl/lib/<project>/`, scores per shot. Read LEARNINGS.md fi
    → send the showcase beside the reel and ask the user for changes, and also fix whatever is wrong by my own review →
    round 2 at 540p, re-rendering only the changed scenes (`--only s06,s09`) → changes if needed → final at full
    resolution. Never full-res before the final; never re-render unchanged scenes.
+   **Round 2 scope (user rule, 2026-11-22):** the user's round-1 notes AND every fix from my own review both go into
+   round 2, unless the user says to leave one out. Never wait for a separate yes on my own fixes.
+   **Motion + transition check before showing any round (user rule, 2026-11-22; missed in gen r1 on EMOTION/story):**
+   SSIM and still sheets don't catch missing animation. For every scene, compare motion against the reel: a strip of
+   every frame across each cut (±6 frames) and a per-scene motion curve (mean abs frame-to-frame difference, ours vs
+   reel). Flag any element that sits still or pops in where the reel animates it, any keyframed move/twirl/wipe that
+   is weaker or missing, and any cut that is hard in ours but transitioned in the reel. Zero hard cuts that the reel
+   doesn't have. Fix these before sending the round; list what was checked in the report.
 7. **Free ground truth for Route B**: write `extract/gt/<reel>.json` (cuts, transitions, camera, eases, text timing)
    from the dump, run `python3 -m extract.check --remeasure`, and fix Route B wherever it misses. Every owned project
    makes the video-only route better.

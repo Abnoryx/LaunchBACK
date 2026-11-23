@@ -1,0 +1,14 @@
+{
+ "w": 1080,
+ "h": 1920,
+ "fps": 18.0,
+ "frames": 753,
+ "dur": 41.833333,
+ "vfr": false,
+ "color_space": "?",
+ "audio": false,
+ "analysis_w": 216,
+ "analysis_h": 384,
+ "decoded": 753,
+ "scale_to_1080": 5.0
+}

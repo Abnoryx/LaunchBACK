@@ -42,6 +42,21 @@ export const setBlurK = (k) => { BLUR_K = k; };
 const findM = (node, m) => (node?.c || node?.props || []).find((c) => c.m === m);
 const isEnabled = (L) => L.enabled === true;
 
+
+// inverse of the homography taking the unit square (0,0),(1,0),(1,1),(0,1) to p0..p3; column-major mat3 for GLSL
+function invHomography(p0, p1, p2, p3) {
+  const dx1 = p1[0] - p2[0], dx2 = p3[0] - p2[0], dx3 = p0[0] - p1[0] + p2[0] - p3[0];
+  const dy1 = p1[1] - p2[1], dy2 = p3[1] - p2[1], dy3 = p0[1] - p1[1] + p2[1] - p3[1];
+  const den = dx1 * dy2 - dx2 * dy1; if (Math.abs(den) < 1e-9) return null;
+  const g = (dx3 * dy2 - dx2 * dy3) / den, h = (dx1 * dy3 - dx3 * dy1) / den;
+  const a = p1[0] - p0[0] + g * p1[0], b = p3[0] - p0[0] + h * p3[0], c = p0[0];
+  const d = p1[1] - p0[1] + g * p1[1], e = p3[1] - p0[1] + h * p3[1], f = p0[1];
+  // M = [[a,b,c],[d,e,f],[g,h,1]] (row-major) maps (u,v,1) -> pixel; invert it
+  const A = e - f * h, B = -(d - f * g), C = d * h - e * g, det = a * A + b * B + c * C; if (Math.abs(det) < 1e-12) return null;
+  const inv = [A, -(b - c * h), b * f - c * e, B, a - c * g, -(a * f - c * d), C, -(a * h - b * g), a * e - b * d].map((v) => v / det);
+  return [inv[0], inv[3], inv[6], inv[1], inv[4], inv[7], inv[2], inv[5], inv[8]];
+}
+
 export class Engine {
   constructor(project, opts = {}) {
     this.p = project;
@@ -61,7 +76,7 @@ export class Engine {
     this.canvas = canvas;
     this.g = new GL(canvas);
     this.g.keep = [...new Set(this.p.comps.map((c) => c.w + 'x' + c.h))].map((k) => k.split('x').map(Number));
-    for (const f of ['Inter Variable', 'Inter Tight Variable', 'Anton', 'Tinos', 'Patrick Hand', 'League Gothic', 'Archivo Narrow', 'Bodoni Moda', 'Arimo', 'Coolvetica Compressed', 'Coolvetica Condensed', 'Coolvetica Crammed', 'Coolvetica', 'Helvetica Real', 'Kokila Real', 'GFS Didot'])
+    for (const f of ['Inter Variable', 'Inter Tight Variable', 'Anton', 'Tinos', 'Patrick Hand', 'League Gothic', 'Archivo Narrow', 'Bodoni Moda', 'Arimo', 'Coolvetica Compressed', 'Coolvetica Condensed', 'Coolvetica Crammed', 'Coolvetica', 'Helvetica Real', 'Kokila Real', 'GFS Didot', 'Montserrat', 'Barlow Condensed', 'Space Grotesk', 'Bitcount Prop Single'])
     { let n = 0; for (const w of [100, 300, 400, 500, 600, 700, 800, 900]) for (const st of ['', 'italic ']) n += (await document.fonts.load(`${st}${w} 40px "${f}"`).catch(() => [])).length;
       if (!n) this.warn('font did not load: ' + f); }
   }
@@ -387,7 +402,7 @@ export class Engine {
           const L = d.p._len || 4000, s = (Math.min(d.trim.s, d.trim.e) / 100) * L, e = (Math.max(d.trim.s, d.trim.e) / 100) * L;
           c.setLineDash([Math.max(0.001, e - s), L * 2]); c.lineDashOffset = -s;
         }
-        if (d.p.merge) for (const q of d.p.parts) c.stroke(q); else c.stroke(d.p);
+        if (d.p.merge) for (const q of mergedLeaves(d.p)) c.stroke(q); else c.stroke(d.p);
       } else if (d.p.merge) { c.fillStyle = css; fillMerged(c, d.p, W, H); } else { c.fillStyle = css; c.fill(d.p); }
       c.restore();
     }
@@ -461,10 +476,43 @@ export class Engine {
   }
 
   // extra pixels needed around layer content so blurs / glows / shadows aren't clipped
+  // enabled AE layer styles of L as [{kind, P(name, default)}]
+  layerStyles(L, t) {
+    const ls = findM(L, 'ADBE Layer Styles');
+    if (!ls || ls.off) return [];
+    const KIND = { dropShadow: 0, innerShadow: 1, innerGlow: 2, outerGlow: 3 };
+    return (ls.c || []).filter((st) => st.m.endsWith('/enabled') && !st.off && st.m.split('/')[0] in KIND).map((st) => {
+      const pre = st.m.split('/')[0];
+      const P = (name, d) => { const q = (st.c || []).find((x) => x.m === `${pre}/${name}`); const v = q ? evalProp(q, t) : undefined; return v ?? d; };
+      return { kind: KIND[pre], P };
+    });
+  }
+  // Photoshop-style layer styles, in layer space after effects (AE order). Approximations: blend modes act inside the
+  // layer (shadows/glows behind the layer composite as normal), Spread/Choke scale the blurred alpha, no Range/Jitter.
+  applyStyles(L, t, tg, rect, keepInput = false) {
+    const styles = this.layerStyles(L, t);
+    if (!styles.length) return tg;
+    const g = this.g, sx = tg.w / (rect[2] - rect[0]), D2R = Math.PI / 180, SIG = this.styleSigma ?? null;   // style Size -> Gaussian sigma (fit on gen: shadows/outer glow 1.0, inner styles 0.4)
+    let cur = tg;
+    // AE draws the behind-the-layer styles first, then the inner ones; apply inner styles to the plain layer
+    for (const pass of [[1, 2], [0, 3]]) for (const st of styles.filter((x) => pass.includes(x.kind))) {
+      const P = st.P, size = P('blur', 5) * sx, dist = (st.kind <= 1 ? P('distance', 5) : 0) * sx;
+      const ang = (P('useGlobalAngle', 0) ? 120 : P('localLightingAngle', 120)) * D2R;
+      const sg = SIG ?? (st.kind === 0 || st.kind === 3 ? 1.0 : 0.4), B = g.blur(cur, Math.max(0.3, size * sg), Math.max(0.3, size * sg));
+      const col = P('color', [0, 0, 0, 1]);
+      const o = g.target(cur.w, cur.h);
+      g.run('lstyle', o, { uKind: st.kind, uMode: Math.round(P('mode2', 1)), uC: col.slice(0, 3), uOp: P('opacity', 75) / 100, uNoise: P('noise', 0) / 100,
+        uSpread: P('chokeMatte', 0) / 100, uOff: [-Math.cos(ang) * dist, Math.sin(ang) * dist] }, { uTex: cur, uB: B });
+      g.release(B); if (cur !== tg) g.release(cur); cur = o;
+    }
+    if (cur !== tg && !keepInput) g.release(tg);
+    return cur;
+  }
   effectPad(comp, L, t, sx) {
-    const fx = findM(L, 'ADBE Effect Parade');
-    if (!fx?.c?.length) return 0;
     let pad = 0;
+    for (const st of this.layerStyles(L, t)) if (st.kind === 0 || st.kind === 3) pad = Math.max(pad, (st.kind === 0 ? st.P('distance', 5) : 0) + st.P('blur', 5) * 3);
+    const fx = findM(L, 'ADBE Effect Parade');
+    if (!fx?.c?.length) return Math.min(600, Math.ceil(pad * sx));
     for (const e of fx.c) {
       const PM = (suffix, d) => { const p = (e.c || []).find((x) => x.m === `${e.m}-${suffix}`); return p ? evalProp(p, t) : d; };
       if (/Gaussian Blur|Camera Lens Blur/.test(e.m)) pad = Math.max(pad, PM('0001', 0) * 1.5);
@@ -478,7 +526,7 @@ export class Engine {
 
   applyEffects(comp, L, t, tg, rect, isAdjustment = false) {
     const fx = findM(L, 'ADBE Effect Parade');
-    if (!fx?.c?.length) return tg;
+    if (!fx?.c?.length || this._noFx === L) return tg;
     const g = this.g;
     const sx = tg.w / (rect[2] - rect[0]);
     let cur = tg;
@@ -663,7 +711,9 @@ export class Engine {
           break;
         }
         case 'ADBE Simple Choker': {
-          const c = PM('0002', 0) * sx; // + chokes (erode), - spreads (dilate)
+          // + chokes (erode), - spreads (dilate). Not pixels: AE moves the edge "in small increments" — calibrated on the gen
+          // reel (pc + Jordan stickers, both -70): pixels drew rings ~2x too wide, value/8 too thin; value / 4 px fits
+          const c = PM('0002', 0) / 4 * sx;
           if (Math.abs(c) >= 0.5) swap(g.minimax(cur, Math.abs(c), [[1, 0], [0, 1]], c < 0));
           break;
         }
@@ -840,6 +890,78 @@ export class Engine {
             const A = this.renderComp(ac, tq, { tc: tq, onlyBelow: L.i }); this._adj = saveAdj; this._t = saveT; swap(A);
           }
         } break;
+        case 'ADBE Twirl': { // angle falls off as (1-d/r)^2; radius is % of the larger layer side (AE docs; matches gen reel f628 spiral)
+          const ang = PM('0001', 0) * Math.PI / 180, c = PM('0003', [540, 960]);
+          if (Math.abs(ang) > 1e-4) { const o = g.target(cur.w, cur.h); g.run('twirl', o, { uC: [(c[0] - rect[0]) * sx, (c[1] - rect[1]) * sx], uAng: ang, uR: Math.max(1, PM('0002', 50) / 100 * Math.max(...this.sourceSize(L).map((v, i) => v || (i ? comp.h : comp.w))) * sx) }, { uTex: cur }); swap(o); }
+          break;
+        }
+        case 'CC Radial Fast Blur': { // zoom blur; Amount 100 ~ a 33 % streak (fit to gen reel f321, the Amount 60 peak)
+          const amt = PM('0002', 0), c = PM('0001', [540, 960]);
+          if (amt > 0.1) { const o = g.target(cur.w, cur.h); g.run('spinblur', o, { uC: [(c[0] - rect[0]) * sx, (c[1] - rect[1]) * sx], uAng: 0, uZoom: amt / 300 }, { uTex: cur }); swap(o); }
+          break;
+        }
+        case 'ADBE Noise2': { // Amount %, Use Color Noise, Clip; new pattern every frame
+          const o = g.target(cur.w, cur.h);
+          g.run('noisergb', o, { uAmt: PM('0001', 0) / 100, uPh: Math.floor(t * comp.fps), uColor: PM('0002', 1), uClip: PM('0003', 1) }, { uTex: cur });
+          swap(o); break;
+        }
+        case 'Universe_Distort_Heatwave': { // approx: drifting fbm displacement (intensity ~1.5 px/unit) + light blur
+          const amt = PM('0002', 3) * 1.5 * sx, dir = (PM('0003', 90) - 90) * Math.PI / 180, sp = PM('0004', 30) * t * sx, size = Math.max(4, PM('0007', 95) * 1.5 * sx);
+          const o = g.target(cur.w, cur.h);
+          g.run('turbdisp', o, { uAmt: amt, uSize: size, uEvo: t * 0.3, uOct: 2, uOff: [Math.sin(dir) * sp, -Math.cos(dir) * sp] }, { uTex: cur });
+          swap(o); const r = PM('0005', 25) / 25 * 0.6 * sx; if (r > 0.3) swap(g.blur(cur, r, r));
+          break;
+        }
+        case 'CC Jaws': { // halves slide apart along the normal; Height = tooth depth (fraction of the layer), Width = tooth count
+          const [lw, lh] = this.sourceSize(L).map((v, i) => v || (i ? comp.h : comp.w)), a = PM('0003', 0) * Math.PI / 180, c = PM('0002', [lw / 2, lh / 2]);
+          const amp = PM('0004', 0) * lh * 0.5 * sx, span = Math.abs(Math.cos(a)) * lh + Math.abs(Math.sin(a)) * lw;
+          const o = g.target(cur.w, cur.h);
+          g.run('jaws', o, { uC: [(c[0] - rect[0]) * sx, (c[1] - rect[1]) * sx], uN: [-Math.sin(a), Math.cos(a)], uT: [Math.cos(a), Math.sin(a)],
+            uS: PM('0001', 0) * (span * 0.5 * sx + amp), uAmp: amp, uPer: Math.max(2, (Math.abs(Math.cos(a)) * lw + Math.abs(Math.sin(a)) * lh) * sx / Math.max(1, PM('0005', 10))), uSharp: PM('0006', 1) === 1 ? 1 : 0 }, { uTex: cur });
+          swap(o); break;
+        }
+        case 'Keylight 906': { // approx: colour-difference matte against the screen colour + despill
+          const sc = P('Screen Colour', [0, 1, 0, 1]), pi = sc.slice(0, 3).indexOf(Math.max(...sc.slice(0, 3)));
+          const o = g.target(cur.w, cur.h); g.run('keylight', o, { uSc: sc.slice(0, 3), uP: pi }, { uTex: cur }); swap(o); break;
+        }
+        case 'ADBE Corner Pin': { // perspective map of the layer rect onto the 4 points
+          const [lw, lh] = this.sourceSize(L), L2 = (q) => [(q[0] - rect[0]) * sx, (q[1] - rect[1]) * sx];
+          const Hi = invHomography(L2(PM('0001', [0, 0])), L2(PM('0002', [lw, 0])), L2(PM('0004', [lw, lh])), L2(PM('0003', [0, lh])));
+          if (Hi) { const o = g.target(cur.w, cur.h); g.run('cornerpin', o, { uH: Hi, uSz: [lw * sx, lh * sx], uOff: L2([0, 0]) }, { uTex: cur }); swap(o); }
+          break;
+        }
+        case 'BCC4LED': { // approx: LED grid (cell ~ LED size + gap at 4 px/unit), brightness, mix with original
+          const sz = P('LED Size X', 1), gap = P('LED Gap X', 0.2), cell = Math.max(2, (sz + gap) * 4 * sx), o = g.target(cur.w, cur.h);
+          g.run('led', o, { uCell: [cell, cell], uGap: Math.min(0.8, gap / (sz + gap)), uBr: P('Brightness', 100) / 100, uMix: P('Mix with Original', 0) / 100 }, { uTex: cur });
+          swap(o); break;
+        }
+        case 'Magic_Bullet_Suite_Magic_Bullet': { // Magic Bullet Film: fitted LUT if one exists (luts.json), else exposure + grain only
+          const key = `${comp.id}|${L.i}`, lut = this.luts?.[key];
+          if (lut) {
+            this._lutTex = this._lutTex || new Map();
+            if (!this._lutTex.has(key)) this._lutTex.set(key, g.lut3dTex(lut.data, lut.n));
+            const o = g.target(cur.w, cur.h); g.run('lut3d', o, { uN: lut.n, uK: 1 }, { uTex: cur, uLut: this._lutTex.get(key) }); swap(o);
+          } else {
+            const ex = P('Exposure', 0); if (ex) swap(g.color(cur, 3, { uA: [ex, 0, 1, 0] }));
+            const gr = P('Grain', 0); if (gr > 0) { const o = g.target(cur.w, cur.h); g.run('noisehls', o, { uL: gr / 100 * 0.06, uPh: Math.floor(t * comp.fps), uGrain: Math.max(1, 1.5 * sx) }, { uTex: cur }); swap(o); }
+          }
+          break;
+        }
+        // S_TimeSlice with Frame Offset 0, Noise Alpha with Amount 0, Optics Compensation at FOV 12 (<5 px at the corners): no visible change
+        case 'S_TimeSlice': if (isAdjustment && this._adj?.L === L) { // approx: Slice Number 1 = one cut through the centre;
+          // the start side of Slice Direction shows the frame (Frame Offset + 1) earlier (gen reel f594: top half still the bubble).
+          // The earlier input is kept from the previous rendered frame (frames render in order): re-rendering an earlier time
+          // here would miss video frames that were only preloaded for the current time (gen f354 showed hidden layers).
+          const back = (P('Frame Offset', 0) + 1) / comp.fps, ang = P('Slice Direction', 90) * Math.PI / 180;
+          this._tsPrev = this._tsPrev || new Map();
+          const prev = this._tsPrev.get(L), keep = g.target(cur.w, cur.h); g.copy(cur, keep);
+          if (prev && prev.tex.w === cur.w && prev.tex.h === cur.h && Math.abs(t - back - prev.t) < 0.25 / comp.fps) {
+            const o = g.target(cur.w, cur.h); g.run('tslice', o, { uDir: [Math.cos(ang), Math.sin(ang)], uSoft: Math.max(0.5, P('Blur Mask', 12) * sx) }, { uTex: cur, uB: prev.tex }); swap(o);
+          }
+          if (prev) g.release(prev.tex);
+          this._tsPrev.set(L, { t, tex: keep });
+        } break;
+        case 'ADBE Noise Alpha2': case 'ADBE Optics Compensation': break;
         // identity at the values these projects use, or a <=5 px shift: deliberately a no-op
         case 'ADBE Easy Levels2': case 'ADBE Displacement Map': break;
         case 'ADBE Slider Control': case 'ADBE Checkbox Control': case 'ADBE Layer Control': case 'ADBE Color Control': case 'ADBE Point Control': case 'ADBE Angle Control': break;
@@ -915,7 +1037,7 @@ export class Engine {
     // collapsed 3D precomp: draw its layers into this comp with combined transforms and our camera
     if (sub && L.collapse_transformation && !findM(L, 'ADBE Mask Parade')?.c?.length) {
       // with effects, AE renders the collapsed layers through our camera first and applies the effects in comp space
-      const hasFx = !!findM(L, 'ADBE Effect Parade')?.c?.some((e) => !e.off);
+      const hasFx = !!findM(L, 'ADBE Effect Parade')?.c?.some((e) => !e.off) || this.layerStyles(L, t).length > 0;
       const realOut = out;
       if (hasFx) { out = g.target(realOut.w, realOut.h); g.clear(out); }
       const lt = this.localTime(L, t), ltc = this.localTime(L, opts.tcL ?? t);
@@ -935,10 +1057,12 @@ export class Engine {
       }
       this._t = saveT;
       if (hasFx) {
-        const fx = this.applyEffects(comp, L, t, out, [0, 0, comp.w, comp.h]);
+        const fx0 = this.applyEffects(comp, L, t, out, [0, 0, comp.w, comp.h]);
+        const fx = this.applyStyles(L, t, fx0, [0, 0, comp.w, comp.h], true);
         const quad = [[0, 0], [comp.w, 0], [0, comp.h], [comp.w, comp.h]].map(([x, y]) => this.clip2(comp.w, comp.h, [x, y, 0, 1]));
         g.run('layer', realOut, { uOpacity: 1, uMode: 10, uMatteMode: 0, uHasMask: 0 }, { uTex: fx, uDst: g.blank, uMatte: null, uMask: null }, quad, [g.gl.ONE, g.gl.ONE_MINUS_SRC_ALPHA]);
-        g.release(fx);
+        if (fx !== fx0) g.release(fx);
+        g.release(fx0);
       }
       return;
     }
@@ -972,6 +1096,7 @@ export class Engine {
       ct.rect = [ct.rect[0] - pad / sx, ct.rect[1] - pad / sx, ct.rect[2] + pad / sx, ct.rect[3] + pad / sx];
     }
     tg = this.applyEffects(comp, L, t, tg, ct.rect);
+    tg = this.applyStyles(L, t, tg, ct.rect);
     // quad corners in layer space → clip
     const [x0, y0, x1, y1] = ct.rect;
     const corners = [[x0, y0], [x1, y0], [x0, y1], [x1, y1]];
@@ -1179,14 +1304,18 @@ function bezLen(sh) {
 // AE gradient stops {colors:[[pos, mid, r, g, b]...], alphas:[[pos, mid, a]...]} -> [[pos, css]] (midpoints taken as 0.5)
 // Merge Paths fill on a 2D canvas whose transform and fillStyle are set: union modes fill every part; intersect clips the
 // first part by the others; subtract/exclude go through a scratch canvas so other shapes already drawn are untouched
+// A part can itself be a merge result (a second Merge Paths in the same group): fill recurses, clip uses its outline union.
+const fillPart = (c, q, W, H) => (q.parts ? fillMerged(c, q, W, H) : c.fill(q));
+function mergedLeaves(q) { return q.parts ? q.parts.flatMap(mergedLeaves) : [q]; }
+function unionPath(q) { if (!q.parts) return q; const u = new Path2D(); for (const l of mergedLeaves(q)) u.addPath(l); return u; }
 function fillMerged(c, m, W, H) {
   const [first, ...rest] = m.parts;
-  if (m.merge === 4) { c.save(); for (const q of rest) c.clip(q); c.fill(first); c.restore(); return; }
-  if (m.merge !== 3 && m.merge !== 5) { for (const q of m.parts) c.fill(q); return; }
+  if (m.merge === 4) { c.save(); for (const q of rest) c.clip(unionPath(q)); fillPart(c, first, W, H); c.restore(); return; }
+  if (m.merge !== 3 && m.merge !== 5) { for (const q of m.parts) fillPart(c, q, W, H); return; }
   const t = new OffscreenCanvas(W, H).getContext('2d');
-  t.setTransform(c.getTransform()); t.fillStyle = c.fillStyle; t.fill(first);
+  t.setTransform(c.getTransform()); t.fillStyle = c.fillStyle; fillPart(t, first, W, H);
   t.globalCompositeOperation = m.merge === 3 ? 'destination-out' : 'xor';
-  for (const q of rest) t.fill(q);
+  for (const q of rest) fillPart(t, q, W, H);
   c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.drawImage(t.canvas, 0, 0); c.restore();
 }
 function gradStops(g) {

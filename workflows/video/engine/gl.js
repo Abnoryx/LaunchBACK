@@ -85,6 +85,30 @@ const SHADERS = {
     bool flap = d < 0.0 && back.a > 0.0 && all(greaterThanEqual(q, vec2(0.0))) && all(lessThanEqual(q, uRes));
     vec4 front = d < 0.0 ? src : vec4(0.0);
     if (flap) { vec4 b = vec4(uPaper.rgb, 1.0)*back.a*uBackOp; o = b + front*(1.0 - b.a); } else o = front; }`,
+  twirl: `${FS_HEAD} uniform vec2 uC; uniform float uAng, uR; void main(){ vec2 p = vUV*uRes - uC; float d = length(p), k = 1.0 - d/uR;
+    float a = k > 0.0 ? uAng*k : 0.0; o = texture(uTex, (mat2(cos(a), sin(a), -sin(a), cos(a))*p + uC)/uRes); }`,
+  noisergb: `${FS_HEAD} uniform float uAmt, uPh, uColor, uClip; void main(){ vec4 c = texture(uTex, vUV); vec2 q = floor(vUV*uRes);
+    vec3 n = fract(sin(vec3(dot(q + uPh*7.13, vec2(12.9898, 78.233)), dot(q + uPh*3.71, vec2(39.346, 11.135)), dot(q + uPh*5.27, vec2(73.156, 52.235))))*43758.5453) - 0.5;
+    if (uColor < 0.5) n = vec3(n.x); vec3 r = c.rgb + n*uAmt*c.a; o = vec4(uClip > 0.5 ? clamp(r, 0.0, c.a) : r, c.a); }`,
+  jaws: `${FS_HEAD} uniform vec2 uC, uN, uT; uniform float uS, uAmp, uPer, uSharp; void main(){
+    // CC Jaws: the layer splits along a toothed line through uC (tangent uT, normal uN); halves slide apart by uS
+    vec2 p = vUV*uRes - uC; float x = dot(p, uT), y = dot(p, uN); float ph = fract(x/uPer);
+    float tri = uSharp > 0.5 ? abs(ph*2.0 - 1.0)*2.0 - 1.0 : cos(ph*6.2831853); float e = uAmp*tri;
+    float ya = y + uS, yb = y - uS; vec4 c = vec4(0.0);
+    if (ya < e) c = texture(uTex, (uC + x*uT + ya*uN)/uRes); else if (yb > e) c = texture(uTex, (uC + x*uT + yb*uN)/uRes);
+    o = c; }`,
+  keylight: `${FS_HEAD} uniform vec3 uSc; uniform int uP; void main(){ vec4 c = texture(uTex, vUV); vec3 r = c.a > 0.0 ? c.rgb/c.a : vec3(0.0);
+    // screen matte = how far the dominant screen channel exceeds the other two, relative to the screen colour; despill clamps it
+    float sp = uP==0 ? uSc.r : uP==1 ? uSc.g : uSc.b, so = uP==0 ? max(uSc.g,uSc.b) : uP==1 ? max(uSc.r,uSc.b) : max(uSc.r,uSc.g);
+    float cp = uP==0 ? r.r : uP==1 ? r.g : r.b, co = uP==0 ? max(r.g,r.b) : uP==1 ? max(r.r,r.b) : max(r.r,r.g);
+    float m = clamp((cp - co)/max(sp - so, 1e-3), 0.0, 1.0), a = c.a*(1.0 - m);
+    if (uP==0) r.r = min(r.r, co); else if (uP==1) r.g = min(r.g, co); else r.b = min(r.b, co);
+    o = vec4(r*a, a); }`,
+  cornerpin: `${FS_HEAD} uniform mat3 uH; uniform vec2 uSz, uOff; void main(){ vec3 q = uH*vec3(vUV*uRes, 1.0); vec2 uv = q.xy/q.z;
+    o = (q.z <= 0.0 || uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) ? vec4(0.0) : texture(uTex, (uv*uSz + uOff)/uRes); }`,
+  led: `${FS_HEAD} uniform vec2 uCell; uniform float uGap, uBr, uMix; void main(){ vec4 c = texture(uTex, vUV); vec2 p = vUV*uRes, cell = floor(p/uCell);
+    vec4 s = texture(uTex, (cell + 0.5)*uCell/uRes); vec2 f = fract(p/uCell); float on = step(uGap*0.5, f.x)*step(f.x, 1.0-uGap*0.5)*step(uGap*0.5, f.y)*step(f.y, 1.0-uGap*0.5);
+    o = mix(vec4(min(s.rgb*uBr*on, vec3(s.a)), s.a), c, uMix); }`,
   bezwarp: `${FS_HEAD} uniform vec2 uP0, uP1, uP2, uP3, uQ0, uQs; void main(){
     // inverse bilinear: output pixel -> (u,v) in the source rect whose corners moved to P0 (TL) P1 (TR) P2 (BR) P3 (BL)
     vec2 p = vUV*uRes, e = uP1-uP0, f = uP3-uP0, g = uP0-uP1+uP2-uP3, h = p-uP0;
@@ -120,6 +144,10 @@ const SHADERS = {
     else if (uMode == 6) b = abs(dc3-sc3);             // difference
     else if (uMode == 7) b = sc3+dc3-2.0*sc3*dc3;      // exclusion
     else if (uMode == 8) b = ov(sc3, dc3);             // hard light
+    else if (uMode == 12) b = max(sc3+dc3-1.0, 0.0);   // linear burn
+    else if (uMode == 13) b = mix(1.0-min((1.0-dc3)/max(sc3,1e-4), 1.0), vec3(1.0), step(1.0-1e-4, dc3)); // (classic) color burn
+    else if (uMode == 14) b = max(sc3, dc3);           // lighten
+    else if (uMode == 15) b = dot(sc3,vec3(.2126,.7152,.0722)) > dot(dc3,vec3(.2126,.7152,.0722)) ? sc3 : dc3; // lighter color
     else b = sc3;
     vec3 rgb = (1.0-d.a)*s.rgb + (1.0-s.a)*d.rgb + s.a*d.a*b;
     if (uMode == 9) { o = d * s.a; return; }           // stencil alpha
@@ -179,6 +207,23 @@ const SHADERS = {
   shadow: `${FS_HEAD} uniform sampler2D uDst; uniform vec2 uOff; uniform vec4 uA; uniform float uK; uniform int uOnly;
   void main(){ float sa = texture(uTex, vUV - uOff/uRes).a * uK; vec4 sh = vec4(uA.rgb*sa, sa); vec4 src = texture(uDst, vUV);
     o = uOnly==1 ? sh : src + sh*(1.0-src.a); }`,
+  // AE layer styles (Photoshop-style): uKind 0 drop shadow, 1 inner shadow, 2 inner glow (edge), 3 outer glow.
+  // uB = the layer alpha blurred by the style size; uMode 1 normal, 5 multiply, 11 screen (others: normal).
+  lstyle: `${FS_HEAD} uniform sampler2D uB; uniform vec2 uOff; uniform vec3 uC; uniform float uOp, uNoise, uSpread; uniform int uKind, uMode;
+  void main(){ vec4 src = texture(uTex, vUV); float sa = src.a;
+    float b = texture(uB, vUV - uOff/uRes).a; b = clamp(b / max(1.0 - uSpread, 0.01), 0.0, 1.0);
+    float m = uKind == 0 ? b : uKind == 1 ? (1.0 - b) * sa : uKind == 2 ? (1.0 - b) * sa : b * (1.0 - sa);
+    float n = fract(sin(dot(floor(vUV*uRes), vec2(12.9898, 78.233)))*43758.5453);
+    m *= uOp * (1.0 - uNoise * n);
+    if (uKind == 0 || uKind == 3) { // behind the layer: becomes part of it, the layer knocks it out
+      vec3 c = uMode == 11 ? uC : uC; o = src + vec4(c*m, m)*(1.0 - sa); return; }
+    vec3 s = sa > 0.0 ? src.rgb/sa : vec3(0.0);
+    vec3 r = uMode == 5 ? mix(s, s*uC, m) : uMode == 11 ? mix(s, 1.0-(1.0-s)*(1.0-uC), m) : mix(s, uC, m);
+    o = vec4(r*sa, sa); }`,
+  // Sapphire TimeSlice approx: the earlier frame (uB) shows on the start side of the slice direction, fading to now
+  tslice: `${FS_HEAD} uniform sampler2D uB; uniform vec2 uDir; uniform float uSoft; void main(){
+    // one slice boundary through the centre, perpendicular to uDir: the start side shows the earlier frame
+    float d = dot((vUV - 0.5) * uRes, uDir); o = mix(texture(uB, vUV), texture(uTex, vUV), smoothstep(-uSoft, uSoft, d)); }`,
   mtile: `${FS_HEAD} uniform float uK; uniform vec2 uOff; void main(){ vec2 q = vUV; if (uK > 0.5) { q = abs(mod(q + 1.0, 2.0) - 1.0); } else { q = fract(q); } o = texture(uTex, q); }`,
   stencil: `${FS_HEAD} uniform sampler2D uDst; uniform int uMode; void main(){ float a = texture(uTex, vUV).a; vec4 d = texture(uDst, vUV);
     o = uMode == 9 ? d * a : uMode == 11 ? d * (1.0 - a) : d; }`,
@@ -320,6 +365,7 @@ export class GL {
       const loc = p.u[k]; if (loc == null) continue;
       if (typeof v === 'number') (p.ty[k] === gl.INT || p.ty[k] === gl.BOOL) ? gl.uniform1i(loc, v) : gl.uniform1f(loc, v);
       else if (v.length === 2) gl.uniform2fv(loc, v);
+      else if (v.length === 3) gl.uniform3fv(loc, v);   // was missing: vec3 uniforms stayed 0 (style colours, Keylight screen colour)
       else if (v.length === 4) gl.uniform4fv(loc, v);
       else if (v.length === 9) gl.uniformMatrix3fv(loc, false, v);
     }
@@ -400,4 +446,4 @@ export class GL {
   }
 }
 
-export const BLEND = { 5212: 0, 5216: 1, 5222: 2, 5226: 3, 5227: 4, 5220: 5, 5223: 5, 5233: 6, 5234: 6, 5235: 7, 5228: 8, 5240: 9 };
+export const BLEND = { 5212: 0, 5216: 1, 5222: 2, 5226: 3, 5227: 4, 5220: 5, 5223: 5, 5233: 6, 5234: 6, 5235: 7, 5228: 8, 5240: 9, 5217: 12, 5218: 13, 5219: 13, 5221: 14, 5246: 15 };

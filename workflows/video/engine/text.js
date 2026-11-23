@@ -41,7 +41,12 @@ const FONT_MAP = [
   [/^CoolRegular/, () => ({ family: 'Coolvetica', weight: 400 })],
   [/^Arimo/, () => ({ family: 'Arimo', weight: 700 })],
   [/^Anton/, () => ({ family: 'Anton', weight: 400 })],
-  [/^Montserrat-(\w+)/, (m) => ({ family: 'Inter Variable', weight: W[m[1]] ?? 800 })],
+  // Round 8 (atipo, all-caps heavy condensed) is not available: Anton is the closest condensed heavy face, drawn in caps
+  [/^ROUND8/, () => ({ family: 'Anton', weight: 400, caps: true })],
+  [/^Montserrat-(\w+)/, (m) => ({ family: 'Montserrat', weight: W[m[1]] ?? 800 })],
+  [/^BarlowCondensed-/, () => ({ family: 'Barlow Condensed', weight: 900 })],
+  [/^SpaceGrotesk-/, () => ({ family: 'Space Grotesk', weight: 500 })],
+  [/^BitcountPropSingle-/, () => ({ family: 'Bitcount Prop Single', weight: 400 })],
 ];
 const W = { Thin: 100, ExtraLight: 200, Light: 300, Regular: 400, Medium: 500, Semibold: 600, SemiBold: 600, Bold: 700, ExtraBold: 800, Heavy: 800, Black: 900 };
 
@@ -257,14 +262,16 @@ function drawTextAE(anim, ss) {
       const size = r.size || anim.size, font = r.font || anim.font;
       maxSize = Math.max(maxSize, size);
       const a0 = k ? ln.adv[k - 1] : 0, a1 = ln.adv[k] ?? a0;
-      if (anim.caps || r.caps) ch = ch.toUpperCase();
       const fm = mapFont(font);
+      if (anim.caps || r.caps || fm.caps) ch = ch.toUpperCase();
       let w = Math.max(0, a1 - a0);
       if (fm.natural) { meas.font = `${fm.italic ? 'italic ' : ''}${fm.weight} ${size * (fm.sizeScale || 1)}px "${fm.family}"`; w = meas.measureText(ch).width; }
       row.push({ c: anim.chars[i], ch, x: ln.x + xAcc + trAcc, w, y: ln.y - (r.bshift || 0), size, font,
         fill: r.fill || anim.fill, vs: r.vs ?? anim.vscale ?? 1 });
       xAcc += w;
-      trAcc += ((r.tracking ?? anim.tracking) / 1000) * size;
+      // character-panel tracking is 1/1000 em; a text animator's Tracking Amount is in layer px (gen EMOTION: 8 -> 0
+      // squeezes the word ~290 px at 682% scale, matching px, not em). It was ignored on this path before.
+      trAcc += ((r.tracking ?? anim.tracking) / 1000) * size + (anim.chars[i]?.track || 0);
     }
     while (row.length && /\s/.test(row[row.length - 1].ch)) row.pop();
     if (!row.length) continue;
@@ -336,7 +343,7 @@ export function drawText(anim, ss = 2) {
   const fontStr = `${f.italic ? 'italic ' : ''}${f.weight} ${size * ss}px "${f.family}"`;
   const meas = drawText._m || (drawText._m = document.createElement('canvas').getContext('2d'));
   meas.font = fontStr;
-  let lines = anim.text.split(/\r\n|\r|\n/);
+  let lines = ((anim.caps || f.caps) ? anim.text.toUpperCase() : anim.text).split(/\r\n|\r|\n/);
   if (anim.box && anim.box[0] > 0) { // AE paragraph text: wrap to the box width
     const maxW = anim.box[0] * ss, out = [];
     for (const ln of lines) {
@@ -359,7 +366,7 @@ export function drawText(anim, ss = 2) {
       const hsA = anim.hscale > 3 ? anim.hscale / 100 : (anim.hscale || 1);
       const w = meas.measureText(ch).width * hsA;
       row.push({ c, ch, x, w, nw: w / hsA });
-      x += w + track + (c ? (c.track / 1000) * size * ss : 0);
+      x += w + track + (c ? c.track * ss : 0);   // animator Tracking Amount: layer px
     }
     ci++; // newline char
     const lw = x - track;
