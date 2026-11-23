@@ -1,0 +1,1 @@
+{"name":"move-the-needle","private":true,"type":"module","scripts":{"preview":"node preview.mjs","render":"node render.mjs","test":"node --test"},"dependencies":{"@fontsource/arimo":"5.3.0","@fontsource/bodoni-moda":"5.3.0","playwright":"1.61.1","three":"0.184.0"}}

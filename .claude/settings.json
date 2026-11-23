@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Higgsfield__jobs_wait",
+      "Bash(ffprobe *)",
+      "mcp__Higgsfield__get_workflow_bundle_file",
+      "mcp__Higgsfield__models_explore",
+      "mcp__Higgsfield__get_workflow_instructions",
+      "mcp__Higgsfield__show_medias"
+    ]
+  }
+}

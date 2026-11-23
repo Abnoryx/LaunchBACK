@@ -1,0 +1,29 @@
+{
+ "name": "sells",
+ "note": "Ground truth from the AE project (Route A dump): cuts = in-points of the root comp's enabled normal-blend picture layers (extract.aep_shots), time offset 0. Transitions and camera not yet filled (need per-cut review).",
+ "frames": 1362,
+ "cuts": [
+  76,
+  100,
+  134,
+  166,
+  258,
+  378,
+  433,
+  459,
+  503,
+  616,
+  676,
+  748,
+  780,
+  817,
+  877,
+  930,
+  1065,
+  1104,
+  1135,
+  1168,
+  1232,
+  1263
+ ]
+}

@@ -1,0 +1,56 @@
+# Video workflow: standing requirements from the user
+
+Read this before any video work. Every rule below came from the user; keep it current when they add more.
+
+## Goal
+- Make Instagram/TikTok reels in the exact style of "The Psychology Trick" (EarnEdits AE project, posted reel `r1.mp4`). Take most if not all inspiration from that reel.
+- Our videos use a **red accent** instead of the original's green.
+- Bar for "1:1": you cannot tell ours from the original side by side (blind test) and SSIM vs the reel of 0.92–0.95 on paper/text shots, 0.85+ on asset-heavy shots. A literal 1.0 is impossible and was agreed not to be the target.
+- The workflow must be repeatable for as many videos as the user wants; it ends packaged as a skill.
+
+## How to build
+- **1:1 from the bought project files, then an original touch** (user rule 2026-11-21, replaces "from scratch"): the user buys the template .aep files (e.g. Earn Edits) so we may use them directly — copy layouts, timings, eases, effects and their assets for the 1:1 rebuild. Every video we make then gets an original touch (our brand, accent, props, type, motifs) chosen by the user from options. Still never commit their files/fonts/renders to git (licence: use, not redistribution) — keep them in the private template folder.
+- **Earn Edits scenes may be used exactly** (user, 2026-11-21: they have permission): scenes from the Earn Edits .aep files can go into the library and our videos as-is (layouts, animation, effects, their assets), not only as reference. /rescene's "measure, never copy their pixels" applies only to reels we don't own. Files stay in the private template folder, not git.
+- **Original touch picks** (user, 2026-11-21): standard on every video = (1) brand motion kit: red accent, LaunchBack arrow replaces generic marks, arrow "launch" whip transition, same end logo sting; (2) signature type: one font pairing + one caption style; (3) retime to the user's VO/beats + own SFX set; (4) own prop world in one consistent look; (6) own finish: grade, grain, film-edge variant, mild glitch. Not chosen: (5) open-loop story ending.
+- **Template-first.** Each shot is built once as a parameterised template, proven 1:1 against the reel with their content, then reused with our content. No throwaway one-off scenes.
+- **Library of everything**, not only shots: shot templates, transitions, camera moves, text styles and font pairings, fonts, palettes, eases, finishes (paper, film edge, grade, edge blur, fringing), assets (props, textures, overlays, 3D models), SFX and music cues. See `library/`.
+- Library grows after every video, but **only with the user's approval** (scorecard pass + a yes on a short clip).
+- **Check before rendering.** Before any real render: render key stills, compare them full-size with the reel, be critical, and fix every visual flaw first — invisible/cut-off text, wrong or missing font, wrong colour/size/position, missing elements. Use a separate critic pass as well as self-review.
+- **Examine everything twice before rendering or showing it** (user rule after the Michelin v0 flatlay): two
+  separate full passes over the shot/video — a frame strip every ~3 frames plus every cut at full frame rate — looking
+  at every detail: text readable and fully on screen, props right size/colour/position, nothing covering what
+  matters, **transitions clean** between every pair of shots (no hard jumps, no leftovers from the previous shot),
+  and **nothing that just cuts in or sits still** — every element arrives with motion (reveal, pop, slide, draw) and
+  the camera keeps moving. Fix every problem found before the render; say what was checked in the report.
+- **Save anything important where it can't be lost.** The container is temporary: finished renders, side-by-sides,
+  contact sheets, scene JSONs and generated assets go into git (force-add past .gitignore if needed, or Git LFS for
+  big files) and/or get sent to the user right away. Never leave the only copy in the scratchpad or `out/`.
+- AutoAE preset renders can't be used: their downloads carry a watermark and we don't remove watermarks.
+- Measure everything: per-shot SSIM vs reel, cut timing, sharpness, plus the style scorecard for our own videos.
+
+## Working rules
+- Run **one job at a time**; do not spawn many agents in parallel (usage limits). Opus for agents; Fable only as advisor.
+- Take it slow, think before answering; research when useful.
+- Report outcomes honestly (scores, what failed, what was approximated).
+- Commit code to the session's branch and push, then fast-forward `main` to it (user rule, 2026-11-22: "merge the branch to main") so every new chat starts with the latest. Do not commit their template files, fonts or renders. Our own small generated assets may be committed so they survive the ephemeral container.
+- Keep the user's personal info private.
+- Higgsfield: the user approved generation spend; image generation is ~0.25 credits each. Original guidance was 50–60 credits, hard cap 100, for a project — quote anything large first.
+- Remind the user of `ROADMAP.md` after a few rounds of video tweaks.
+- **GPU work goes to Kaggle** (user rule, 2026-11-21): renders and anything that needs or benefits from a GPU (rescene heavy stages, AI models) run on the user's free Kaggle GPU (private notebooks, T4, ~30 h/week) via the Kaggle REST API at www.kaggle.com/api/v1 (key saved on the environment; the new CLI uses api.kaggle.com, which is not allowed). Not Higgsfield GPUs. Fall back to this CPU only if Kaggle is down or out of quota, and say so.
+- **Don't ask before the next step of an agreed pipeline** (user rule, 2026-11-21): e.g. /rescene Route A steps run back to back; only stop for real blockers or the user's own decisions.
+- **Render rounds** (user rule, 2026-11-22): every scene renders separately (`kgl.render --shots`), and the scenes are stitched together for the showcase. Round 1 at 540p (`--preview 540`) → ask the user for changes and also fix whatever is wrong by my own review → round 2 at 540p → changes if needed → final at full resolution. Re-render only the scenes that changed (`--only`).
+- **Kaggle user name** comes from the cloud environment's `KAGGLE_USER` variable (user rule, 2026-11-22); never write it into the repo.
+- **Private files travel between chats via Kaggle** (user rule, 2026-11-22): at the start of any video chat, if `/home/user/tpl` is missing or empty, run `python3 -m kgl.tpl_backup restore` before anything else; at the end of each rescene step that changes `/home/user/tpl` (new reel, renders, templates, LUTs), run `python3 -m kgl.tpl_backup backup`. A finished rescene in one chat is then usable for the video rebuild in the next.
+- **Say when a GPU starts** (user rule, 2026-11-22): after pushing a Kaggle job, watch its log for `STATUS running` (kgl.run prints it) and tell the user as soon as it appears; also tell them if it is still queued after 20 min.
+- **Library only after the full-res final is approved** (user rule, 2026-11-22): a reel's scene templates and assets go into `library/catalog.json` (private `tpl:` references, final scores) only once the user approves the full-resolution render — never after a 540p round.
+- **Two-chat workflow** (user rule, 2026-11-22): one chat runs /rescene to the end (final approved → library → Kaggle backup); a later chat rebuilds a new video from the library templates. Each chat must leave main and the Kaggle backup complete.
+- **Explain in simple terms** (user preference, 2026-11-22): short, plain answers; no jargon walls. The user is often on a phone.
+- **When Kaggle is queued** (2026-11-22): it can wait 30+ min for a T4. Tell the user, keep the job queued. Options already weighed: Higgsfield GPU (no queue, ~71 credits/h, quote first; the auto-mode check blocks uploading licensed template files to third-party hosts, so a box must pull from the user's private Kaggle dataset); Colab notebook pulling the same dataset (works, but the user found it too manual — don't offer it first); this container's CPU (~8 s/frame full res 1 sample, ~30 s at 4 samples); OpenRouter can't run renders. Speeds on the T4: 540p 1 sample ~0.12 s/frame (whole reel ~3 min), full res 4 samples ~3.5 s/frame (~80-100 min).
+- **End every reply with a short status block** (user rule, 2026-11-21): only what is happening right now (no recap of finished things) — current task + state, what is rendering/running and its time left.
+
+## Known blockers / asks
+- Sells step 8 (original touch) waits on the user's content: new text, images/logo, and the brand red hex.
+- Higgsfield downloads need host `d8j0ntlcm91z4.cloudfront.net` allowed in this environment's network settings (user must do it from a computer). Until then the user sends generated images in chat.
+- Fonts: user supplied Coolvetica (regular cuts only; Heavy cuts are paid). Kokila, Didot, Bradley Hand, Times, Helvetica still wanted from the user's own PC/Mac.
+- Music: decision pending (their bed is an Artlist screen recording — not licensed for us).
+- After Effects: user will buy later when they have a capable computer; templates should stay portable to AE edit lists.

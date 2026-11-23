@@ -1,0 +1,23 @@
+{
+ "name": "stop",
+ "note": "Ground truth from the AE project (Route A dump): cuts = shot starts from extract.aep_shots on the root comp '7th reel', time offset 0. Shot 14 (929) is a momentum-matched whip with no visible cut. Transitions and camera not yet filled.",
+ "frames": 1125,
+ "cuts": [
+  94,
+  176,
+  317,
+  394,
+  408,
+  479,
+  521,
+  573,
+  634,
+  745,
+  813,
+  890,
+  929,
+  969,
+  1022,
+  1074
+ ]
+}

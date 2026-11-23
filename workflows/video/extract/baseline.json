@@ -1,0 +1,50 @@
+{
+ "eases@0.3": {
+  "curves": 150,
+  "noise_px": 0.3,
+  "key_err_mean": 0.0,
+  "key_within_1f": 1.0,
+  "missed": 0,
+  "extra_moving_keys": 1,
+  "ease_acc": 1.0
+ },
+ "eases@1.0": {
+  "curves": 150,
+  "noise_px": 1.0,
+  "key_err_mean": 0.011,
+  "key_within_1f": 1.0,
+  "missed": 1,
+  "extra_moving_keys": 11,
+  "ease_acc": 0.971
+ },
+ "gt:r1": {
+  "cut_recall": 1.0,
+  "cut_precision": 0.611,
+  "cut_missed": [],
+  "transition_tag_hit": 0.727,
+  "camera_px_err_median": 0.28,
+  "camera_px_err_p90": 5.77,
+  "camera_moving_frames_err_median": 4.5,
+  "zoom_err_median_pct": 0.21
+ },
+ "gt:sells": {
+  "cut_recall": 0.864,
+  "cut_precision": 0.633,
+  "cut_missed": [
+   780,
+   817,
+   1232
+  ]
+ },
+ "gt:stop": {
+  "cut_recall": 0.938,
+  "cut_precision": 0.833,
+  "cut_missed": [
+   929
+  ]
+ },
+ "corrections:zeigarnik": {
+  "cuts_add_ok": true,
+  "cuts_remove_ok": false
+ }
+}

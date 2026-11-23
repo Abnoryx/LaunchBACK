@@ -1,0 +1,4 @@
+runs/*/frames.npy
+runs/*/audio.wav
+runs/*/pts.npy
+__pycache__/

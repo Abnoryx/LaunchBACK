@@ -1,0 +1,2792 @@
+{
+ "_about": "Index of every building block for the style. status: draft -> proven (passes reel score + check) -> approved (user said yes). New entries are added only after user approval. \"tpl:\" paths live in the private template folder (/home/user/tpl, backed up to the private Kaggle dataset), never in git.",
+ "templates": {
+  "hero_word": {
+   "file": "templates/hero_word.py",
+   "source": "reel S1 f0-96",
+   "slots": [
+    "kicker",
+    "hero",
+    "q1",
+    "q2",
+    "sub1",
+    "sub2",
+    "mark",
+    "prop"
+   ],
+   "status": "draft",
+   "score": {
+    "ssim_reel": 0.728,
+    "frames": 97
+   },
+   "blocked_by": "car shape (different model) and WONDER font (Coolvetica Heavy Comp is paid); position fitting has converged",
+   "gen": {
+    "world": "paper",
+    "words": [
+     2,
+     4
+    ],
+    "hero": true,
+    "prop": true,
+    "use": "opening hook: giant hero word + spinning prop + marks",
+    "stats": {
+     "picked": 0,
+     "approved": 0,
+     "rejected": 0
+    }
+   }
+  },
+  "share_card": {
+   "file": "templates/share_card.py",
+   "source": "reel S10 f934-991",
+   "slots": [
+    "line1",
+    "pill",
+    "with",
+    "accent",
+    "who",
+    "bar",
+    "tail",
+    "watermark",
+    "fineprint"
+   ],
+   "status": "proven",
+   "score": {
+    "ssim_reel": 0.882,
+    "frames": 58
+   },
+   "weak": "card-shrink transition f968-971 (0.31-0.68)",
+   "gen": {
+    "world": "paper",
+    "words": [
+     2,
+     4
+    ],
+    "hero": false,
+    "prop": false,
+    "use": "one emphasised word in a pill, card shrinks",
+    "stats": {
+     "picked": 0,
+     "approved": 0,
+     "rejected": 0
+    }
+   }
+  },
+  "word_panel": {
+   "file": "templates/word_panel.py",
+   "source": "reel S2 f141-200",
+   "slots": [
+    "a",
+    "b",
+    "panel",
+    "big"
+   ],
+   "status": "proven",
+   "score": {
+    "ssim_reel": 0.928,
+    "frames": 60
+   },
+   "weak": "f181-184 black gap between the two wipes (0.5-0.8)",
+   "gen": {
+    "world": "paper",
+    "words": [
+     3,
+     5
+    ],
+    "hero": true,
+    "prop": false,
+    "use": "line + huge word rising per letter",
+    "stats": {
+     "picked": 0,
+     "approved": 0,
+     "rejected": 0
+    }
+   }
+  },
+  "flythrough_words": {
+   "file": "templates/flythrough_words.py",
+   "source": "reel S8b f774-844",
+   "slots": [
+    "a",
+    "b",
+    "c_small",
+    "c_accent"
+   ],
+   "status": "proven",
+   "score": {
+    "ssim_reel": 0.907,
+    "frames": 71
+   },
+   "gen": {
+    "world": "dark",
+    "words": [
+     2,
+     5
+    ],
+    "hero": true,
+    "prop": false,
+    "use": "words fly in through a dusty dark room",
+    "stats": {
+     "picked": 0,
+     "approved": 0,
+     "rejected": 0
+    }
+   }
+  },
+  "statement_flip": {
+   "file": "templates/statement_flip.py",
+   "source": "reel S6 f547-635",
+   "slots": [
+    "line",
+    "accent",
+    "small",
+    "big",
+    "scan"
+   ],
+   "status": "draft",
+   "score": {
+    "ssim_reel": 0.681,
+    "paper_half": 0.929,
+    "scan_half": 0.281,
+    "frames": 89
+   },
+   "weak": "scan half: our MRI is a different scan (texture cannot match); layout/motion match",
+   "gen": {
+    "world": "paper",
+    "words": [
+     3,
+     6
+    ],
+    "hero": true,
+    "prop": false,
+    "use": "statement with accent word, flips to a scan/map",
+    "stats": {
+     "picked": 0,
+     "approved": 0,
+     "rejected": 0
+    }
+   }
+  },
+  "dark_docs": {
+   "file": "templates/dark_docs.py",
+   "source": "reel S7 f636-712",
+   "slots": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "docs"
+   ],
+   "status": "draft",
+   "score": {
+    "ssim_reel": 0.753,
+    "frames": 77
+   },
+   "gen": {
+    "world": "dark",
+    "words": [
+     2,
+     5
+    ],
+    "hero": true,
+    "prop": true,
+    "use": "documents fly past in the dark, strike/stamp",
+    "stats": {
+     "picked": 0,
+     "approved": 0,
+     "rejected": 0
+    }
+   }
+  },
+  "disc_brain": {
+   "file": "templates/disc_brain.py",
+   "source": "reel S1b f97-140",
+   "slots": [
+    "kicker",
+    "term",
+    "term_accent",
+    "definition",
+    "banner",
+    "prop"
+   ],
+   "status": "draft",
+   "score": {
+    "ssim_reel": 0.723,
+    "frames": 43
+   },
+   "notes": "3D brain_side.glb, smooth hand-drawn loop",
+   "gen": {
+    "world": "paper",
+    "words": [
+     2,
+     4
+    ],
+    "hero": true,
+    "prop": true,
+    "use": "prop on a disc with a definition, scribble loop",
+    "stats": {
+     "picked": 0,
+     "approved": 0,
+     "rejected": 0
+    }
+   }
+  },
+  "word_prop_pop": {
+   "file": "templates/word_prop_pop.py",
+   "source": "reel S3 f249-344",
+   "slots": [
+    "brand",
+    "small",
+    "label",
+    "l1",
+    "l2",
+    "accent",
+    "prop",
+    "hand"
+   ],
+   "status": "draft",
+   "score": {
+    "ssim_reel": 0.781,
+    "frames": 95
+   },
+   "notes": "real iPhone 15 Pro Max (CC-BY-4.0 polyman); paper cut-out glove fist/open generated from OG frames",
+   "gen": {
+    "world": "paper",
+    "words": [
+     1,
+     3
+    ],
+    "hero": true,
+    "prop": true,
+    "use": "cut-out prop pops, big serif word",
+    "stats": {
+     "picked": 0,
+     "approved": 0,
+     "rejected": 0
+    }
+   }
+  },
+  "brand_box": {
+   "file": "templates/brand_box.py",
+   "source": "reel S4 f345-454",
+   "slots": [
+    "brand",
+    "tagline",
+    "tags",
+    "tag_box",
+    "over",
+    "side",
+    "marker",
+    "prop"
+   ],
+   "status": "draft",
+   "score": {
+    "ssim_reel": 0.779,
+    "frames": 109
+   },
+   "notes": "3D sofa model (sofa.glb) turns in Y",
+   "gen": {
+    "world": "paper",
+    "words": [
+     2,
+     4
+    ],
+    "hero": false,
+    "prop": true,
+    "use": "box with 3 props swapping, verb in highlighter",
+    "stats": {
+     "picked": 0,
+     "approved": 0,
+     "rejected": 0
+    }
+   }
+  },
+  "calendar_flip": {
+   "file": "templates/calendar_flip.py",
+   "source": "reel S5 f455-546",
+   "slots": [
+    "pages",
+    "brand",
+    "gives",
+    "nights",
+    "end",
+    "end_small",
+    "prop"
+   ],
+   "status": "draft",
+   "notes": "page turn = per-frame clip mask + reflected dark flap (slow curl, fast sweep); window light = static multiply with lit polygons",
+   "score": {
+    "ssim_reel": 0.715,
+    "frames": 92
+   },
+   "weak": "bed is a different model; window shadow across the card is a flat screen-space approximation",
+   "gen": {
+    "world": "dark",
+    "words": [
+     2,
+     4
+    ],
+    "hero": true,
+    "prop": true,
+    "use": "counter/calendar pages flip to a year or number",
+    "stats": {
+     "picked": 0,
+     "approved": 0,
+     "rejected": 0
+    }
+   }
+  },
+  "brain_collage": {
+   "file": "templates/brain_collage.py",
+   "source": "reel S8a f713-773",
+   "slots": [
+    "amp",
+    "line",
+    "small",
+    "accent",
+    "label",
+    "ring",
+    "prop"
+   ],
+   "status": "draft",
+   "score": {
+    "ssim_reel": 0.599,
+    "frames": 60
+   },
+   "weak": "number ring angle/blur and grid fine detail; fineprint was 60 px high in the scored render (fixed since)",
+   "notes": "3D brain.glb; number ring depth-split so it wraps round the brain",
+   "gen": {
+    "world": "paper",
+    "words": [
+     3,
+     6
+    ],
+    "hero": false,
+    "prop": true,
+    "use": "prop centre + ring of words in depth",
+    "stats": {
+     "picked": 0,
+     "approved": 0,
+     "rejected": 0
+    }
+   }
+  },
+  "follow_needle": {
+   "file": "templates/follow_needle.py",
+   "source": "reel S9 f845-933",
+   "slots": [
+    "cta",
+    "accent",
+    "small",
+    "big",
+    "logo",
+    "hand",
+    "pen"
+   ],
+   "status": "draft",
+   "notes": "wave precomp + travelling Wave Warp",
+   "score": {
+    "ssim_reel": 0.719,
+    "frames": 88
+   },
+   "gen": {
+    "world": "paper",
+    "words": [
+     3,
+     6
+    ],
+    "hero": false,
+    "prop": false,
+    "use": "outro wave / call to action",
+    "stats": {
+     "picked": 0,
+     "approved": 0,
+     "rejected": 0
+    }
+   }
+  },
+  "hand_flame": {
+   "file": "templates/hand_flame.py",
+   "source": "reel S2b f200-248",
+   "slots": [
+    "small",
+    "big",
+    "hand",
+    "flame"
+   ],
+   "status": "proven",
+   "notes": "rim-lit hand clip hand_rim_grab.mp4 (SCREEN), flame_loop.mp4 + warm halo",
+   "score": {
+    "ssim_reel": 0.835,
+    "frames": 48
+   },
+   "gen": {
+    "world": "dark",
+    "words": [
+     2,
+     4
+    ],
+    "hero": false,
+    "prop": true,
+    "use": "rim-lit hand reaching for a glowing object",
+    "stats": {
+     "picked": 0,
+     "approved": 0,
+     "rejected": 0
+    }
+   }
+  },
+  "desk_flatlay": {
+   "file": "templates/desk_flatlay.py",
+   "source": "ours (archetype #11 flatlay + #16 bubbles)",
+   "slots": [
+    "label",
+    "b1",
+    "b2",
+    "object",
+    "plate"
+   ],
+   "status": "draft",
+   "notes": "built for Michelin S18; charcoal mat",
+   "gen": {
+    "world": "paper",
+    "words": [
+     3,
+     6
+    ],
+    "hero": false,
+    "prop": true,
+    "use": "top-down desk with chat bubbles",
+    "stats": {
+     "picked": 0,
+     "approved": 0,
+     "rejected": 0
+    }
+   }
+  },
+  "logo_reveal": {
+   "file": "templates/logo_reveal.py",
+   "source": "ours (LaunchBack logo pieces, make_logo.py)",
+   "status": "draft",
+   "gen": {
+    "world": "dark",
+    "words": [
+     0,
+     1
+    ],
+    "hero": false,
+    "prop": false,
+    "use": "LaunchBack logo end sting (always last)",
+    "stats": {
+     "picked": 0,
+     "approved": 0,
+     "rejected": 0
+    }
+   }
+  },
+  "needle_wave": {
+   "file": "templates/needle_wave.py",
+   "source": "reel S9 f845-933",
+   "slots": [
+    "cta",
+    "accent",
+    "small",
+    "big",
+    "needle.assets (hand, plate, logo, pen)",
+    "needle.layout/timing/wave"
+   ],
+   "status": "draft",
+   "notes": "follow_needle head (f845-882) dissolving over 3 f into the user-supplied move_the_needle recreation (templates/move_the_needle: measured wavy white reveal + halo, arm grip, dark wipe). Replaces follow_needle in Michelin S20 (user, 2026-11-21)."
+  },
+  "sells/s01": {
+   "file": "tpl:lib/sells/templates/shot_01.json",
+   "kind": "aep_scene",
+   "source": "Sells reel scene 1 f0-76",
+   "window": [
+    0.0,
+    2.53333
+   ],
+   "slots": {
+    "texts": 13,
+    "footage": 19,
+    "accent": true
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.81,
+    "bar": 0.92,
+    "meets_bar": false,
+    "frames": 76,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "sells/s02": {
+   "file": "tpl:lib/sells/templates/shot_02.json",
+   "kind": "aep_scene",
+   "source": "Sells reel scene 2 f76-100",
+   "window": [
+    2.53333,
+    3.33333
+   ],
+   "slots": {
+    "texts": 6,
+    "footage": 15,
+    "accent": false
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.79,
+    "bar": 0.92,
+    "meets_bar": false,
+    "frames": 24,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "sells/s03": {
+   "file": "tpl:lib/sells/templates/shot_03.json",
+   "kind": "aep_scene",
+   "source": "Sells reel scene 3 f100-134",
+   "window": [
+    3.33333,
+    4.46667
+   ],
+   "slots": {
+    "texts": 2,
+    "footage": 8,
+    "accent": false
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.983,
+    "bar": 0.92,
+    "meets_bar": true,
+    "frames": 34,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "sells/s04": {
+   "file": "tpl:lib/sells/templates/shot_04.json",
+   "kind": "aep_scene",
+   "source": "Sells reel scene 4 f134-166",
+   "window": [
+    4.46667,
+    5.53333
+   ],
+   "slots": {
+    "texts": 13,
+    "footage": 17,
+    "accent": true
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.792,
+    "bar": 0.92,
+    "meets_bar": false,
+    "frames": 32,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "sells/s05": {
+   "file": "tpl:lib/sells/templates/shot_05.json",
+   "kind": "aep_scene",
+   "source": "Sells reel scene 5 f166-258",
+   "window": [
+    5.53333,
+    8.6
+   ],
+   "slots": {
+    "texts": 2,
+    "footage": 6,
+    "accent": true
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.79,
+    "bar": 0.85,
+    "meets_bar": false,
+    "frames": 92,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "sells/s06": {
+   "file": "tpl:lib/sells/templates/shot_06.json",
+   "kind": "aep_scene",
+   "source": "Sells reel scene 6 f258-378",
+   "window": [
+    8.6,
+    12.6
+   ],
+   "slots": {
+    "texts": 4,
+    "footage": 3,
+    "accent": true
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.805,
+    "bar": 0.85,
+    "meets_bar": false,
+    "frames": 120,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "sells/s07": {
+   "file": "tpl:lib/sells/templates/shot_07.json",
+   "kind": "aep_scene",
+   "source": "Sells reel scene 7 f378-433",
+   "window": [
+    12.6,
+    14.43333
+   ],
+   "slots": {
+    "texts": 11,
+    "footage": 2,
+    "accent": true
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.998,
+    "bar": 0.92,
+    "meets_bar": true,
+    "frames": 55,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "sells/s08": {
+   "file": "tpl:lib/sells/templates/shot_08.json",
+   "kind": "aep_scene",
+   "source": "Sells reel scene 8 f433-459",
+   "window": [
+    14.43333,
+    15.3
+   ],
+   "slots": {
+    "texts": 9,
+    "footage": 2,
+    "accent": false
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.936,
+    "bar": 0.85,
+    "meets_bar": true,
+    "frames": 26,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "sells/s09": {
+   "file": "tpl:lib/sells/templates/shot_09.json",
+   "kind": "aep_scene",
+   "source": "Sells reel scene 9 f459-503",
+   "window": [
+    15.3,
+    16.76667
+   ],
+   "slots": {
+    "texts": 2,
+    "footage": 4,
+    "accent": true
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.5,
+    "bar": 0.85,
+    "meets_bar": false,
+    "frames": 44,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "sells/s10": {
+   "file": "tpl:lib/sells/templates/shot_10.json",
+   "kind": "aep_scene",
+   "source": "Sells reel scene 10 f503-616",
+   "window": [
+    16.76667,
+    20.53333
+   ],
+   "slots": {
+    "texts": 12,
+    "footage": 9,
+    "accent": true
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.979,
+    "bar": 0.92,
+    "meets_bar": true,
+    "frames": 113,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "sells/s11": {
+   "file": "tpl:lib/sells/templates/shot_11.json",
+   "kind": "aep_scene",
+   "source": "Sells reel scene 11 f616-676",
+   "window": [
+    20.53333,
+    22.53333
+   ],
+   "slots": {
+    "texts": 6,
+    "footage": 9,
+    "accent": false
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.988,
+    "bar": 0.92,
+    "meets_bar": true,
+    "frames": 60,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "sells/s12": {
+   "file": "tpl:lib/sells/templates/shot_12.json",
+   "kind": "aep_scene",
+   "source": "Sells reel scene 12 f676-748",
+   "window": [
+    22.53333,
+    24.93333
+   ],
+   "slots": {
+    "texts": 4,
+    "footage": 8,
+    "accent": false
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.908,
+    "bar": 0.85,
+    "meets_bar": true,
+    "frames": 72,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "sells/s13": {
+   "file": "tpl:lib/sells/templates/shot_13.json",
+   "kind": "aep_scene",
+   "source": "Sells reel From KlickPin CF P f748-780",
+   "window": [
+    24.93333,
+    26.0
+   ],
+   "slots": {
+    "texts": 2,
+    "footage": 3,
+    "accent": false
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.71,
+    "bar": 0.85,
+    "meets_bar": false,
+    "frames": 32,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "sells/s14": {
+   "file": "tpl:lib/sells/templates/shot_14.json",
+   "kind": "aep_scene",
+   "source": "Sells reel From KlickPin CF M f780-817",
+   "window": [
+    26.0,
+    27.23333
+   ],
+   "slots": {
+    "texts": 4,
+    "footage": 5,
+    "accent": false
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.793,
+    "bar": 0.85,
+    "meets_bar": false,
+    "frames": 37,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "sells/s15": {
+   "file": "tpl:lib/sells/templates/shot_15.json",
+   "kind": "aep_scene",
+   "source": "Sells reel From KlickPin CF P f817-877",
+   "window": [
+    27.23333,
+    29.23333
+   ],
+   "slots": {
+    "texts": 8,
+    "footage": 13,
+    "accent": false
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.958,
+    "bar": 0.85,
+    "meets_bar": true,
+    "frames": 60,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "sells/s16": {
+   "file": "tpl:lib/sells/templates/shot_16.json",
+   "kind": "aep_scene",
+   "source": "Sells reel scene 13 f877-930",
+   "window": [
+    29.23333,
+    31.0
+   ],
+   "slots": {
+    "texts": 4,
+    "footage": 11,
+    "accent": false
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.574,
+    "bar": 0.85,
+    "meets_bar": false,
+    "frames": 53,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "sells/s17": {
+   "file": "tpl:lib/sells/templates/shot_17.json",
+   "kind": "aep_scene",
+   "source": "Sells reel scene 14 f930-1065",
+   "window": [
+    31.0,
+    35.5
+   ],
+   "slots": {
+    "texts": 12,
+    "footage": 4,
+    "accent": true
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.988,
+    "bar": 0.85,
+    "meets_bar": true,
+    "frames": 135,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "sells/s18": {
+   "file": "tpl:lib/sells/templates/shot_18.json",
+   "kind": "aep_scene",
+   "source": "Sells reel scene 15 f1065-1104",
+   "window": [
+    35.5,
+    36.8
+   ],
+   "slots": {
+    "texts": 18,
+    "footage": 6,
+    "accent": true
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.988,
+    "bar": 0.92,
+    "meets_bar": true,
+    "frames": 39,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "sells/s19": {
+   "file": "tpl:lib/sells/templates/shot_19.json",
+   "kind": "aep_scene",
+   "source": "Sells reel scene 16 f1104-1135",
+   "window": [
+    36.8,
+    37.83333
+   ],
+   "slots": {
+    "texts": 4,
+    "footage": 2,
+    "accent": true
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.993,
+    "bar": 0.92,
+    "meets_bar": true,
+    "frames": 31,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "sells/s20": {
+   "file": "tpl:lib/sells/templates/shot_20.json",
+   "kind": "aep_scene",
+   "source": "Sells reel Shape Layer 2 (3D f1135-1168",
+   "window": [
+    37.83333,
+    38.93333
+   ],
+   "slots": {
+    "texts": 6,
+    "footage": 1,
+    "accent": true
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.994,
+    "bar": 0.85,
+    "meets_bar": true,
+    "frames": 33,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "sells/s21": {
+   "file": "tpl:lib/sells/templates/shot_21.json",
+   "kind": "aep_scene",
+   "source": "Sells reel scene 17 f1168-1232",
+   "window": [
+    38.93333,
+    41.06667
+   ],
+   "slots": {
+    "texts": 4,
+    "footage": 1,
+    "accent": false
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.995,
+    "bar": 0.92,
+    "meets_bar": true,
+    "frames": 64,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "sells/s22": {
+   "file": "tpl:lib/sells/templates/shot_22.json",
+   "kind": "aep_scene",
+   "source": "Sells reel scene 18 f1232-1263",
+   "window": [
+    41.06667,
+    42.1
+   ],
+   "slots": {
+    "texts": 10,
+    "footage": 4,
+    "accent": true
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.717,
+    "bar": 0.92,
+    "meets_bar": false,
+    "frames": 31,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "sells/s23": {
+   "file": "tpl:lib/sells/templates/shot_23.json",
+   "kind": "aep_scene",
+   "source": "Sells reel White Solid 12 f1263-1362",
+   "window": [
+    42.1,
+    45.4
+   ],
+   "slots": {
+    "texts": 3,
+    "footage": 1,
+    "accent": false
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.984,
+    "bar": 0.85,
+    "meets_bar": true,
+    "frames": 99,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "flare_script": {
+   "file": "templates/flare_script.py",
+   "status": "draft",
+   "gen": {
+    "world": "dark",
+    "words": [
+     2,
+     4
+    ],
+    "hero": true,
+    "prop": false,
+    "use": "short line + thin script word over a teal lens flare",
+    "stats": {
+     "picked": 0,
+     "approved": 0,
+     "rejected": 0
+    }
+   }
+  },
+  "brain_words": {
+   "file": "templates/brain_words.py",
+   "status": "draft",
+   "gen": {
+    "world": "dark",
+    "words": [
+     3,
+     6
+    ],
+    "hero": true,
+    "prop": true,
+    "use": "prop centre, camera pushes, lines reveal left",
+    "stats": {
+     "picked": 0,
+     "approved": 0,
+     "rejected": 0
+    }
+   }
+  },
+  "cine_scene": {
+   "file": "templates/cine_scene.py",
+   "status": "draft",
+   "gen": {
+    "world": "any",
+    "words": [
+     1,
+     6
+    ],
+    "hero": false,
+    "prop": true,
+    "use": "generic cinematic shot (data-driven), any prop/light",
+    "stats": {
+     "picked": 0,
+     "approved": 0,
+     "rejected": 0
+    }
+   }
+  },
+  "stop/s01": {
+   "file": "tpl:lib/stop/templates/shot_01.json",
+   "kind": "aep_scene",
+   "source": "Stop reel scene 1 f0-94 (scene 4)",
+   "window": [
+    0.0,
+    3.13333
+   ],
+   "slots": {
+    "texts": 34,
+    "footage": 22,
+    "accent": true
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.672,
+    "bar": 0.85,
+    "meets_bar": false,
+    "frames": 94,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "stop/s02": {
+   "file": "tpl:lib/stop/templates/shot_02.json",
+   "kind": "aep_scene",
+   "source": "Stop reel scene 2 f94-176 (scene 2)",
+   "window": [
+    3.13333,
+    5.86667
+   ],
+   "slots": {
+    "texts": 19,
+    "footage": 10,
+    "accent": true
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.97,
+    "bar": 0.85,
+    "meets_bar": true,
+    "frames": 82,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "stop/s03": {
+   "file": "tpl:lib/stop/templates/shot_03.json",
+   "kind": "aep_scene",
+   "source": "Stop reel scene 3 f176-317 (scene 3)",
+   "window": [
+    5.86667,
+    10.56667
+   ],
+   "slots": {
+    "texts": 21,
+    "footage": 24,
+    "accent": true
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.913,
+    "bar": 0.85,
+    "meets_bar": true,
+    "frames": 141,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "stop/s04": {
+   "file": "tpl:lib/stop/templates/shot_04.json",
+   "kind": "aep_scene",
+   "source": "Stop reel scene 4 f317-394 (Pale Yellow Solid 2)",
+   "window": [
+    10.56667,
+    13.13333
+   ],
+   "slots": {
+    "texts": 10,
+    "footage": 16,
+    "accent": true
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.998,
+    "bar": 0.92,
+    "meets_bar": true,
+    "frames": 77,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "stop/s05": {
+   "file": "tpl:lib/stop/templates/shot_05.json",
+   "kind": "aep_scene",
+   "source": "Stop reel scene 5 f394-408 (Pale Yellow Solid 2)",
+   "window": [
+    13.13333,
+    13.6
+   ],
+   "slots": {
+    "texts": 1,
+    "footage": 1,
+    "accent": true
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.998,
+    "bar": 0.92,
+    "meets_bar": true,
+    "frames": 14,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "stop/s06": {
+   "file": "tpl:lib/stop/templates/shot_06.json",
+   "kind": "aep_scene",
+   "source": "Stop reel scene 6 f408-479 (webpage)",
+   "window": [
+    13.6,
+    15.96667
+   ],
+   "slots": {
+    "texts": 3,
+    "footage": 3,
+    "accent": true
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.843,
+    "bar": 0.85,
+    "meets_bar": false,
+    "frames": 71,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "stop/s07": {
+   "file": "tpl:lib/stop/templates/shot_07.json",
+   "kind": "aep_scene",
+   "source": "Stop reel scene 7 f479-521 (3545769-hd_1920_1080_24fps.mp4)",
+   "window": [
+    15.96667,
+    17.36667
+   ],
+   "slots": {
+    "texts": 5,
+    "footage": 4,
+    "accent": true
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.872,
+    "bar": 0.85,
+    "meets_bar": true,
+    "frames": 42,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "stop/s08": {
+   "file": "tpl:lib/stop/templates/shot_08.json",
+   "kind": "aep_scene",
+   "source": "Stop reel scene 8 f521-573 (From KlickPin CF Huntmovie on Instagram Never give up control breakingbad walterwhite gusfring bryancranston giancarloesposito [Video] [Video] in 2025.mp4)",
+   "window": [
+    17.36667,
+    19.1
+   ],
+   "slots": {
+    "texts": 7,
+    "footage": 3,
+    "accent": true
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.948,
+    "bar": 0.85,
+    "meets_bar": true,
+    "frames": 52,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "stop/s09": {
+   "file": "tpl:lib/stop/templates/shot_09.json",
+   "kind": "aep_scene",
+   "source": "Stop reel scene 9 f573-634 (From KlickPin CF Huntmovie on Instagram Never give up control breakingbad walterwhite gusfring bryancranston giancarloesposito [Video] [Video] in 2025.mp4)",
+   "window": [
+    19.1,
+    21.13333
+   ],
+   "slots": {
+    "texts": 11,
+    "footage": 4,
+    "accent": true
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.944,
+    "bar": 0.85,
+    "meets_bar": true,
+    "frames": 61,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "stop/s10": {
+   "file": "tpl:lib/stop/templates/shot_10.json",
+   "kind": "aep_scene",
+   "source": "Stop reel scene 10 f634-745 (ui scene)",
+   "window": [
+    21.13333,
+    24.83333
+   ],
+   "slots": {
+    "texts": 41,
+    "footage": 3,
+    "accent": true
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.832,
+    "bar": 0.85,
+    "meets_bar": false,
+    "frames": 111,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "stop/s11": {
+   "file": "tpl:lib/stop/templates/shot_11.json",
+   "kind": "aep_scene",
+   "source": "Stop reel scene 11 f745-813 (idk what scene it is)",
+   "window": [
+    24.83333,
+    27.1
+   ],
+   "slots": {
+    "texts": 33,
+    "footage": 1,
+    "accent": true
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.805,
+    "bar": 0.92,
+    "meets_bar": false,
+    "frames": 68,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "stop/s12": {
+   "file": "tpl:lib/stop/templates/shot_12.json",
+   "kind": "aep_scene",
+   "source": "Stop reel scene 12 f813-890 (typo edit)",
+   "window": [
+    27.1,
+    29.66667
+   ],
+   "slots": {
+    "texts": 14,
+    "footage": 4,
+    "accent": true
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.747,
+    "bar": 0.92,
+    "meets_bar": false,
+    "frames": 77,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "stop/s13": {
+   "file": "tpl:lib/stop/templates/shot_13.json",
+   "kind": "aep_scene",
+   "source": "Stop reel scene 13 f890-929 (trans logo gemini.png)",
+   "window": [
+    29.66667,
+    30.96667
+   ],
+   "slots": {
+    "texts": 16,
+    "footage": 5,
+    "accent": true
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.989,
+    "bar": 0.92,
+    "meets_bar": true,
+    "frames": 39,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "stop/s14": {
+   "file": "tpl:lib/stop/templates/shot_14.json",
+   "kind": "aep_scene",
+   "source": "Stop reel scene 14 f929-969 (trans logo gemini.png)",
+   "window": [
+    30.96667,
+    32.3
+   ],
+   "slots": {
+    "texts": 4,
+    "footage": 2,
+    "accent": true
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.996,
+    "bar": 0.92,
+    "meets_bar": true,
+    "frames": 40,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "stop/s15": {
+   "file": "tpl:lib/stop/templates/shot_15.json",
+   "kind": "aep_scene",
+   "source": "Stop reel scene 15 f969-1022 (trans logo gemini.png)",
+   "window": [
+    32.3,
+    34.06667
+   ],
+   "slots": {
+    "texts": 3,
+    "footage": 3,
+    "accent": true
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.985,
+    "bar": 0.85,
+    "meets_bar": true,
+    "frames": 53,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "stop/s16": {
+   "file": "tpl:lib/stop/templates/shot_16.json",
+   "kind": "aep_scene",
+   "source": "Stop reel scene 16 f1022-1074 (From KlickPin CF 500 days of summer 💖 [Video] _ Romantic movie quotes Pretty movie Short film.mp4)",
+   "window": [
+    34.06667,
+    35.8
+   ],
+   "slots": {
+    "texts": 5,
+    "footage": 3,
+    "accent": true
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.985,
+    "bar": 0.85,
+    "meets_bar": true,
+    "frames": 52,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "stop/s17": {
+   "file": "tpl:lib/stop/templates/shot_17.json",
+   "kind": "aep_scene",
+   "source": "Stop reel scene 17 f1074-1125 (audio spectrum)",
+   "window": [
+    35.8,
+    37.5
+   ],
+   "slots": {
+    "texts": 7,
+    "footage": 1,
+    "accent": true
+   },
+   "status": "approved",
+   "score": {
+    "ssim_reel": 0.94,
+    "bar": 0.92,
+    "meets_bar": true,
+    "frames": 51,
+    "round": "final full res"
+   },
+   "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  }
+ },
+ "transitions": {
+  "minimax_flash": {
+   "fn": "style.minimax_flash",
+   "source": "reel f67-68, f96-98, f140-142",
+   "status": "draft"
+  },
+  "lens_blur_in": {
+   "fn": "style.lens_blur_in",
+   "source": "reel f0-20",
+   "status": "draft"
+  },
+  "lens_blur_out": {
+   "fn": "style.lens_blur_out",
+   "source": "reel f238-248",
+   "status": "draft"
+  },
+  "whip": {
+   "source": "reel f86-96 (camera x 817->1245, ease whip)",
+   "status": "draft",
+   "note": "currently via solved camera"
+  }
+ },
+ "camera_moves": {
+  "solved_reel_camera": {
+   "fn": "style.solved_camera",
+   "source": "research/camera/cam_all.tsv",
+   "status": "draft",
+   "note": "replace with parametric moves (punch-in, push-in, pan, dolly, snap pull-out) as templates are generalised"
+  }
+ },
+ "text_styles": {
+  "word_reveal": {
+   "fn": "style.word_reveal",
+   "spec": "opacity 0->1 + blur 10, offset -100->100 over ~10 f, words"
+  },
+  "char_reveal": {
+   "fn": "style.char_reveal",
+   "spec": "same, per character"
+  },
+  "rise_reveal": {
+   "spec": "per character, rise 115 px + opacity",
+   "source": "reel S2 YOURS"
+  },
+  "pairing_sans_serif_italic": {
+   "spec": "bold sans helpers (Arimo, tracking -80) + serif bold italic hero (Kokila/Tinos)"
+  },
+  "reveal_rise": {
+   "fn": "style.reveal_rise",
+   "spec": "rise dy px + fade (+ blur), words or letters"
+  }
+ },
+ "fonts": {
+  "Arimo": {
+   "role": "sans_bold (Helvetica-Bold)",
+   "license": "Apache 2.0 (fontsource)",
+   "status": "approved"
+  },
+  "Anton": {
+   "role": "hero_condensed (Coolvetica HeavyComp stand-in, best SSIM)",
+   "license": "OFL",
+   "status": "draft"
+  },
+  "Coolvetica Condensed/Compressed/Crammed/Regular": {
+   "role": "pill (SHARE) etc.",
+   "license": "Typodermic free (user supplied, not in repo)",
+   "path": "/home/user/tpl/fonts/"
+  },
+  "Tinos": {
+   "role": "serif italic stand-in (Kokila, Times)",
+   "license": "Apache 2.0"
+  },
+  "Bodoni Moda": {
+   "role": "Didot italic stand-in",
+   "license": "OFL"
+  },
+  "League Gothic": {
+   "role": "condensed alt",
+   "license": "OFL"
+  },
+  "Patrick Hand": {
+   "role": "handwriting (Bradley Hand stand-in)",
+   "license": "OFL"
+  }
+ },
+ "palettes": {
+  "original": {
+   "fn": "style.PALETTES['original']"
+  },
+  "red": {
+   "fn": "style.PALETTES['red']",
+   "note": "our accent"
+  }
+ },
+ "eases": {
+  "fn": "style.EASE",
+  "names": [
+   "standard",
+   "out",
+   "snap",
+   "whip",
+   "push",
+   "dolly"
+  ]
+ },
+ "finishes": {
+  "paper": {
+   "fn": "style.paper",
+   "spec": "#E8E8E8 flat"
+  },
+  "paper_finish": {
+   "fn": "style.paper_finish",
+   "spec": "edge blur (inverted diamond, feather 150, Gaussian 14, fringe 3) + fringe 0.8 + film edge multiply"
+  },
+  "dark_grade": {
+   "spec": "lift (0,16,17), gain .96, sat x.6, black #001011",
+   "status": "todo"
+  }
+ },
+ "assets": {
+  "film_edge.png": {
+   "made_by": "make_assets.film_edge (drawn in code)",
+   "use": "multiply overlay on paper shots",
+   "status": "draft"
+  },
+  "car.png": {
+   "made_by": "Higgsfield gpt_image_2_6 + make_assets.car_cutout (unmixed, recoloured to #156422)",
+   "use": "hero_word prop (original content)",
+   "status": "draft"
+  },
+  "film_edge_dark.png": {
+   "made_by": "make_assets.film_edge_dark",
+   "use": "screen overlay on dark shots (amber marks)",
+   "status": "draft"
+  },
+  "viewfinder.png": {
+   "made_by": "camera viewfinder surround (drawn)",
+   "status": "draft"
+  },
+  "mri_a.png": {
+   "made_by": "coronal MRI (Higgsfield)",
+   "status": "draft"
+  },
+  "mri_b.png": {
+   "made_by": "coronal MRI alt (Higgsfield)",
+   "status": "draft"
+  },
+  "chart_doc.png": {
+   "made_by": "line chart document (drawn)",
+   "status": "draft"
+  },
+  "census_doc.png": {
+   "made_by": "census web page document (drawn)",
+   "status": "draft"
+  },
+  "calendar_1/10/30/50/100.png": "calendar pages (make_assets.calendar_card, layout measured on the reel)",
+  "bed.png": "bed cutout 1145x879 (Higgsfield, solid matte)",
+  "sofa.png": "sofa cutout (Higgsfield)",
+  "phone_back.png": "phone back cutout (Higgsfield)",
+  "glove_fist.png": "glove fist (Higgsfield)",
+  "glove_open.png": "glove open (Higgsfield)",
+  "brain_top.png": "top-view brain cutout (Higgsfield)",
+  "brain_quad.png": "four dark brain renders 2x2 (from brain_side)",
+  "math_graph.png": "maths graph sheet, transparent (drawn)",
+  "ruler.png": "ruler strip, transparent (drawn)",
+  "formula_board.png": "hand-drawn maths sheet (drawn, Patrick Hand)",
+  "fist.png": "forearm + clenched fist cutout (Higgsfield)",
+  "pen.png": "black pen cutout (Higgsfield)",
+  "e_mark.png": "round single-stroke e + dot logo mark (drawn)",
+  "hand_match.png": "hand holding an upright matchstick, cutout (Higgsfield)",
+  "flame.png": "match flame on black, use SCREEN (Higgsfield)",
+  "desk_plate.png": "top-down desk, charcoal cutting mat, window shadow (Higgsfield, mat recoloured)",
+  "floppy.png": "floppy disk cutout (Higgsfield)",
+  "sells/05ad174a8afbd78963a9fd42b12df0b5.gif": {
+   "file": "tpl:lib/sells/assets/05ad174a8afbd78963a9fd42b12df0b5.gif",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/158.mp3": {
+   "file": "tpl:lib/sells/assets/158.mp3",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/2025-12-03 15-25-05.mp4": {
+   "file": "tpl:lib/sells/assets/2025-12-03 15-25-05.mp4",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/20251201_1058_Open Vintage Book_simple_compose_01kbc62n90e9zsr0w12n16g73v.png": {
+   "file": "tpl:lib/sells/assets/20251201_1058_Open Vintage Book_simple_compose_01kbc62n90e9zsr0w12n16g73v.png",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/3545769-hd_1920_1080_24fps.mp4": {
+   "file": "tpl:lib/sells/assets/3545769-hd_1920_1080_24fps.mp4",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/45594-moneyface.gif": {
+   "file": "tpl:lib/sells/assets/45594-moneyface.gif",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/71gU92y52kL.jpg": {
+   "file": "tpl:lib/sells/assets/71gU92y52kL.jpg",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/7b5fa151219f73421cdf5def86583fba (1).jpg": {
+   "file": "tpl:lib/sells/assets/7b5fa151219f73421cdf5def86583fba (1).jpg",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/8560ef3f7d57118e24e170772cbbff1a.jpg": {
+   "file": "tpl:lib/sells/assets/8560ef3f7d57118e24e170772cbbff1a.jpg",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/8th reel.mp4": {
+   "file": "tpl:lib/sells/assets/8th reel.mp4",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/8th reel_1.mp4": {
+   "file": "tpl:lib/sells/assets/8th reel_1.mp4",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/Artwork 1.ai": {
+   "file": "tpl:lib/sells/assets/Artwork 1.ai",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/Artwork 2.ai": {
+   "file": "tpl:lib/sells/assets/Artwork 2.ai",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/Artwork 5.ai": {
+   "file": "tpl:lib/sells/assets/Artwork 5.ai",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/C5773.MP4": {
+   "file": "tpl:lib/sells/assets/C5773.MP4",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/Camcorder Overlay + Timer.mp4": {
+   "file": "tpl:lib/sells/assets/Camcorder Overlay + Timer.mp4",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/Cinematic Impact 1.mp3": {
+   "file": "tpl:lib/sells/assets/Cinematic Impact 1.mp3",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/Click 02.wav": {
+   "file": "tpl:lib/sells/assets/Click 02.wav",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/Click 05.wav": {
+   "file": "tpl:lib/sells/assets/Click 05.wav",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/DownloadGraph_page-0001.jpg": {
+   "file": "tpl:lib/sells/assets/DownloadGraph_page-0001.jpg",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/From KlickPin CF Collective Memory Silent History … Composed of more than 10000 images portrait monochro… [Video] in 2025 _ Motion graphics inspiration Film texture Motion graphics design.mp4": {
+   "file": "tpl:lib/sells/assets/From KlickPin CF Collective Memory Silent History … Composed of more than 10000 images portrait monochro… [Video] in 2025 _ Motion graphics inspiration Film texture Motion graphics design.mp4",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/From KlickPin CF Money ball movie en 2025 _ Videos artísticos Imagenes de canserbero Escenas peliculas.mp4": {
+   "file": "tpl:lib/sells/assets/From KlickPin CF Money ball movie en 2025 _ Videos artísticos Imagenes de canserbero Escenas peliculas.mp4",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/From KlickPin CF Pin by Ohum on Pins by you _ Filmmaking inspiration Filmmaking ideas Aesthetic videos for edits love.mp4": {
+   "file": "tpl:lib/sells/assets/From KlickPin CF Pin by Ohum on Pins by you _ Filmmaking inspiration Filmmaking ideas Aesthetic videos for edits love.mp4",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/From KlickPin CF Pin by мятная мятная on Космос in 2025 _ Cool pictures Dark nature aesthetic Film texture.mp4": {
+   "file": "tpl:lib/sells/assets/From KlickPin CF Pin by мятная мятная on Космос in 2025 _ Cool pictures Dark nature aesthetic Film texture.mp4",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/From KlickPin CF Pin von e mmm auf Motion Graphics in 2025 _ Projekte.mp4": {
+   "file": "tpl:lib/sells/assets/From KlickPin CF Pin von e mmm auf Motion Graphics in 2025 _ Projekte.mp4",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/From KlickPin CF The Lost Factory and Tracks in 2025 _ Breakup picture Album cover design Good vibe songs.mp4": {
+   "file": "tpl:lib/sells/assets/From KlickPin CF The Lost Factory and Tracks in 2025 _ Breakup picture Album cover design Good vibe songs.mp4",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/From KlickPin CF Via Alex Butcher 2025 _ Hareketli grafik Kavramsal fotoğrafçılık Sinematografi.mp4": {
+   "file": "tpl:lib/sells/assets/From KlickPin CF Via Alex Butcher 2025 _ Hareketli grafik Kavramsal fotoğrafçılık Sinematografi.mp4",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/Healing.wav": {
+   "file": "tpl:lib/sells/assets/Healing.wav",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/IMG_0264.PNG": {
+   "file": "tpl:lib/sells/assets/IMG_0264.PNG",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/Icon 01.wav": {
+   "file": "tpl:lib/sells/assets/Icon 01.wav",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/LIGHT BOKEH TRANSITIONS 30.mp4": {
+   "file": "tpl:lib/sells/assets/LIGHT BOKEH TRANSITIONS 30.mp4",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/Marker.mp3": {
+   "file": "tpl:lib/sells/assets/Marker.mp3",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/Overlay 13.mp4": {
+   "file": "tpl:lib/sells/assets/Overlay 13.mp4",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/Riser Dark.wav": {
+   "file": "tpl:lib/sells/assets/Riser Dark.wav",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/Riser Swooshy.wav": {
+   "file": "tpl:lib/sells/assets/Riser Swooshy.wav",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/Screenshot 2025-11-14 215055.png": {
+   "file": "tpl:lib/sells/assets/Screenshot 2025-11-14 215055.png",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/Screenshot 2025-11-22 205946.png": {
+   "file": "tpl:lib/sells/assets/Screenshot 2025-11-22 205946.png",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/Screenshot 2025-11-28 001741.png": {
+   "file": "tpl:lib/sells/assets/Screenshot 2025-11-28 001741.png",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/Screenshot 2025-12-01 225349.png": {
+   "file": "tpl:lib/sells/assets/Screenshot 2025-12-01 225349.png",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/Screenshot 2025-12-03 004027.png": {
+   "file": "tpl:lib/sells/assets/Screenshot 2025-12-03 004027.png",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/Subtle_1.mp4": {
+   "file": "tpl:lib/sells/assets/Subtle_1.mp4",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/Texturelabs_Paper_361M.jpg": {
+   "file": "tpl:lib/sells/assets/Texturelabs_Paper_361M.jpg",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/Typewriter 4.wav": {
+   "file": "tpl:lib/sells/assets/Typewriter 4.wav",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/Typewriter Sound Effect.mp3": {
+   "file": "tpl:lib/sells/assets/Typewriter Sound Effect.mp3",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/UI Beep 2.mp3": {
+   "file": "tpl:lib/sells/assets/UI Beep 2.mp3",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/WhatsApp Image 2025-11-23 at 12.26.44 PM.jpeg": {
+   "file": "tpl:lib/sells/assets/WhatsApp Image 2025-11-23 at 12.26.44 PM.jpeg",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/Whoosh Fast 01.wav": {
+   "file": "tpl:lib/sells/assets/Whoosh Fast 01.wav",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/Whoosh Fast 02.wav": {
+   "file": "tpl:lib/sells/assets/Whoosh Fast 02.wav",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/ac96aa691c1a8349371191c7d0cbcb87.jpg": {
+   "file": "tpl:lib/sells/assets/ac96aa691c1a8349371191c7d0cbcb87.jpg",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/audio spectrum.mp4": {
+   "file": "tpl:lib/sells/assets/audio spectrum.mp4",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/b33f0d10bab5c0d68a006844f7eda264.jpg": {
+   "file": "tpl:lib/sells/assets/b33f0d10bab5c0d68a006844f7eda264.jpg",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/bc11ffb5b6bd8af81afc47f7ea3dfdd4.jpg": {
+   "file": "tpl:lib/sells/assets/bc11ffb5b6bd8af81afc47f7ea3dfdd4.jpg",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/big-soft-whooshes-SBA-300062663.mp3": {
+   "file": "tpl:lib/sells/assets/big-soft-whooshes-SBA-300062663.mp3",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/board.jpg": {
+   "file": "tpl:lib/sells/assets/board.jpg",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/camera winder frame.jpg": {
+   "file": "tpl:lib/sells/assets/camera winder frame.jpg",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/dp guy.png": {
+   "file": "tpl:lib/sells/assets/dp guy.png",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/earnera logo.png": {
+   "file": "tpl:lib/sells/assets/earnera logo.png",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/ec065b89d758f757fc2de597612648d2.gif": {
+   "file": "tpl:lib/sells/assets/ec065b89d758f757fc2de597612648d2.gif",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/f1f3e9e07658e1fd741f6b3be42d7506.jpg": {
+   "file": "tpl:lib/sells/assets/f1f3e9e07658e1fd741f6b3be42d7506.jpg",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/film burn 17.mp4": {
+   "file": "tpl:lib/sells/assets/film burn 17.mp4",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/film burn 4.mp4": {
+   "file": "tpl:lib/sells/assets/film burn 4.mp4",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/film texture.mp4": {
+   "file": "tpl:lib/sells/assets/film texture.mp4",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/flapping-28206.mp3": {
+   "file": "tpl:lib/sells/assets/flapping-28206.mp3",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/flash-whoosh-swoosh-3-SBA-300463407.mp3": {
+   "file": "tpl:lib/sells/assets/flash-whoosh-swoosh-3-SBA-300463407.mp3",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/flash-whoosh-swoosh-7-SBA-300462861.mp3": {
+   "file": "tpl:lib/sells/assets/flash-whoosh-swoosh-7-SBA-300462861.mp3",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/glass texture.jpg": {
+   "file": "tpl:lib/sells/assets/glass texture.jpg",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/google-drive.png": {
+   "file": "tpl:lib/sells/assets/google-drive.png",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/graph.jpg": {
+   "file": "tpl:lib/sells/assets/graph.jpg",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/grid.png": {
+   "file": "tpl:lib/sells/assets/grid.png",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/grunge.jpg": {
+   "file": "tpl:lib/sells/assets/grunge.jpg",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/halftone bigger.jpg": {
+   "file": "tpl:lib/sells/assets/halftone bigger.jpg",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/halftone.jpg": {
+   "file": "tpl:lib/sells/assets/halftone.jpg",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/hand.png": {
+   "file": "tpl:lib/sells/assets/hand.png",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/iPhone Texting Sound Effect [lSBQE1PNJjk].wav": {
+   "file": "tpl:lib/sells/assets/iPhone Texting Sound Effect [lSBQE1PNJjk].wav",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/icons8-gmail-100.png": {
+   "file": "tpl:lib/sells/assets/icons8-gmail-100.png",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/icons8-google-calendar-144.png": {
+   "file": "tpl:lib/sells/assets/icons8-google-calendar-144.png",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/icons8-google-meet-48.png": {
+   "file": "tpl:lib/sells/assets/icons8-google-meet-48.png",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/idea board.png": {
+   "file": "tpl:lib/sells/assets/idea board.png",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/impact.aac": {
+   "file": "tpl:lib/sells/assets/impact.aac",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/layout.png": {
+   "file": "tpl:lib/sells/assets/layout.png",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/line graph.jpg": {
+   "file": "tpl:lib/sells/assets/line graph.jpg",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/mechanical ui.mp4": {
+   "file": "tpl:lib/sells/assets/mechanical ui.mp4",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/micro-air-swoosh_G18j6H4u.mp3": {
+   "file": "tpl:lib/sells/assets/micro-air-swoosh_G18j6H4u.mp3",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/money_PNG3524 (1).png": {
+   "file": "tpl:lib/sells/assets/money_PNG3524 (1).png",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/newpaper texture.jpg": {
+   "file": "tpl:lib/sells/assets/newpaper texture.jpg",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/oil painting.jpg": {
+   "file": "tpl:lib/sells/assets/oil painting.jpg",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/paper flapping.mp4": {
+   "file": "tpl:lib/sells/assets/paper flapping.mp4",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/paper trans.png": {
+   "file": "tpl:lib/sells/assets/paper trans.png",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/paper.png": {
+   "file": "tpl:lib/sells/assets/paper.png",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/paperr.jpg": {
+   "file": "tpl:lib/sells/assets/paperr.jpg",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/sad emoji.png": {
+   "file": "tpl:lib/sells/assets/sad emoji.png",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/search_281764.png": {
+   "file": "tpl:lib/sells/assets/search_281764.png",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/seth godins.png": {
+   "file": "tpl:lib/sells/assets/seth godins.png",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/short wooshes.mp4": {
+   "file": "tpl:lib/sells/assets/short wooshes.mp4",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/smartphone typing.mp4": {
+   "file": "tpl:lib/sells/assets/smartphone typing.mp4",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/thumb pin.png": {
+   "file": "tpl:lib/sells/assets/thumb pin.png",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/trans books.png": {
+   "file": "tpl:lib/sells/assets/trans books.png",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/trans logo gemini.png": {
+   "file": "tpl:lib/sells/assets/trans logo gemini.png",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/vibrant hit.mp4": {
+   "file": "tpl:lib/sells/assets/vibrant hit.mp4",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/wooden.png": {
+   "file": "tpl:lib/sells/assets/wooden.png",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "sells/y2mate.com - 4k_dirt_vintage_film_dust_hair_damage_35mm_footage_free_noise_overlay_after_effects_premiere_hd_KtZwp4kBP4M_1080p.mp4": {
+   "file": "tpl:lib/sells/assets/y2mate.com - 4k_dirt_vintage_film_dust_hair_damage_35mm_footage_free_noise_overlay_after_effects_premiere_hd_KtZwp4kBP4M_1080p.mp4",
+   "source": "Sells .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/cicle gif.gif": {
+   "file": "tpl:lib/stop/assets/cicle gif.gif",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/4K Dirt vintage film dust hair damage 35mm footage FREE noise overlay after effects premiere HD.mp4": {
+   "file": "tpl:lib/stop/assets/4K Dirt vintage film dust hair damage 35mm footage FREE noise overlay after effects premiere HD.mp4",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/7th reel.mp4": {
+   "file": "tpl:lib/stop/assets/7th reel.mp4",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/7th reel_1.mp4": {
+   "file": "tpl:lib/stop/assets/7th reel_1.mp4",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/2025-11-18 17-20-25.mp4": {
+   "file": "tpl:lib/stop/assets/2025-11-18 17-20-25.mp4",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/3545769-hd_1920_1080_24fps.mp4": {
+   "file": "tpl:lib/stop/assets/3545769-hd_1920_1080_24fps.mp4",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/audio spectrum.mp4": {
+   "file": "tpl:lib/stop/assets/audio spectrum.mp4",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/From KlickPin CF 500 days of summer 💖 [Video] _ Romantic movie quotes Pretty movie Short film.mp4": {
+   "file": "tpl:lib/stop/assets/From KlickPin CF 500 days of summer 💖 [Video] _ Romantic movie quotes Pretty movie Short film.mp4",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/From KlickPin CF Blue and Green Abstract Wallpaper.mp4": {
+   "file": "tpl:lib/stop/assets/From KlickPin CF Blue and Green Abstract Wallpaper.mp4",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/From KlickPin CF Huntmovie on Instagram Never give up control breakingbad walterwhite gusfring bryancranston giancarloesposito [Video] [Video] in 2025.mp4": {
+   "file": "tpl:lib/stop/assets/From KlickPin CF Huntmovie on Instagram Never give up control breakingbad walterwhite gusfring bryancranston giancarloesposito [Video] [Video] in 2025.mp4",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/public.mp4": {
+   "file": "tpl:lib/stop/assets/public.mp4",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/smartphone typing.mp4": {
+   "file": "tpl:lib/stop/assets/smartphone typing.mp4",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/1de52947cf871b610fb4276053dd137f.jpg": {
+   "file": "tpl:lib/stop/assets/1de52947cf871b610fb4276053dd137f.jpg",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/3c92ac58ae1768d1d83242a53c2ec070.jpg": {
+   "file": "tpl:lib/stop/assets/3c92ac58ae1768d1d83242a53c2ec070.jpg",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/04a783eb899e171af133ebeec34abb4d.jpg": {
+   "file": "tpl:lib/stop/assets/04a783eb899e171af133ebeec34abb4d.jpg",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/9d9267a2cbae58665aa5059abde0da67.jpg": {
+   "file": "tpl:lib/stop/assets/9d9267a2cbae58665aa5059abde0da67.jpg",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/9ed76d611947c5ac25dfe6449ee82712.jpg": {
+   "file": "tpl:lib/stop/assets/9ed76d611947c5ac25dfe6449ee82712.jpg",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/59af9cd100daf9aa154cc753dd58316d.jpg": {
+   "file": "tpl:lib/stop/assets/59af9cd100daf9aa154cc753dd58316d.jpg",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/76cc506f778acfc028ea536eeaab5a02.jpg": {
+   "file": "tpl:lib/stop/assets/76cc506f778acfc028ea536eeaab5a02.jpg",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/167e395fb34aa20f7246e0ef1e3b8edf.jpg": {
+   "file": "tpl:lib/stop/assets/167e395fb34aa20f7246e0ef1e3b8edf.jpg",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/558a08a80b6512259b6d2bd2c3182a5b.jpg": {
+   "file": "tpl:lib/stop/assets/558a08a80b6512259b6d2bd2c3182a5b.jpg",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/601d9e84193f244db69d080eed473c03.jpg": {
+   "file": "tpl:lib/stop/assets/601d9e84193f244db69d080eed473c03.jpg",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/738c1655ce055f78d760e20adc97cfd8.jpg": {
+   "file": "tpl:lib/stop/assets/738c1655ce055f78d760e20adc97cfd8.jpg",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/6800ef37001d517f49fac15c2fbd85c6.jpg": {
+   "file": "tpl:lib/stop/assets/6800ef37001d517f49fac15c2fbd85c6.jpg",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/0852035562411aae6e2092bebca76bfb.jpg": {
+   "file": "tpl:lib/stop/assets/0852035562411aae6e2092bebca76bfb.jpg",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/a8afcfb29e906eaafbdb428925df27b6.jpg": {
+   "file": "tpl:lib/stop/assets/a8afcfb29e906eaafbdb428925df27b6.jpg",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/c896dc6b5f32dc59a75d4f8354e518db.jpg": {
+   "file": "tpl:lib/stop/assets/c896dc6b5f32dc59a75d4f8354e518db.jpg",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/camera winder frame.jpg": {
+   "file": "tpl:lib/stop/assets/camera winder frame.jpg",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/d10311e5fb91f5793cef942d91a614c6.jpg": {
+   "file": "tpl:lib/stop/assets/d10311e5fb91f5793cef942d91a614c6.jpg",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/fde69036a5a880ee045a883005e0ebf4.jpg": {
+   "file": "tpl:lib/stop/assets/fde69036a5a880ee045a883005e0ebf4.jpg",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/halftone bigger.jpg": {
+   "file": "tpl:lib/stop/assets/halftone bigger.jpg",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/halftone plane.jpg": {
+   "file": "tpl:lib/stop/assets/halftone plane.jpg",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/halftone.jpg": {
+   "file": "tpl:lib/stop/assets/halftone.jpg",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/WhatsApp Image 2025-10-05 at 21.53.10_b4b3b07c.jpg": {
+   "file": "tpl:lib/stop/assets/WhatsApp Image 2025-10-05 at 21.53.10_b4b3b07c.jpg",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/arrow trans.png": {
+   "file": "tpl:lib/stop/assets/arrow trans.png",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/ChatGPT Image Nov 9, 2025, 09_53_30 AM.png": {
+   "file": "tpl:lib/stop/assets/ChatGPT Image Nov 9, 2025, 09_53_30 AM.png",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/ChatGPT Image Nov 9, 2025, 09_53_56 AM.png": {
+   "file": "tpl:lib/stop/assets/ChatGPT Image Nov 9, 2025, 09_53_56 AM.png",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/check.png": {
+   "file": "tpl:lib/stop/assets/check.png",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/cursor.png": {
+   "file": "tpl:lib/stop/assets/cursor.png",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/doc.png": {
+   "file": "tpl:lib/stop/assets/doc.png",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/dp guy.png": {
+   "file": "tpl:lib/stop/assets/dp guy.png",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/earnera logo.png": {
+   "file": "tpl:lib/stop/assets/earnera logo.png",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/gemini logo.png": {
+   "file": "tpl:lib/stop/assets/gemini logo.png",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/google-drive.png": {
+   "file": "tpl:lib/stop/assets/google-drive.png",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/icons8-gmail-100.png": {
+   "file": "tpl:lib/stop/assets/icons8-gmail-100.png",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/icons8-google-calendar-144.png": {
+   "file": "tpl:lib/stop/assets/icons8-google-calendar-144.png",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/icons8-google-meet-48.png": {
+   "file": "tpl:lib/stop/assets/icons8-google-meet-48.png",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/IMG_0264.PNG": {
+   "file": "tpl:lib/stop/assets/IMG_0264.PNG",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/iphone.png": {
+   "file": "tpl:lib/stop/assets/iphone.png",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/logo'.png": {
+   "file": "tpl:lib/stop/assets/logo'.png",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/MATH7-5-1-X-2.png": {
+   "file": "tpl:lib/stop/assets/MATH7-5-1-X-2.png",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/scratch wall.png": {
+   "file": "tpl:lib/stop/assets/scratch wall.png",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/Screenshot 2025-11-10 220832.png": {
+   "file": "tpl:lib/stop/assets/Screenshot 2025-11-10 220832.png",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/Screenshot 2025-11-13 173910.png": {
+   "file": "tpl:lib/stop/assets/Screenshot 2025-11-13 173910.png",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/Screenshot 2025-11-13 225108.png": {
+   "file": "tpl:lib/stop/assets/Screenshot 2025-11-13 225108.png",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/Screenshot 2025-11-14 215055.png": {
+   "file": "tpl:lib/stop/assets/Screenshot 2025-11-14 215055.png",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/trans logo gemini.png": {
+   "file": "tpl:lib/stop/assets/trans logo gemini.png",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/Untitled design.png": {
+   "file": "tpl:lib/stop/assets/Untitled design.png",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/156.mp3": {
+   "file": "tpl:lib/stop/assets/156.mp3",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/Cinematic Impact 1.mp3": {
+   "file": "tpl:lib/stop/assets/Cinematic Impact 1.mp3",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/cinematic-whoosh-impact-reveal-4-SBA-300419256.mp3": {
+   "file": "tpl:lib/stop/assets/cinematic-whoosh-impact-reveal-4-SBA-300419256.mp3",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/flash-whoosh-swoosh-8-SBA-300462869.mp3": {
+   "file": "tpl:lib/stop/assets/flash-whoosh-swoosh-8-SBA-300462869.mp3",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/Hit 3.mp3": {
+   "file": "tpl:lib/stop/assets/Hit 3.mp3",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/Marker.mp3": {
+   "file": "tpl:lib/stop/assets/Marker.mp3",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/micro-air-swoosh_G18j6H4u.mp3": {
+   "file": "tpl:lib/stop/assets/micro-air-swoosh_G18j6H4u.mp3",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/Radio.mp3": {
+   "file": "tpl:lib/stop/assets/Radio.mp3",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/Riser.mp3": {
+   "file": "tpl:lib/stop/assets/Riser.mp3",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/sound-7.mp3": {
+   "file": "tpl:lib/stop/assets/sound-7.mp3",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/Typewriter Sound Effect.mp3": {
+   "file": "tpl:lib/stop/assets/Typewriter Sound Effect.mp3",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/UI Beep 2.mp3": {
+   "file": "tpl:lib/stop/assets/UI Beep 2.mp3",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/impact.aac": {
+   "file": "tpl:lib/stop/assets/impact.aac",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/Beatbox Click 02.wav": {
+   "file": "tpl:lib/stop/assets/Beatbox Click 02.wav",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/Button 01.wav": {
+   "file": "tpl:lib/stop/assets/Button 01.wav",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/Button Click.wav": {
+   "file": "tpl:lib/stop/assets/Button Click.wav",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/Cinematic Boom Medium Fast.wav": {
+   "file": "tpl:lib/stop/assets/Cinematic Boom Medium Fast.wav",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/Healing.wav": {
+   "file": "tpl:lib/stop/assets/Healing.wav",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/iPhone Notification Sound Effect [80HZS0B-Fl0].wav": {
+   "file": "tpl:lib/stop/assets/iPhone Notification Sound Effect [80HZS0B-Fl0].wav",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/iPhone Texting Sound Effect [lSBQE1PNJjk].wav": {
+   "file": "tpl:lib/stop/assets/iPhone Texting Sound Effect [lSBQE1PNJjk].wav",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/iPhone Typing Sound Effect.wav": {
+   "file": "tpl:lib/stop/assets/iPhone Typing Sound Effect.wav",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/Riser Dark.wav": {
+   "file": "tpl:lib/stop/assets/Riser Dark.wav",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/Riser Swooshy.wav": {
+   "file": "tpl:lib/stop/assets/Riser Swooshy.wav",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/UI 01.wav": {
+   "file": "tpl:lib/stop/assets/UI 01.wav",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/Whoosh Digital 01.wav": {
+   "file": "tpl:lib/stop/assets/Whoosh Digital 01.wav",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/Whoosh Digital 07.wav": {
+   "file": "tpl:lib/stop/assets/Whoosh Digital 07.wav",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/Whoosh Fast 01.wav": {
+   "file": "tpl:lib/stop/assets/Whoosh Fast 01.wav",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  },
+  "stop/Whoosh Main.wav": {
+   "file": "tpl:lib/stop/assets/Whoosh Main.wav",
+   "source": "Stop .aep footage",
+   "status": "approved",
+   "license": "Earn Edits template: use only, private"
+  }
+ },
+ "sfx": {
+  "_todo": "our own whoosh/hit/riser set placed by the reel's onset rules (0-3 f before the visual)"
+ },
+ "music": {
+  "_todo": "user decision pending; bed 12 dB under VO, no ducking"
+ },
+ "models": {
+  "brain.glb": "top-view brain (S8a)",
+  "brain_side.glb": "full brain side view (S1b)",
+  "sofa.glb": "mustard single sofa bed (S4)",
+  "phone.glb": "generic phone, triple camera (S3)",
+  "iphone15.glb": "Apple iPhone 15 Pro Max Black by polyman (Sketchfab), CC-BY-4.0 - credit required"
+ },
+ "footage": {
+  "hand_grab.mp4": "pale hand closing round something, on black (S2b)",
+  "flame_loop.mp4": "flickering match flame on black (S2b)",
+  "glove_open.mp4": "white glove fist opens palm-up, on black (S3)"
+ }
+}
