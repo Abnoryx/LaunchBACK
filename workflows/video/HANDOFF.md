@@ -47,3 +47,14 @@ Earlier (2026-11-21):
 
 ### Library site (`/site`, Vercel)
 Built and tested against a mock GitHub API (list, delete template/asset, edit notes, upload, login, path guard). Needs the user's Vercel import + env vars (see README). `zz_site_test` is a throw-away template to delete from the site as the first end-to-end test. Catalog edits are done on the text so the file stays byte-identical except the changed entry.
+
+### /gen Michelin run (2026-11-23, run `gen/runs/michelin/`) — state + lessons
+- Plan v3 (23 shots) built by `gen/runs/michelin/build.py` (our templates + bought scenes via `extract.aep_template apply`: text, red accent,
+  footage swaps to blank.png for third-party imagery). Rendered on CPU with `render_local.py` (Kaggle was stuck queued; `kgl/render_multi.py`
+  renders many projects in one Kaggle job when the queue is free). Stitch: `stitch.py`. Round 2 at 540p: `renders/michelin_gen_r2_540p.mp4`. Not approved yet.
+- Lessons: (1) the Kaggle backup lacks `lib/stop` (stop/* shots unusable until re-harvested) and the harvested footage of gen/sells
+  (rebuild: unzip zips/*.zip into tpl/x/<reel>, `python3 -m extract.aep_harvest lib/<reel>/<reel>.json x/<reel> <reel>`, copy luts.json into assets/).
+  (2) The engine caches video frames in /tmp/engine-cache by footage id+time: `rm -rf /tmp/engine-cache` after swapping video footage.
+  (3) `library/assets/logo/*.png` (incl. launchback_src.png) are git-ignored and missing: logo_reveal renders black; the logo sting for shot 23
+  was cut from renders/michelin_v2_quad_1080p.mp4. Force-add the logo PNGs once the user re-sends them. (4) gen.previews of bought scenes made
+  before the footage was harvested are degraded (missing textures). (5) ElevenLabs key was declined: no VO, timings estimated, no SFX/music yet.
