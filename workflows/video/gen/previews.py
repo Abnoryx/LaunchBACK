@@ -54,7 +54,7 @@ def footage(reel):
         if not os.path.isdir(x):
             for z in glob.glob(f'{TPL}/zips/*.zip'):
                 if os.path.basename(aep) in subprocess.run(['unzip', '-l', z], capture_output=True, text=True).stdout:
-                    subprocess.run(['unzip', '-q', '-o', z, '-d', x], check=True); break
+                    subprocess.run(['unzip', '-q', '-o', z, '-d', x]); break   # exit 1-2 = warnings (odd names); harvest reports real gaps
         subprocess.run([sys.executable, '-m', 'extract.aep_harvest', dump, x, reel], cwd=VID, check=True)
     for l in (f'{lib}/luts.json', f'{lib}/render_footage/luts.json'):
         if os.path.exists(l) and not os.path.exists(f'{assets}/luts.json'): shutil.copy(l, f'{assets}/luts.json')
