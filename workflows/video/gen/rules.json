@@ -1,6 +1,6 @@
 [
  {
-  "check": "s.get('template')!='gen/s07'",
+  "check": "s.get('template')=='gen/s07'",
   "note": "gen/s07 is a source mp4 (Nike clip), not a library scene",
   "from_run": "michelin",
   "date": "2026-11-23"
