@@ -436,34 +436,6 @@
     }
    }
   },
-  "desk_flatlay": {
-   "file": "templates/desk_flatlay.py",
-   "source": "ours (archetype #11 flatlay + #16 bubbles)",
-   "slots": [
-    "label",
-    "b1",
-    "b2",
-    "object",
-    "plate"
-   ],
-   "status": "draft",
-   "notes": "built for Michelin S18; charcoal mat",
-   "gen": {
-    "world": "paper",
-    "words": [
-     3,
-     6
-    ],
-    "hero": false,
-    "prop": true,
-    "use": "top-down desk with chat bubbles",
-    "stats": {
-     "picked": 0,
-     "approved": 0,
-     "rejected": 0
-    }
-   }
-  },
   "logo_reveal": {
    "file": "templates/logo_reveal.py",
    "source": "ours (LaunchBack logo pieces, make_logo.py)",
