@@ -111,3 +111,15 @@ Rules here override defaults in the code until they are folded into it.
   every disputed cut as a ±3-frame strip. Automatic tags alone are noisy (same cut tagged hard_cut vs whip).
 - Open: scene 5 XP wallpaper — AE ignores its alpha matte (matte off: SSIM 0.40 -> 0.55); general rule unknown.
   EMOTION/STORY need the real font (Round 8 by atipo, all-caps); the tracking animation itself is already there.
+
+## 2026-11-23 — gen before the final (user: shapes lack depth/shadows; EMOTION/STORY still not animated/transitioned)
+- AE Layer Styles were ignored by the engine. Now drawn: Drop Shadow, Inner Shadow, Inner Glow (edge), Outer Glow, in
+  layer space after effects; Size -> Gaussian sigma 0.5x; modes multiply/screen/normal. Gives scene 1's pillow shapes.
+- Simple Choker is not pixels: value / 4 px matched the gen reel (computer outline + Jordan sticker, both -70).
+- Text animator Tracking Amount is in layer px, not 1/1000 em (character-panel tracking stays em). The AE-layout text
+  path ignored animator tracking entirely; now EMOTION/STORY widths match the reel to ±5 px on every frame.
+  (IKEA/Game looked like counter-evidence but both were mid-reveal or past the animation: check what a frame tests.)
+- ROUND8-FOUR (Round 8 by atipo, all-caps) -> Anton drawn in caps until the real font arrives.
+- Sapphire TimeSlice (Slice Number 1): one centre cut; the start side of Slice Direction shows the previous frame.
+  Kept from the previous rendered frame (re-rendering an earlier time missed preloaded video frames). First frame of
+  the effect has no previous frame: 1-frame difference at gen f354.

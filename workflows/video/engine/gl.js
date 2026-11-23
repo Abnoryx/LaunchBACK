@@ -187,6 +187,23 @@ const SHADERS = {
   shadow: `${FS_HEAD} uniform sampler2D uDst; uniform vec2 uOff; uniform vec4 uA; uniform float uK; uniform int uOnly;
   void main(){ float sa = texture(uTex, vUV - uOff/uRes).a * uK; vec4 sh = vec4(uA.rgb*sa, sa); vec4 src = texture(uDst, vUV);
     o = uOnly==1 ? sh : src + sh*(1.0-src.a); }`,
+  // AE layer styles (Photoshop-style): uKind 0 drop shadow, 1 inner shadow, 2 inner glow (edge), 3 outer glow.
+  // uB = the layer alpha blurred by the style size; uMode 1 normal, 5 multiply, 11 screen (others: normal).
+  lstyle: `${FS_HEAD} uniform sampler2D uB; uniform vec2 uOff; uniform vec3 uC; uniform float uOp, uNoise, uSpread; uniform int uKind, uMode;
+  void main(){ vec4 src = texture(uTex, vUV); float sa = src.a;
+    float b = texture(uB, vUV - uOff/uRes).a; b = clamp(b / max(1.0 - uSpread, 0.01), 0.0, 1.0);
+    float m = uKind == 0 ? b : uKind == 1 ? (1.0 - b) * sa : uKind == 2 ? (1.0 - b) * sa : b * (1.0 - sa);
+    float n = fract(sin(dot(floor(vUV*uRes), vec2(12.9898, 78.233)))*43758.5453);
+    m *= uOp * (1.0 - uNoise * n);
+    if (uKind == 0 || uKind == 3) { // behind the layer: becomes part of it, the layer knocks it out
+      vec3 c = uMode == 11 ? uC : uC; o = src + vec4(c*m, m)*(1.0 - sa); return; }
+    vec3 s = sa > 0.0 ? src.rgb/sa : vec3(0.0);
+    vec3 r = uMode == 5 ? mix(s, s*uC, m) : uMode == 11 ? mix(s, 1.0-(1.0-s)*(1.0-uC), m) : mix(s, uC, m);
+    o = vec4(r*sa, sa); }`,
+  // Sapphire TimeSlice approx: the earlier frame (uB) shows on the start side of the slice direction, fading to now
+  tslice: `${FS_HEAD} uniform sampler2D uB; uniform vec2 uDir; uniform float uSoft; void main(){
+    // one slice boundary through the centre, perpendicular to uDir: the start side shows the earlier frame
+    float d = dot((vUV - 0.5) * uRes, uDir); o = mix(texture(uB, vUV), texture(uTex, vUV), smoothstep(-uSoft, uSoft, d)); }`,
   mtile: `${FS_HEAD} uniform float uK; uniform vec2 uOff; void main(){ vec2 q = vUV; if (uK > 0.5) { q = abs(mod(q + 1.0, 2.0) - 1.0); } else { q = fract(q); } o = texture(uTex, q); }`,
   stencil: `${FS_HEAD} uniform sampler2D uDst; uniform int uMode; void main(){ float a = texture(uTex, vUV).a; vec4 d = texture(uDst, vUV);
     o = uMode == 9 ? d * a : uMode == 11 ? d * (1.0 - a) : d; }`,

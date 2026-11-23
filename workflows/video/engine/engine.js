@@ -436,10 +436,43 @@ export class Engine {
   }
 
   // extra pixels needed around layer content so blurs / glows / shadows aren't clipped
+  // enabled AE layer styles of L as [{kind, P(name, default)}]
+  layerStyles(L, t) {
+    const ls = findM(L, 'ADBE Layer Styles');
+    if (!ls || ls.off) return [];
+    const KIND = { dropShadow: 0, innerShadow: 1, innerGlow: 2, outerGlow: 3 };
+    return (ls.c || []).filter((st) => st.m.endsWith('/enabled') && !st.off && st.m.split('/')[0] in KIND).map((st) => {
+      const pre = st.m.split('/')[0];
+      const P = (name, d) => { const q = (st.c || []).find((x) => x.m === `${pre}/${name}`); const v = q ? evalProp(q, t) : undefined; return v ?? d; };
+      return { kind: KIND[pre], P };
+    });
+  }
+  // Photoshop-style layer styles, in layer space after effects (AE order). Approximations: blend modes act inside the
+  // layer (shadows/glows behind the layer composite as normal), Spread/Choke scale the blurred alpha, no Range/Jitter.
+  applyStyles(L, t, tg, rect, keepInput = false) {
+    const styles = this.layerStyles(L, t);
+    if (!styles.length) return tg;
+    const g = this.g, sx = tg.w / (rect[2] - rect[0]), D2R = Math.PI / 180, SIG = this.styleSigma ?? 0.5;   // style Size -> Gaussian sigma (0.4 fits scene 1's inner glow, text shadows want wider)
+    let cur = tg;
+    // AE draws the behind-the-layer styles first, then the inner ones; apply inner styles to the plain layer
+    for (const pass of [[1, 2], [0, 3]]) for (const st of styles.filter((x) => pass.includes(x.kind))) {
+      const P = st.P, size = P('blur', 5) * sx, dist = (st.kind <= 1 ? P('distance', 5) : 0) * sx;
+      const ang = (P('useGlobalAngle', 0) ? 120 : P('localLightingAngle', 120)) * D2R;
+      const B = g.blur(cur, Math.max(0.3, size * SIG), Math.max(0.3, size * SIG));
+      const col = P('color', [0, 0, 0, 1]);
+      const o = g.target(cur.w, cur.h);
+      g.run('lstyle', o, { uKind: st.kind, uMode: Math.round(P('mode2', 1)), uC: col.slice(0, 3), uOp: P('opacity', 75) / 100, uNoise: P('noise', 0) / 100,
+        uSpread: P('chokeMatte', 0) / 100, uOff: [-Math.cos(ang) * dist, Math.sin(ang) * dist] }, { uTex: cur, uB: B });
+      g.release(B); if (cur !== tg) g.release(cur); cur = o;
+    }
+    if (cur !== tg && !keepInput) g.release(tg);
+    return cur;
+  }
   effectPad(comp, L, t, sx) {
-    const fx = findM(L, 'ADBE Effect Parade');
-    if (!fx?.c?.length) return 0;
     let pad = 0;
+    for (const st of this.layerStyles(L, t)) if (st.kind === 0 || st.kind === 3) pad = Math.max(pad, (st.kind === 0 ? st.P('distance', 5) : 0) + st.P('blur', 5) * 3);
+    const fx = findM(L, 'ADBE Effect Parade');
+    if (!fx?.c?.length) return Math.min(600, Math.ceil(pad * sx));
     for (const e of fx.c) {
       const PM = (suffix, d) => { const p = (e.c || []).find((x) => x.m === `${e.m}-${suffix}`); return p ? evalProp(p, t) : d; };
       if (/Gaussian Blur|Camera Lens Blur/.test(e.m)) pad = Math.max(pad, PM('0001', 0) * 1.5);
@@ -614,7 +647,9 @@ export class Engine {
           break;
         }
         case 'ADBE Simple Choker': {
-          const c = PM('0002', 0) * sx; // + chokes (erode), - spreads (dilate)
+          // + chokes (erode), - spreads (dilate). Not pixels: AE moves the edge "in small increments" — calibrated on the gen
+          // reel (pc + Jordan stickers, both -70): pixels drew rings ~2x too wide, value/8 too thin; value / 4 px fits
+          const c = PM('0002', 0) / 4 * sx;
           if (Math.abs(c) >= 0.5) swap(g.minimax(cur, Math.abs(c), [[1, 0], [0, 1]], c < 0));
           break;
         }
@@ -772,7 +807,20 @@ export class Engine {
           break;
         }
         // S_TimeSlice with Frame Offset 0, Noise Alpha with Amount 0, Optics Compensation at FOV 12 (<5 px at the corners): no visible change
-        case 'S_TimeSlice': case 'ADBE Noise Alpha2': case 'ADBE Optics Compensation': break;
+        case 'S_TimeSlice': if (isAdjustment && this._adj?.L === L) { // approx: Slice Number 1 = one cut through the centre;
+          // the start side of Slice Direction shows the frame (Frame Offset + 1) earlier (gen reel f594: top half still the bubble).
+          // The earlier input is kept from the previous rendered frame (frames render in order): re-rendering an earlier time
+          // here would miss video frames that were only preloaded for the current time (gen f354 showed hidden layers).
+          const back = (P('Frame Offset', 0) + 1) / comp.fps, ang = P('Slice Direction', 90) * Math.PI / 180;
+          this._tsPrev = this._tsPrev || new Map();
+          const prev = this._tsPrev.get(L), keep = g.target(cur.w, cur.h); g.copy(cur, keep);
+          if (prev && prev.tex.w === cur.w && prev.tex.h === cur.h && Math.abs(t - back - prev.t) < 0.25 / comp.fps) {
+            const o = g.target(cur.w, cur.h); g.run('tslice', o, { uDir: [Math.cos(ang), Math.sin(ang)], uSoft: Math.max(0.5, P('Blur Mask', 12) * sx) }, { uTex: cur, uB: prev.tex }); swap(o);
+          }
+          if (prev) g.release(prev.tex);
+          this._tsPrev.set(L, { t, tex: keep });
+        } break;
+        case 'ADBE Noise Alpha2': case 'ADBE Optics Compensation': break;
         // identity at the values these projects use, or a <=5 px shift: deliberately a no-op
         case 'ADBE Easy Levels2': case 'ADBE Displacement Map': break;
         case 'ADBE Slider Control': case 'ADBE Checkbox Control': case 'ADBE Layer Control': case 'ADBE Color Control': case 'ADBE Point Control': case 'ADBE Angle Control': break;
@@ -848,7 +896,7 @@ export class Engine {
     // collapsed 3D precomp: draw its layers into this comp with combined transforms and our camera
     if (sub && L.collapse_transformation && !findM(L, 'ADBE Mask Parade')?.c?.length) {
       // with effects, AE renders the collapsed layers through our camera first and applies the effects in comp space
-      const hasFx = !!findM(L, 'ADBE Effect Parade')?.c?.some((e) => !e.off);
+      const hasFx = !!findM(L, 'ADBE Effect Parade')?.c?.some((e) => !e.off) || this.layerStyles(L, t).length > 0;
       const realOut = out;
       if (hasFx) { out = g.target(realOut.w, realOut.h); g.clear(out); }
       const lt = this.localTime(L, t), ltc = this.localTime(L, opts.tcL ?? t);
@@ -868,10 +916,12 @@ export class Engine {
       }
       this._t = saveT;
       if (hasFx) {
-        const fx = this.applyEffects(comp, L, t, out, [0, 0, comp.w, comp.h]);
+        const fx0 = this.applyEffects(comp, L, t, out, [0, 0, comp.w, comp.h]);
+        const fx = this.applyStyles(L, t, fx0, [0, 0, comp.w, comp.h], true);
         const quad = [[0, 0], [comp.w, 0], [0, comp.h], [comp.w, comp.h]].map(([x, y]) => this.clip2(comp.w, comp.h, [x, y, 0, 1]));
         g.run('layer', realOut, { uOpacity: 1, uMode: 10, uMatteMode: 0, uHasMask: 0 }, { uTex: fx, uDst: g.blank, uMatte: null, uMask: null }, quad, [g.gl.ONE, g.gl.ONE_MINUS_SRC_ALPHA]);
-        g.release(fx);
+        if (fx !== fx0) g.release(fx);
+        g.release(fx0);
       }
       return;
     }
@@ -905,6 +955,7 @@ export class Engine {
       ct.rect = [ct.rect[0] - pad / sx, ct.rect[1] - pad / sx, ct.rect[2] + pad / sx, ct.rect[3] + pad / sx];
     }
     tg = this.applyEffects(comp, L, t, tg, ct.rect);
+    tg = this.applyStyles(L, t, tg, ct.rect);
     // quad corners in layer space → clip
     const [x0, y0, x1, y1] = ct.rect;
     const corners = [[x0, y0], [x1, y0], [x0, y1], [x1, y1]];
