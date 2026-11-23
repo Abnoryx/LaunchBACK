@@ -3,6 +3,10 @@ name: session-handoff
 description: Use when the user says "session handoff", "wrap up session", "hand off", "handoff summary", or wants a structured end-of-session summary before clearing context. Produces a chat-only handoff covering decisions, shipped changes, key files, running state, verification steps, deferrals, and open questions so a fresh agent can continue seamlessly.
 ---
 
+## Always land on main
+Everything this skill produces or changes (code, runs, learnings, library entries, renders, skill edits) must be
+committed and pushed to `main` — not left on a side branch. Merge any work from other branches into `main` as well.
+
 # Session Handoff
 
 Produce a repeatable end-of-session summary so the user can `/clear` and start a fresh agent without losing continuity. The next agent should be able to pick up by reading this summary alone.

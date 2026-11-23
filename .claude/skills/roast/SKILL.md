@@ -4,6 +4,10 @@ description: Use when someone asks to roast an idea, pressure-test or stress-tes
 argument-hint: "[the idea to roast]"
 ---
 
+## Always land on main
+Everything this skill produces or changes (code, runs, learnings, library entries, renders, skill edits) must be
+committed and pushed to `main` — not left on a side branch. Merge any work from other branches into `main` as well.
+
 ## What this does
 
 Claude's default is to agree with you. `/roast` is the opposite. It convenes a council of five independent persona agents who tear an idea apart and build it up from every angle, then a Judge synthesizes everything into one honest verdict. Use it before you sink time and money into building the wrong thing.

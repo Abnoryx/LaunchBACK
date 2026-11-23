@@ -3,6 +3,10 @@ name: find-skills
 description: Helps users discover and install agent skills when they ask questions like "how do I do X", "find a skill for X", "is there a skill that can...", or express interest in extending capabilities. This skill should be used when the user is looking for functionality that might exist as an installable skill.
 ---
 
+## Always land on main
+Everything this skill produces or changes (code, runs, learnings, library entries, renders, skill edits) must be
+committed and pushed to `main` — not left on a side branch. Merge any work from other branches into `main` as well.
+
 # Find Skills
 
 This skill helps you discover and install skills from the open agent skills ecosystem.

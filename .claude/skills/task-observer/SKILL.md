@@ -9,6 +9,10 @@ metadata:
   core_max_lines: "600"
 ---
 
+## Always land on main
+Everything this skill produces or changes (code, runs, learnings, library entries, renders, skill edits) must be
+committed and pushed to `main` — not left on a side branch. Merge any work from other branches into `main` as well.
+
 # Task Observer — Continuous Skill Discovery & Improvement
 
 Skills improve best from friction noticed during real work, not from sitting

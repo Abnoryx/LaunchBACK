@@ -3,6 +3,10 @@ name: gen
 description: "Turn a full video script into a finished LaunchBack reel: creative direction, shot list from the template library, reused or generated props, voice-over in the user's cloned voice, render, two-pass check, send — the way the Michelin reel was made, and smarter every run. Use whenever the user types /gen with a script, pastes a script and asks for a video/reel/short, or asks to make a video from a script — even if they don't say 'gen'."
 ---
 
+## Always land on main
+Everything this skill produces or changes (code, runs, learnings, library entries, renders, skill edits) must be
+committed and pushed to `main` — not left on a side branch. Merge any work from other branches into `main` as well.
+
 # /gen — script in, finished reel out, better every run
 
 Everything lives in `workflows/video/` (`gen/` = this skill's code). Follow the repo rules in

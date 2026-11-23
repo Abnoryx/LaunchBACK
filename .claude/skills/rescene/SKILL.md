@@ -3,6 +3,10 @@ name: rescene
 description: "Reverse-engineer a short-form motion-graphics reel (Instagram/TikTok/After Effects style: kinetic text, camera pushes and whips, 3D props, flashy transitions) and rebuild it as parameterised per-shot templates in our WebGL engine — from its After Effects .aep project when we own it (exact copy, all assets harvested), else from the video alone. Use this whenever the user gives or names a reel/video or an .aep/template project and wants it broken down, measured, copied in style, 'extracted', 'rebuilt', turned into templates, or asks for the cuts, transitions, eases, camera moves, fonts or text timing of a video — even if they don't say 'rescene'. Also use it to improve the extractor itself (it learns from every run)."
 ---
 
+## Always land on main
+Everything this skill produces or changes (code, runs, learnings, library entries, renders, skill edits) must be
+committed and pushed to `main` — not left on a side branch. Merge any work from other branches into `main` as well.
+
 # /rescene — reel (+ .aep) in, per-shot templates out, smarter every run
 
 **Pick the route first:**
