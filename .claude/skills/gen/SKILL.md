@@ -10,8 +10,14 @@ Everything lives in `workflows/video/` (`gen/` = this skill's code). Follow the 
 renders, quote credits first, short status block at the end of every reply, original-touch picks 1/2/3/4/6.
 
 ## 0. Load what earlier runs learned
-Read `REQUIREMENTS.md`, `ROADMAP.md`, `gen/LEARNINGS.md`, `gen/rules.json` and `library/catalog.json` (templates
-with features + approval stats). Name the run: `gen/runs/<name>/`; save the script there as `script.txt`.
+Read `REQUIREMENTS.md`, `ROADMAP.md`, `gen/LEARNINGS.md` and `gen/rules.json`. Name the run: `gen/runs/<name>/`; save
+the script there as `script.txt`.
+**The whole library is approved and auto-included** (user rule): `python3 -m gen.library` lists every shot it finds
+(`library/templates/*.py`, `library/catalog.json`, bought .aep scenes in `/home/user/tpl/lib/*/templates`) and every
+asset — nothing to register or tag; files added later are picked up on the next run. Then
+`python3 -m gen.previews` renders (Kaggle, 540p) only the shots that have no preview yet, exactly as stored, and
+describes them with CLIP (`gen.embed`). Ours land in `library/previews/` (commit them); bought scenes in
+`/home/user/tpl/previews/` (private, backed up to Kaggle by the script, never git).
 
 ## 1. Voice first (if ElevenLabs is connected)
 `python3 -m gen.voice gen/runs/<name>/script.txt gen/runs/<name>` -> `vo.mp3` + `words.json` (word timestamps, the
@@ -33,18 +39,25 @@ silently).
 - Brand kit (picks): red accent, one font pairing + one caption style, arrow whip transition, logo sting, own finish.
 - Brand care: commentary words only — no third-party logos, mascots or marks.
 
-## 4. Shot list -> `gen/runs/<name>/plan.json` + sign-off
-`python3 -m gen.shotlist gen/runs/<name>/beats.json` ranks EVERY template in the library per beat
-(hand-built templates, bought .aep scenes like `sells/sNN`, anything in `library/catalog.json`; untagged ones get
-features from their catalog fields) using features + learned stats (approved shots rise, rejected sink, no repeats). Pick with judgement, write `plan.json`:
+## 4. Shot list -> `gen/runs/<name>/plan.json` + selects video + sign-off
+`python3 -m gen.shotlist gen/runs/<name>/beats.json [--world dark|paper] [--plan gen/runs/<name>/draft.json]` ranks
+EVERY library shot per beat **by fit to the script only**: CLIP similarity of the beat text to the shot's preview frames
+and to its words/notes, a role match (hook / number / payoff prompts) and fit rules (words fit its text slots, digits ->
+a shot that shows numbers, prop wanted -> a shot with a prop). Picks use MMR (relevance minus similarity to shots
+already picked; `select.mmr_lambda` in `gen/config.json`) and never repeat a shot. **SSIM, approval stats and status
+never affect the choice** (user rule). The ranked list is the menu: the brief still decides world flips and the spine;
+pick with judgement and write `plan.json`:
 `{"shots":[{"template","text","seconds","world","invert","text_px","elements","assets":[...],"params":{...}}]}`,
 last shot `logo_reveal`. Gaps -> `cine_scene` (data-driven) or a new template (flag it).
-`python3 -m gen.score gen/runs/<name>/plan.json` must say OK (rules + everything learned). Fix, then show the user a
-shot table + the brief. **No spend and no build before the user signs off.**
+`python3 -m gen.score gen/runs/<name>/plan.json` must say OK (rules + everything learned).
+Then `python3 -m gen.selects gen/runs/<name>/plan.json` -> `selects.mp4`: the chosen library shots exactly as stored,
+trimmed to each beat, in order, with the beat text burned small at the bottom. Send it with the shot table (it prints
+one) and the brief. Don't commit a selects video that contains bought scenes (licence). **No spend and no build before
+the user signs off.**
 
 ## 5. Assets — reuse first
 For each prop: `python3 -m gen.shotlist --assets <tags>` searches every asset in the library (`library/assets/**`
-and bought .aep libraries in `/home/user/tpl/lib`, private: use, never commit); the index refreshes itself. Reuse, re-tint or
+and bought .aep libraries in `/home/user/tpl/lib/*/assets`, private: use, never commit), found fresh every run. Reuse, re-tint or
 re-light what exists. Only gaps: quote Higgsfield credits, generate in one consistent prop look (pick #4), cut out,
 check (turntable for 3D: `scratch/model_turntable_all.py`), add to the index.
 
@@ -56,14 +69,16 @@ full rate (text readable and on screen, props right, transitions clean, nothing 
 whoosh per cut + own SFX, mix to −14 LUFS. Commit (force-add the render) and send.
 
 ## 7. Learn — automatic, EVERY run (don't skip, don't wait to be asked)
-- `python3 -m gen.learn pick <name>` once the plan is built.
+Learning works through the user's notes turning into rules — never through popularity stats (they don't rank shots).
+- `python3 -m gen.learn pick <name>` once the plan is built (logs the picks in the run).
 - Every user note: `python3 -m gen.learn note <name> "<note verbatim>" "<what I changed>"`; when it can be checked
   automatically add `--rule "<python expr over s, a shot dict>" --why "<rule>"` (e.g. `--rule "s.get('text_px',99)<80"
   --why "text too small on phone"`) so `gen.score` catches it next time.
-- Verdicts: `python3 -m gen.learn shot <name> <template> approved|rejected`, then `outcome <name> approved|rejected`.
+- Verdicts: `python3 -m gen.learn shot <name> <template> approved|rejected`, then `outcome <name> approved|rejected`
+  (logged in the run; `gen.check` keeps approved plans passing).
 - Before keeping any change to /gen itself: `python3 -m gen.check` (all past approved plans must still pass).
-- Approved new shots become library templates (add `gen` features to `library/catalog.json`); new props join the index.
-- Commit + push `gen/runs/<name>/` and the updated rules, stats and learnings.
+- New shots/props: just put the file in the library — the next run finds it, renders its preview and describes it.
+- Commit + push `gen/runs/<name>/`, new `library/previews/`, and the updated rules and learnings.
 
 ## Not built yet (say so when relevant)
 ElevenLabs needs connecting (key + voice id). Music bed selection, automatic SFX library, render backends other than

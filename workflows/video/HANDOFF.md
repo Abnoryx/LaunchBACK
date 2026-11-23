@@ -17,6 +17,12 @@ NOT in git — redo in a new container:
 3. The Zeigarnik reel video (uploads are per chat): ask for it again if reworking that reel.
 
 Where things stand (2026-11-23):
+- /gen v2 (2026-11-23): whole library auto-included (gen/library.py), previews of every shot rendered once
+  (gen/previews.py -> library/previews/, bought scenes -> /home/user/tpl/previews/, private), CLIP descriptions
+  (gen/embed.py; ONNX model from Kaggle kernel 'clip-export', cached in ~/.cache/launchback/clip, fetched automatically),
+  fit-only ranking + MMR (gen/shotlist.py), selects video before any build (gen/selects.py). First preview render was
+  started 2026-11-23; if library/previews/ is still missing shots, run `python3 -m gen.previews`.
+  Michelin dry run: gen/runs/michelin_dry/ (script + beats reconstructed from scratch/michelin.py).
 - Stop ("Stop Trying to Please Everyone", Earn Edits, Route A): steps 1-7 done in chat "Please everyone rescene".
   Private files: /home/user/tpl/lib/stop/ (stop.json dump, assets/ incl. luts.json with the measured Colorama LUT,
   templates/shot_NN.json, shots.json, parity_shots.json, r1/ r2/ final/ renders, parity/ scores). Renders need
