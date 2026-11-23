@@ -1911,6 +1911,22 @@
    },
    "render": "grade: tpl:lib/gen/luts.json (--luts); the posted reel adds a bokeh overlay in \"sound design\" over s06-s07",
    "license": "Earn Edits template: use only, private (never commit or redistribute the file)"
+  },
+  "zz_site_test": {
+   "file": "templates/zz_site_test.py",
+   "source": "test of the library site",
+   "slots": [
+    "word"
+   ],
+   "status": "draft",
+   "gen": {
+    "world": "paper",
+    "words": [
+     1,
+     1
+    ],
+    "use": "test shot for the library site, delete it"
+   }
   }
  },
  "transitions": {

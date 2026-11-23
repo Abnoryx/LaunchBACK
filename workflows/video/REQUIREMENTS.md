@@ -46,6 +46,10 @@ Read this before any video work. Every rule below came from the user; keep it cu
 - **Two-chat workflow** (user rule, 2026-11-22): one chat runs /rescene to the end (final approved → library → Kaggle backup); a later chat rebuilds a new video from the library templates. Each chat must leave main and the Kaggle backup complete.
 - **Explain in simple terms** (user preference, 2026-11-22): short, plain answers; no jargon walls. The user is often on a phone.
 - **When Kaggle is queued** (2026-11-22): it can wait 30+ min for a T4. Tell the user, keep the job queued. Options already weighed: Higgsfield GPU (no queue, ~71 credits/h, quote first; the auto-mode check blocks uploading licensed template files to third-party hosts, so a box must pull from the user's private Kaggle dataset); Colab notebook pulling the same dataset (works, but the user found it too manual — don't offer it first); this container's CPU (~8 s/frame full res 1 sample, ~30 s at 4 samples); OpenRouter can't run renders. Speeds on the T4: 540p 1 sample ~0.12 s/frame (whole reel ~3 min), full res 4 samples ~3.5 s/frame (~80-100 min).
+- **/gen shot choice** (user rule, 2026-11-23): everything in the library (now and anything added later) is approved and
+  usable automatically, no tagging. SSIM, approval stats or anything else must not bias shot choice — only how well a
+  shot fits the script beat. Before building, show the exact chosen library shots, untouched, stitched as one video
+  (`gen.selects`).
 - **End every reply with a short status block** (user rule, 2026-11-21): only what is happening right now (no recap of finished things) — current task + state, what is rendering/running and its time left.
 
 ## Known blockers / asks

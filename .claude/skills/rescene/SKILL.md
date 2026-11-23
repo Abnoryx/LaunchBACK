@@ -134,6 +134,11 @@ assets in `/home/user/tpl/lib/<project>/`, scores per shot. Read LEARNINGS.md fi
    (`library/catalog.json` templates `<reel>/sNN`: private `tpl:` path, window, slots, parity score, status proven if
    it meets the bar, else draft) and every harvested asset (`assets` `<reel>/<file>`, use-only licence). Only then is
    anything customised. The files stay in the private template folder + Kaggle dataset; the catalog only points to them.
+   **Also save the review videos (user rule, 2026-11-23):** in the same step, the approved final render's scene mp4s
+   (`<out>/sNN.mp4`, already one per scene) become the library previews that `/gen` ranks and the user reviews:
+   scale each to 540p, then `gen.previews.keep(mp4, entry)` (moves it to `/home/user/tpl/previews/<reel>/sNN.mp4`
+   and makes the 3-frame `sNN.jpg`), then `python3 -m gen.embed` and `python3 -m kgl.tpl_backup backup`. Private: never
+   in git (bought scenes). No re-render needed; if a scene is missing, `python3 -m gen.previews` renders it.
 8. **Original touch** (REQUIREMENTS.md picks 1–4, 6) is applied through the exposed params when a template is used in
    our videos — never by editing the template itself.
 

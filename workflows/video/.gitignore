@@ -3,3 +3,6 @@ node_modules/
 *.png
 *.jpg
 !library/assets/*.png
+!library/previews/*.mp4
+!library/previews/*.jpg
+scratch/tmp*/

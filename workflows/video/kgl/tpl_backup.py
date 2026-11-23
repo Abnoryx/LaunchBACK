@@ -1,6 +1,6 @@
 """Back up / restore /home/user/tpl (the bought templates: fonts, reels, zips, analysis notes) as a PRIVATE Kaggle
 dataset (<user>/launchback-tpl). Not in git on purpose (licence: use, not redistribution).
-usage: python3 -m kgl.tpl_backup backup     (fonts, reels, zips, an/ + lib/ notes and dumps; plus lib/*/render_footage; skips regenerable x/, lib/*/assets, frames)
+usage: python3 -m kgl.tpl_backup backup     (fonts, reels, zips, previews, an/ + lib/ notes and dumps; plus lib/*/render_footage; skips regenerable x/, lib/*/assets, frames)
        python3 -m kgl.tpl_backup restore    (downloads and unpacks into /home/user/tpl)"""
 import os, sys, tarfile, time, urllib.request, zipfile, io
 from .run import call, user
@@ -12,7 +12,7 @@ KEEP_EXT = ('.md', '.json', '.tsv', '.py', '.txt')
 def backup():
     owner = user(); tgz = '/tmp/launchback_tpl.tgz'
     with tarfile.open(tgz, 'w:gz') as t:
-        for d in ('fonts', 'reels', 'zips'):
+        for d in ('fonts', 'reels', 'zips', 'previews'):   # previews: /gen's renders of the bought scenes
             if os.path.isdir(f'{TPL}/{d}'): t.add(f'{TPL}/{d}', arcname=d)
         for d in sorted(os.listdir(f'{TPL}/lib')) if os.path.isdir(f'{TPL}/lib') else []:   # footage the renders read
             rf = f'{TPL}/lib/{d}/render_footage'                                       # (no harvest step needed)

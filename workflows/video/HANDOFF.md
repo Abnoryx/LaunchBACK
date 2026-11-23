@@ -17,6 +17,12 @@ NOT in git — redo in a new container:
 3. The Zeigarnik reel video (uploads are per chat): ask for it again if reworking that reel.
 
 Where things stand (2026-11-23):
+- /gen v2 (2026-11-23): whole library auto-included (gen/library.py), previews of every shot rendered once
+  (gen/previews.py -> library/previews/, bought scenes -> /home/user/tpl/previews/, private), CLIP descriptions
+  (gen/embed.py; ONNX model from Kaggle kernel 'clip-export', cached in ~/.cache/launchback/clip, fetched automatically),
+  fit-only ranking + MMR (gen/shotlist.py), selects video before any build (gen/selects.py). First preview render was
+  started 2026-11-23; if library/previews/ is still missing shots, run `python3 -m gen.previews`.
+  Michelin dry run: gen/runs/michelin_dry/ (script + beats reconstructed from scratch/michelin.py).
 - Stop ("Stop Trying to Please Everyone", Earn Edits, Route A): steps 1-7 done in chat "Please everyone rescene".
   Private files: /home/user/tpl/lib/stop/ (stop.json dump, assets/ incl. luts.json with the measured Colorama LUT,
   templates/shot_NN.json, shots.json, parity_shots.json, r1/ r2/ final/ renders, parity/ scores). Renders need
@@ -33,3 +39,11 @@ Earlier (2026-11-21):
   (Earn Edits) -> rebuild 1:1 from them (allowed now), then apply the original-touch picks in REQUIREMENTS.md.
 - Renders run on Kaggle (~0.44 s/frame at 1080p, ~15-45 min per reel incl. queue).
 - Reply rule: end every reply with a short status block (current things only).
+
+### /gen v2 dry run (Michelin) — state
+- Previews done on CPU: 18 ours (library/previews, committed), 23 sells (private). **stop (17) not rendered yet** — run `python3 -m gen.previews` (CPU, ~1-2 h); until then stop shots rank on words only and float up on short beats.
+- Checks: hook -> hero_word OK; no repeats OK; selects.mp4 plays (51 s, 540x960, not committed: contains bought scenes).
+- FAIL: "Michelin sells tyres, since 1900." -> desk_flatlay, because that template's stored words were written for the Michelin reel (text match ~6 z). Raising fit.number to 4 does not flip it. Standalone "1900" -> stop shots (no previews). Re-check after stop previews exist; consider giving desk_flatlay neutral default words.
+
+### Library site (`/site`, Vercel)
+Built and tested against a mock GitHub API (list, delete template/asset, edit notes, upload, login, path guard). Needs the user's Vercel import + env vars (see README). `zz_site_test` is a throw-away template to delete from the site as the first end-to-end test. Catalog edits are done on the text so the file stays byte-identical except the changed entry.

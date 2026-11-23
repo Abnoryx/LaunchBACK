@@ -1,0 +1,172 @@
+{
+ "shots": [
+  {
+   "template": "hero_word",
+   "text": "A tyre company has more",
+   "seconds": 1.92,
+   "world": "paper"
+  },
+  {
+   "template": "brain_words",
+   "text": "power over chefs than any",
+   "seconds": 1.93,
+   "world": "dark"
+  },
+  {
+   "template": "flare_script",
+   "text": "food critic alive.",
+   "seconds": 1.15,
+   "world": "dark"
+  },
+  {
+   "template": "desk_flatlay",
+   "text": "Michelin sells tyres, since 1900.",
+   "seconds": 1.92,
+   "world": "dark"
+  },
+  {
+   "template": "sells/s09",
+   "text": "Problem:",
+   "seconds": 0.6,
+   "world": "dark"
+  },
+  {
+   "template": "sells/s07",
+   "text": "almost nobody owns a car.",
+   "seconds": 1.93,
+   "world": "paper"
+  },
+  {
+   "template": "pill_diagram",
+   "text": "A tyre business needs movement.",
+   "seconds": 1.92,
+   "world": "dark"
+  },
+  {
+   "template": "statement_flip",
+   "text": "They had no ad budget at all.",
+   "seconds": 2.69,
+   "world": "paper"
+  },
+  {
+   "template": "sells/s06",
+   "text": "So they made a free guide.",
+   "seconds": 2.31,
+   "world": "dark"
+  },
+  {
+   "template": "sells/s20",
+   "text": "They gave it away free,",
+   "seconds": 1.92,
+   "world": "dark"
+  },
+  {
+   "template": "share_card",
+   "text": "for every driver:",
+   "seconds": 1.16,
+   "world": "paper"
+  },
+  {
+   "template": "sells/s14",
+   "text": "where to fill up,",
+   "seconds": 1.53,
+   "world": "dark"
+  },
+  {
+   "template": "calendar_flip",
+   "text": "sleep, eat.",
+   "seconds": 0.77,
+   "world": "dark"
+  },
+  {
+   "template": "sells/s04",
+   "text": "France started driving to places",
+   "seconds": 1.93,
+   "world": "paper"
+  },
+  {
+   "template": "flythrough_words",
+   "text": "it had never even heard of.",
+   "seconds": 2.3,
+   "world": "dark"
+  },
+  {
+   "template": "stop/s11",
+   "text": "The guide was free for decades.",
+   "seconds": 2.31,
+   "world": "any"
+  },
+  {
+   "template": "sells/s05",
+   "text": "The tyres paid for it.",
+   "seconds": 1.93,
+   "world": "dark"
+  },
+  {
+   "template": "follow_needle",
+   "text": "Chefs chase the star a",
+   "seconds": 1.92,
+   "world": "dark"
+  },
+  {
+   "template": "sells/s22",
+   "text": "rubber company invented.",
+   "seconds": 1.15,
+   "world": "paper"
+  },
+  {
+   "template": "sells/s23",
+   "text": "Michelin never sold information,",
+   "seconds": 1.54,
+   "world": "paper"
+  },
+  {
+   "template": "sells/s15",
+   "text": "they built demand and collected",
+   "seconds": 1.92,
+   "world": "dark"
+  },
+  {
+   "template": "sells/s19",
+   "text": "it somewhere else.",
+   "seconds": 1.16,
+   "world": "paper"
+  },
+  {
+   "template": "stop/s07",
+   "text": "Their audience was the guide.",
+   "seconds": 1.92,
+   "world": "any"
+  },
+  {
+   "template": "sells/s21",
+   "text": "Their money was the tyres.",
+   "seconds": 1.92,
+   "world": "paper"
+  },
+  {
+   "template": "sells/s03",
+   "text": "Most creators have a guide",
+   "seconds": 1.93,
+   "world": "paper"
+  },
+  {
+   "template": "sells/s13",
+   "text": "and no tyres.",
+   "seconds": 1.15,
+   "world": "dark"
+  },
+  {
+   "template": "stop/s01",
+   "text": "That gap is what I work on.",
+   "seconds": 2.69,
+   "world": "any"
+  },
+  {
+   "template": "logo_reveal",
+   "text": "",
+   "seconds": 3.5,
+   "world": "dark"
+  }
+ ]
+}
