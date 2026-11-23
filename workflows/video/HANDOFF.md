@@ -44,3 +44,6 @@ Earlier (2026-11-21):
 - Previews done on CPU: 18 ours (library/previews, committed), 23 sells (private). **stop (17) not rendered yet** — run `python3 -m gen.previews` (CPU, ~1-2 h); until then stop shots rank on words only and float up on short beats.
 - Checks: hook -> hero_word OK; no repeats OK; selects.mp4 plays (51 s, 540x960, not committed: contains bought scenes).
 - FAIL: "Michelin sells tyres, since 1900." -> desk_flatlay, because that template's stored words were written for the Michelin reel (text match ~6 z). Raising fit.number to 4 does not flip it. Standalone "1900" -> stop shots (no previews). Re-check after stop previews exist; consider giving desk_flatlay neutral default words.
+
+### Library site (`/site`, Vercel)
+Built and tested against a mock GitHub API (list, delete template/asset, edit notes, upload, login, path guard). Needs the user's Vercel import + env vars (see README). `zz_site_test` is a throw-away template to delete from the site as the first end-to-end test. Catalog edits are done on the text so the file stays byte-identical except the changed entry.
