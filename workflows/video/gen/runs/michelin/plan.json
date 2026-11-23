@@ -169,9 +169,9 @@
    "text_px": 110
   },
   {
-   "template": "needle_wave",
+   "template": "needle_solo",
    "text": "ONE AT A TIME",
-   "seconds": 2.7,
+   "seconds": 1.7,
    "world": "dark",
    "invert": false,
    "text_px": 110

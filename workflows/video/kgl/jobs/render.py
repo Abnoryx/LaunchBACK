@@ -15,10 +15,13 @@ os.environ['RENDER_GPU'] = '1'
 lst = []
 # entries: [comp, dur] (whole comp) or [comp, from, to, label] (one scene); each scene is kept as its own file in OUT
 for e in cfg['comps']:
-    name, a, b, label = (e[0], 0, e[1], e[0]) if len(e) == 2 else e
+    if isinstance(e, dict):   # multi-project entry (kgl/render_multi.py): own project, footage dirs and extra options
+        name, a, b, label = e['comp'], e['from'], e['to'], e['label']; proj, foot, extra = e['project'], e['footage'], e.get('extra', cfg.get('extra', []))
+    else:
+        name, a, b, label = (e[0], 0, e[1], e[0]) if len(e) == 2 else e; proj, foot, extra = cfg['project'], cfg['footage'], cfg.get('extra', [])
     t = time.time(); o = f"{os.environ['OUT']}/{label}.mp4"
-    r = subprocess.run(['node', 'engine/render.mjs', '--project', cfg['project'], '--footage', cfg['footage'], '--comp', name, '--from', str(a),
-                        '--to', str(b), '--fps', str(cfg.get('fps', 30)), *cfg.get('extra', []), '--out', o], capture_output=True, text=True)
+    r = subprocess.run(['node', 'engine/render.mjs', '--project', proj, '--footage', foot, '--comp', name, '--from', str(a),
+                        '--to', str(b), '--fps', str(cfg.get('fps', 30)), *extra, '--out', o], capture_output=True, text=True)
     ok = r.returncode == 0 and os.path.exists(o)
     print(label, 'ok' if ok else 'FAILED', f'{time.time() - t:.0f}s', r.stdout[-200:].replace('\n', ' | '), '' if ok else r.stderr[-600:], flush=True)
     if ok: lst.append(f"file '{o}'")
