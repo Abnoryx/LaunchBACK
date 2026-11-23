@@ -344,6 +344,7 @@ export class GL {
       const loc = p.u[k]; if (loc == null) continue;
       if (typeof v === 'number') (p.ty[k] === gl.INT || p.ty[k] === gl.BOOL) ? gl.uniform1i(loc, v) : gl.uniform1f(loc, v);
       else if (v.length === 2) gl.uniform2fv(loc, v);
+      else if (v.length === 3) gl.uniform3fv(loc, v);   // was missing: vec3 uniforms stayed 0 (style colours, Keylight screen colour)
       else if (v.length === 4) gl.uniform4fv(loc, v);
       else if (v.length === 9) gl.uniformMatrix3fv(loc, false, v);
     }

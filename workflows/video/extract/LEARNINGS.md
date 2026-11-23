@@ -123,3 +123,7 @@ Rules here override defaults in the code until they are folded into it.
 - Sapphire TimeSlice (Slice Number 1): one centre cut; the start side of Slice Direction shows the previous frame.
   Kept from the previous rendered frame (re-rendering an earlier time missed preloaded video frames). First frame of
   the effect has no previous frame: 1-frame difference at gen f354.
+- gl.run never uploaded 3-component uniforms (only 2/4/9): every vec3 colour stayed black — layer-style colours and the
+  Keylight screen colour. Inner Glow therefore darkened instead of glowing. Fixed; style blur now per kind (shadows and
+  outer glow sigma = Size, inner glow/shadow 0.4 x Size), fitted on gen s01/s02/s18.
+- Muxing audio with -shortest cut 4 video frames (audio a hair shorter than 753 frames): mux with -t <video duration>.

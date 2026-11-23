@@ -452,13 +452,13 @@ export class Engine {
   applyStyles(L, t, tg, rect, keepInput = false) {
     const styles = this.layerStyles(L, t);
     if (!styles.length) return tg;
-    const g = this.g, sx = tg.w / (rect[2] - rect[0]), D2R = Math.PI / 180, SIG = this.styleSigma ?? 0.5;   // style Size -> Gaussian sigma (0.4 fits scene 1's inner glow, text shadows want wider)
+    const g = this.g, sx = tg.w / (rect[2] - rect[0]), D2R = Math.PI / 180, SIG = this.styleSigma ?? null;   // style Size -> Gaussian sigma (fit on gen: shadows/outer glow 1.0, inner styles 0.4)
     let cur = tg;
     // AE draws the behind-the-layer styles first, then the inner ones; apply inner styles to the plain layer
     for (const pass of [[1, 2], [0, 3]]) for (const st of styles.filter((x) => pass.includes(x.kind))) {
       const P = st.P, size = P('blur', 5) * sx, dist = (st.kind <= 1 ? P('distance', 5) : 0) * sx;
       const ang = (P('useGlobalAngle', 0) ? 120 : P('localLightingAngle', 120)) * D2R;
-      const B = g.blur(cur, Math.max(0.3, size * SIG), Math.max(0.3, size * SIG));
+      const sg = SIG ?? (st.kind === 0 || st.kind === 3 ? 1.0 : 0.4), B = g.blur(cur, Math.max(0.3, size * sg), Math.max(0.3, size * sg));
       const col = P('color', [0, 0, 0, 1]);
       const o = g.target(cur.w, cur.h);
       g.run('lstyle', o, { uKind: st.kind, uMode: Math.round(P('mode2', 1)), uC: col.slice(0, 3), uOp: P('opacity', 75) / 100, uNoise: P('noise', 0) / 100,
