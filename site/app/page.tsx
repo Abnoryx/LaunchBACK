@@ -37,7 +37,7 @@ export default function Home() {
         <div className="thumb">{s.preview
           ? <video src={file(`previews/${s.id}.mp4`)} poster={file(`previews/${s.id}.jpg`)} muted loop playsInline preload="none"
               onMouseEnter={e => e.currentTarget.play()} onMouseLeave={e => e.currentTarget.pause()} controls />
-          : <div className="none">{s.ours ? 'no preview yet' : 'bought scene: preview is private'}</div>}</div>
+          : <div className="none">no preview yet</div>}</div>
         <div className="body">
           <span className="id">{s.id}</span>
           <div><span className={'tag' + (s.ours ? ' ours' : '')}>{s.ours ? 'ours' : 'bought'}</span> <span className="tag">{s.status}</span> {s.world && <span className="tag">{s.world}</span>}</div>
