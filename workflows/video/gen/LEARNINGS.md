@@ -11,3 +11,4 @@
 
 ## Log
 - 2026-11-23 michelin: "Change 2 3 8 12, remove them from the library; the Nike shot isn't a real shot from the library; use the better needle wave shot I gave" -> Removed brain_words, flare_script, pill_diagram, desk_flatlay from the library; replaced shots 2/3/8/12 (gen/s12, gen/s08, sells/s22, sells/s20); dropped gen/s07 (a source clip, not a scene) for gen/s01; adopted the user's move_the_needle shot.json and swapped follow_needle for needle_wave
+- 2026-11-24 michelin: "Study these transitions (use less glitch) and only use these nothing else (reel DL24UePpHWN); also study the other reels and implement them as a last step" -> stitch3: only snap whip pan, macro push, hard cut from that reel; notes in research_notes/reels_2026-11-24_user_refs.md
