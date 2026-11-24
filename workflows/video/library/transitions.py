@@ -10,7 +10,7 @@ W, H = 540, 960
 DEFAULTS = {'hard_cut': dict(frames=1), 'whip': dict(frames=4, dir='left', blur=0.018), 'zoom_punch': dict(frames=4), 'flash_white': dict(frames=3),
             'dip_black': dict(frames=8), 'invert': dict(frames=2), 'blur': dict(frames=6), 'rgb_split': dict(frames=3, shift=18),
             # the five/six moves taught in reel DVR92iPjRIw (user's transitions reference, 2026-11-24)
-            'swipe': dict(frames=12, skew=0.3), 'mask_zoom': dict(frames=16), 'shape_reveal': dict(frames=16), 'match_cut': dict(frames=15), 'diff_glitch': dict(frames=8)}
+            'swipe': dict(frames=12, skew=0.3), 'mask_zoom': dict(frames=16), 'shape_reveal': dict(frames=16), 'match_cut': dict(frames=15, posterize=True), 'diff_glitch': dict(frames=8)}
 FMT = {'invert': 'gbrp', 'rgb_split': 'gbrp'}   # everything else is judged in yuv420p
 Q = '(1-P)'                                       # ffmpeg's xfade P runs 1 -> 0; Q = 0 -> 1
 E = f'(1-pow(1-{Q},3))'                           # ease-out cubic: fast in, decelerating hold
@@ -71,7 +71,8 @@ def shape_reveal(p):
 def match_cut(p):
     """Momentum match cut (reel DVR92 / DaDhD 'cutting the curve'): outgoing accelerates in (1/3 of the frames), the cut lands at peak
     speed, the incoming decelerates out of the same scale (2/3) - 1:2 ratio, radial blur follows the speed."""
-    u1 = f'(3*{Q})'; u2 = f'(({Q}-1/3)*1.5)'; early = f'lt({Q},1/3)'
+    n = p['frames']; qq = f'(floor({Q}*{n}/2.5)*2.5/{n})' if p.get('posterize') else Q   # Posterize Time 12 fps: hold every 2.5 frames (reel DaDhD)
+    u1 = f'(3*{qq})'; u2 = f'(({qq}-1/3)*1.5)'; early = f'lt({qq},1/3)'
     sc = f'if({early},1+0.55*pow({u1},3),1+0.55*pow(1-{u2},3))'; g = f'if({early},0.05*{u1}*{u1},0.05*pow(1-{u2},2))'; ts = []
     for k in TAPS:
         s_k = f'(({sc})*(1+({k})*({g})*0.5))'; x = f'(W/2+(X-W/2)/{s_k})'; y = f'(H/2+(Y-H/2)/{s_k})'
