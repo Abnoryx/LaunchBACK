@@ -1,5 +1,6 @@
-"""Stitch v2: hold each shot long enough to read, burn the script line under it, real transitions (xfade whips, white flash on
-the invert-flash shots), a synthesised whoosh on every cut. usage: stitch2.py <dir with NN.mp4> <out.mp4>"""
+"""Stitch v4: holds + burned script lines + ONLY the transitions of the user's transitions reel DVR92iPjRIw (NOT DL24, which is a texture tutorial): 4-frame snap whip pan/push with
+directional motion blur and fast-in/decelerating ease, 4-frame macro push-in with radial blur, 1-frame hard cut (no flash/slide/wipe/fade).
+Whoosh on whips and pushes. usage: stitch3.py <dir with NN.mp4> <out.mp4>"""
 import glob, json, os, subprocess, sys, wave
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
@@ -10,8 +11,12 @@ CAP = ["A tyre company has more", "power over chefs", "than any food critic aliv
        "The map wasn't the crazy part. The eating was.", "One anonymous meal. One rating. No appeal.", "Chefs now spend their whole lives chasing a mark",
        "a tyre company invented.", "They sold tyres.", "First they gave people somewhere to go.", "Every business you love has", "a guidebook like this.",
        "We're finding them one at a time.", ""]
-FLASH = {11, 13, 15}; TD = 0.25
-CYC = ['slideleft', 'slideup', 'wipeleft', 'slideright', 'smoothleft', 'slidedown']
+import sys as _s; _s.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..')))
+from library import transitions as T
+# ONLY the user's transitions reel (DVR92iPjRIw): swipe, mask zoom, shape reveal, momentum match cut, ONE difference glitch (less glitch), hard cut in the hook
+SEQ = {1: 'hard_cut', 2: 'hard_cut', 3: 'swipe', 4: 'shape_reveal', 5: 'mask_zoom', 6: 'match_cut', 7: 'swipe', 8: 'shape_reveal', 9: 'mask_zoom', 10: 'match_cut',
+       11: 'swipe', 12: 'shape_reveal', 13: 'mask_zoom', 14: 'diff_glitch', 15: 'swipe', 16: 'shape_reveal', 17: 'mask_zoom', 18: 'match_cut', 19: 'swipe',
+       20: 'shape_reveal', 21: 'match_cut', 22: 'mask_zoom'}
 fs = sorted(glob.glob(f'{d}/[0-9][0-9].mp4')); n = len(fs); assert n == len(CAP)
 dur = lambda f: float(subprocess.run(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', f], capture_output=True, text=True).stdout)
 nat = [dur(f) for f in fs]
@@ -36,20 +41,23 @@ fc = []
 for i in range(n):
     fc.append(f'[{i}:v]tpad=stop_mode=clone:stop_duration={max(0, tgt[i] - nat[i]):.3f},fps=30,scale=540:960,setsar=1,format=yuv420p[a{i}];'
               f'[a{i}][{n + i}:v]overlay=0:0:shortest=1,format=yuv420p[v{i}]')
-cur, L, cuts = 'v0', tgt[0], []
+cur, L, cuts, kinds = 'v0', tgt[0], [], []
 for i in range(1, n):
-    tr = 'fadewhite' if (i + 1) in FLASH else CYC[(i - 1) % len(CYC)]
-    fc.append(f'[{cur}][v{i}]xfade=transition={tr}:duration={TD}:offset={L - TD:.3f}[x{i}]'); cuts.append(L - TD); cur = f'x{i}'; L += tgt[i] - TD
+    tag = SEQ[i]; p = {**T.DEFAULTS[tag]}; td = int(p['frames']) / 30; ex = T.expr(tag, p, 'yuv420p')
+    fc.append(f"[{cur}][v{i}]xfade=transition=custom:expr='{ex}':duration={td:.4f}:offset={L - td:.3f}[x{i}]")
+    if tag != 'hard_cut': cuts.append((L - td, td))
+    kinds.append(tag); cur = f'x{i}'; L += tgt[i] - td
 fc_s = ';'.join(fc)
+open(f'{d}/filter.txt', 'w').write(fc_s)
 # whoosh track
 sr = 44100; rng = np.random.default_rng(7); aud = np.zeros(int((L + 1) * sr), dtype=np.float32)
 wl = int(0.42 * sr); t = np.linspace(0, 1, wl); env = np.sin(np.pi * t) ** 2 * np.exp(-1.2 * t)
 noise = rng.standard_normal(wl).astype(np.float32); hp = np.diff(noise, prepend=0)
 sweep = np.convolve(hp * env, np.ones(6) / 6, mode='same') * 0.35
-for c in cuts:
-    s = int(max(0, c + TD / 2 - 0.12) * sr); aud[s:s + wl] += sweep[:len(aud) - s]
+for c, td in cuts:
+    s = int(max(0, c + td / 2 - 0.10) * sr); aud[s:s + wl] += sweep[:len(aud) - s]
 aud = np.clip(aud, -1, 1); wp = f'{d}/whoosh.wav'
 with wave.open(wp, 'wb') as w: w.setnchannels(1); w.setsampwidth(2); w.setframerate(sr); w.writeframes((aud * 32767).astype('<i2').tobytes())
-cmd += ['-i', wp, '-filter_complex', fc_s, '-map', f'[{cur}]', '-map', f'{2 * n}:a', '-af', 'loudnorm=I=-14:TP=-1.5:LRA=11', '-c:v', 'libx264', '-crf', '17',
+cmd += ['-i', wp, '-filter_complex_script', f'{d}/filter.txt', '-map', f'[{cur}]', '-map', f'{2 * n}:a', '-af', 'loudnorm=I=-14:TP=-1.5:LRA=11', '-c:v', 'libx264', '-crf', '17',
         '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '160k', '-shortest', out]
-subprocess.run(cmd, check=True); print(f'{n} shots, {L:.1f}s, {len(cuts)} transitions ->', out)
+subprocess.run(cmd, check=True); print(f'{n} shots, {L:.1f}s;', ', '.join(kinds), '->', out)

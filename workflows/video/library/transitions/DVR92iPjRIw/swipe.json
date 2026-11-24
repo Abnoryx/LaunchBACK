@@ -1,0 +1,13 @@
+{
+ "id": "DVR92iPjRIw/swipe",
+ "tag": "swipe",
+ "params": {
+  "frames": 12,
+  "skew": 0.3
+ },
+ "preview": "transitions/DVR92iPjRIw/swipe.mp4",
+ "status": "draft",
+ "reel": "DVR92iPjRIw",
+ "source": "user transitions reference reel",
+ "params_source": "estimates from vidIQ walkthrough (not measured)"
+}

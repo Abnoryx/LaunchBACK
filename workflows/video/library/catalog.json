@@ -1877,7 +1877,12 @@
   "gen/invert": {"spec": "transitions/gen/invert.json", "preview": "transitions/gen/invert.mp4", "tag": "invert", "frames": 2, "source": "rescene gen run, 1 uses", "status": "draft"},
   "gen/rgb_split": {"spec": "transitions/gen/rgb_split.json", "preview": "transitions/gen/rgb_split.mp4", "tag": "rgb_split", "frames": 3, "source": "rescene gen run, 2 uses", "status": "draft"},
   "gen/whip": {"spec": "transitions/gen/whip.json", "preview": "transitions/gen/whip.mp4", "tag": "whip", "frames": 4, "source": "rescene gen run, 5 uses", "status": "draft"},
-  "gen/zoom_punch": {"spec": "transitions/gen/zoom_punch.json", "preview": "transitions/gen/zoom_punch.mp4", "tag": "zoom_punch", "frames": 4, "source": "rescene gen run, 3 uses", "status": "draft"}
+  "gen/zoom_punch": {"spec": "transitions/gen/zoom_punch.json", "preview": "transitions/gen/zoom_punch.mp4", "tag": "zoom_punch", "frames": 4, "source": "rescene gen run, 3 uses", "status": "draft"},
+  "DVR92iPjRIw/diff_glitch": {"spec": "transitions/DVR92iPjRIw/diff_glitch.json", "preview": "transitions/DVR92iPjRIw/diff_glitch.mp4", "tag": "diff_glitch", "frames": 8, "source": "user transitions reel DVR92iPjRIw (estimates)", "status": "draft"},
+  "DVR92iPjRIw/mask_zoom": {"spec": "transitions/DVR92iPjRIw/mask_zoom.json", "preview": "transitions/DVR92iPjRIw/mask_zoom.mp4", "tag": "mask_zoom", "frames": 16, "source": "user transitions reel DVR92iPjRIw (estimates)", "status": "draft"},
+  "DVR92iPjRIw/match_cut": {"spec": "transitions/DVR92iPjRIw/match_cut.json", "preview": "transitions/DVR92iPjRIw/match_cut.mp4", "tag": "match_cut", "frames": 15, "source": "user transitions reel DVR92iPjRIw (estimates)", "status": "draft"},
+  "DVR92iPjRIw/shape_reveal": {"spec": "transitions/DVR92iPjRIw/shape_reveal.json", "preview": "transitions/DVR92iPjRIw/shape_reveal.mp4", "tag": "shape_reveal", "frames": 16, "source": "user transitions reel DVR92iPjRIw (estimates)", "status": "draft"},
+  "DVR92iPjRIw/swipe": {"spec": "transitions/DVR92iPjRIw/swipe.json", "preview": "transitions/DVR92iPjRIw/swipe.mp4", "tag": "swipe", "frames": 12, "source": "user transitions reel DVR92iPjRIw (estimates)", "status": "draft"}
  },
  "camera_moves": {
   "solved_reel_camera": {

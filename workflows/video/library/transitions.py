@@ -8,7 +8,9 @@ HERE = os.path.dirname(os.path.abspath(__file__)); OUT = os.path.join(HERE, 'tra
 FONT = '/usr/share/fonts/opentype/inter/Inter-Bold.otf'
 W, H = 540, 960
 DEFAULTS = {'hard_cut': dict(frames=1), 'whip': dict(frames=4, dir='left', blur=0.018), 'zoom_punch': dict(frames=4), 'flash_white': dict(frames=3),
-            'dip_black': dict(frames=8), 'invert': dict(frames=2), 'blur': dict(frames=6), 'rgb_split': dict(frames=3, shift=18)}
+            'dip_black': dict(frames=8), 'invert': dict(frames=2), 'blur': dict(frames=6), 'rgb_split': dict(frames=3, shift=18),
+            # the five/six moves taught in reel DVR92iPjRIw (user's transitions reference, 2026-11-24)
+            'swipe': dict(frames=12, skew=0.3), 'mask_zoom': dict(frames=16), 'shape_reveal': dict(frames=16), 'match_cut': dict(frames=15), 'diff_glitch': dict(frames=8)}
 FMT = {'invert': 'gbrp', 'rgb_split': 'gbrp'}   # everything else is judged in yuv420p
 Q = '(1-P)'                                       # ffmpeg's xfade P runs 1 -> 0; Q = 0 -> 1
 E = f'(1-pow(1-{Q},3))'                           # ease-out cubic: fast in, decelerating hold
@@ -37,6 +39,53 @@ def zoom():
     return '(' + '+'.join(ts) + ')/9'
 
 
+EIO = 'if(lt(Q,0.5),4*pow(Q,3),1-pow(2-2*Q,3)/2)'.replace('Q', Q)   # ease-in-out cubic (peak speed mid-move)
+CLIP = lambda v, lo, hi: f'min(max({v},{lo}),{hi})'
+
+
+def swipe(p):
+    """Foreground object swipe (reel DVR92 'swipe/occlusion'): a dark slanted band crosses right->left; at full cover the shot changes."""
+    sk = p['skew']; wt = f'(W+{sk}*H)'; xs = f'(X+{sk}*Y)'; lft = f'({wt}*(1-2*{EIO}))'; sp = f'(W*0.03*(1-abs(2*{Q}-1)))'; occ = 'if(eq(PLANE,0),18,128)'; ts = []
+    for k in TAPS:
+        l = f'({lft}+({k})*{sp}/4)'
+        ts.append(f'if(lt({xs},{l}),A,if(gt({xs},{l}+{wt}),B,{occ}))')
+    return '(' + '+'.join(ts) + ')/9'
+
+
+def mask_zoom(p):
+    """Negative-space zoom (reel DVR92): the outgoing shot punches in, the incoming shot grows through a round hole (20% -> 100%)."""
+    e = EIO; rmin = '(W*0.03)'; rmax = '(H*0.6)'; r = f'({rmin}*pow({rmax}/{rmin},{e}))'; sa = f'(1+4*{e}*{e})'; sb = f'(0.25+0.75*{e})'
+    d = 'hypot(X-W/2,Y-H/2)'; m = CLIP(f'(({r}-{d})/2+0.5)', 0, 1)
+    a = smp('a', f'(W/2+(X-W/2)/{sa})', f'(H/2+(Y-H/2)/{sa})'); b = smp('b', f'(W/2+(X-W/2)/{sb})', f'(H/2+(Y-H/2)/{sb})')
+    return f'({a})*(1-{m})+({b})*{m}'
+
+
+def shape_reveal(p):
+    """Geometric shape reveal (reel DVR92 'shape scale'): a triangle scales 0 -> 2500% from the centre as an alpha matte onto the next shot."""
+    r = f'(W*0.02*pow(H*2.8/(W*0.02),{EIO}))'; dx = '(X-W/2)'; dy = '(Y-H/2)'
+    f1 = f'(0.5*{r}-{dy})'; f2 = f'(0.866*{dx}+0.5*({dy}+{r}))'; f3 = f'(-0.866*{dx}+0.5*({dy}+{r}))'
+    m = CLIP(f'(min(min({f1},{f2}),{f3})/1.5+0.5)', 0, 1)
+    return f'A*(1-{m})+B*{m}'
+
+
+def match_cut(p):
+    """Momentum match cut (reel DVR92 / DaDhD 'cutting the curve'): outgoing accelerates in (1/3 of the frames), the cut lands at peak
+    speed, the incoming decelerates out of the same scale (2/3) - 1:2 ratio, radial blur follows the speed."""
+    u1 = f'(3*{Q})'; u2 = f'(({Q}-1/3)*1.5)'; early = f'lt({Q},1/3)'
+    sc = f'if({early},1+0.55*pow({u1},3),1+0.55*pow(1-{u2},3))'; g = f'if({early},0.05*{u1}*{u1},0.05*pow(1-{u2},2))'; ts = []
+    for k in TAPS:
+        s_k = f'(({sc})*(1+({k})*({g})*0.5))'; x = f'(W/2+(X-W/2)/{s_k})'; y = f'(H/2+(Y-H/2)/{s_k})'
+        ts.append(f"if({early},{smp('a', x, y)},{smp('b', x, y)})")
+    return '(' + '+'.join(ts) + ')/9'
+
+
+def diff_glitch(p, fmt='yuv420p'):
+    """Difference-blend strobe (reel DVR92 glitch): 3 inverted pulses (frames ~0-1, 3-4, 6-7) then the next shot. Use sparingly."""
+    pulse = f'(lt({Q},0.12)+between({Q},0.3,0.4)+between({Q},0.6,0.75))'; hold = f'if(lt({Q},0.5),A,B)'
+    inv = f'(255-({hold}))' if fmt == 'gbrp' else f'(if(eq(PLANE,0),255,256)-({hold}))'
+    return f'if(gt({pulse},0),{inv},{hold})'
+
+
 def expr(tag, p, fmt):
     pk = f'(1-abs(2*{Q}-1))'                      # 0 at the ends, 1 at the middle
     hold = 'if(lt(%s,0.5),A,B)' % Q
@@ -56,6 +105,11 @@ def expr(tag, p, fmt):
     if tag == 'rgb_split':
         dx = f"(if(eq(PLANE,1),{p['shift']},if(eq(PLANE,2),-{p['shift']},0))*sin(PI*{Q}))"
         return f"if(lt({Q},0.5),{smp('a', f'X+{dx}', 'Y')},{smp('b', f'X+{dx}', 'Y')})"
+    if tag == 'swipe': return swipe(p)
+    if tag == 'mask_zoom': return mask_zoom(p)
+    if tag == 'shape_reveal': return shape_reveal(p)
+    if tag == 'match_cut': return match_cut(p)
+    if tag == 'diff_glitch': return diff_glitch(p, fmt)
     raise ValueError(tag)
 
 

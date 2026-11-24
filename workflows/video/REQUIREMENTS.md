@@ -52,7 +52,7 @@ Read this before any video work. Every rule below came from the user; keep it cu
   (`gen.selects`).
 - **End every reply with a short status block** (user rule, 2026-11-21): only what is happening right now (no recap of finished things) — current task + state, what is rendering/running and its time left.
 
-- **Transitions: only the reference reel's** (user, 2026-11-24, reel DL24UePpHWN): snap whip pan/push (4 f, directional motion blur, decelerating ease), macro push-in (radial blur), hard cut. Nothing else (no fades, wipes, flashes); use less glitch. Shots must render to their FULL length (never trimmed to estimated beat times), each held long enough to read, script line burned in as caption. Notes + the other reels to implement last: `research_notes/reels_2026-11-24_user_refs.md`.
+- **Transitions: only the user's transitions reel** (user, 2026-11-24, reel DVR92iPjRIw, NOT DL24UePpHWN): swipe (foreground occlusion), mask zoom, shape reveal, momentum match cut, shape morph, difference glitch (use less glitch: one per reel), hard cut. Nothing else. Shots render to their FULL length (never trimmed to estimated beat times), each held long enough to read, script line burned in as caption. The other four reels are lessons, not style: DQu3nYiCepd = 2.5D camera movement, DL24UePpHWN + DdB21JrTK6w = texturising, DaDhDFjAysT = box/match cuts; implement them last. Notes: `research_notes/reels_2026-11-24_user_refs.md`.
 
 ## Known blockers / asks
 - Sells step 8 (original touch) waits on the user's content: new text, images/logo, and the brand red hex.
