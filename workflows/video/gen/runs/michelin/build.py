@@ -71,14 +71,14 @@ def main():
         t, sec, label = s['template'], s['seconds'], f'{n:02d}'
         if t in OURS:
             mod = importlib.import_module(f'library.templates.{t}'); c = mod.build(p, f'S{label}', **OURS[t]); dur = mod.DUR_F * F
-            entries.append(dict(project='__OURS__', comp=f'S{label}', **{'from': 0, 'to': round(min(dur, sec), 4)}, label=label, footage=[], extra=PREV))
+            entries.append(dict(project='__OURS__', comp=f'S{label}', **{'from': 0, 'to': round(dur, 4)}, label=label, footage=[], extra=PREV))
         else:
             reel, sid = t.split('/'); i = int(sid[1:]); tp = f'{TPL}/{reel}/templates/shot_{i:02d}.json'
             pj = os.path.join(W, f'params_{label}.json'); json.dump({**BOUGHT[t], 'accent': RED}, open(pj, 'w'))
             out = os.path.join(W, f'proj_{label}.json')
             subprocess.run([sys.executable, '-m', 'extract.aep_template', 'apply', tp, pj, out], cwd=VID, check=True, capture_output=True)
             tm = json.load(open(tp))['template']; a, b = tm['window']
-            entries.append(dict(project=out, comp=tm['root'], **{'from': a, 'to': round(min(b, a + sec), 4)}, label=label, footage=[reel],
+            entries.append(dict(project=out, comp=tm['root'], **{'from': a, 'to': round(b, 4)}, label=label, footage=[reel],
                                 extra=f"{PREV} --luts footage/{reel}/luts.json"))
         order.append((label, t, sec))
     aeb.EASE_OVERRIDE = None
