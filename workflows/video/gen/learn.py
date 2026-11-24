@@ -21,6 +21,7 @@ def log(name):
 
 def plan(name):
     p = json.load(open(os.path.join(run_dir(name), 'plan.json')))
+    if 'shots' not in p: return [x['scene'] for x in p['scenes']], []   # group plan: the group's scenes
     return [s['template'] for s in p['shots']], sorted({a for s in p['shots'] for a in s.get('assets', [])})
 
 

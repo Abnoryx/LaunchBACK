@@ -1,0 +1,27 @@
+{
+ "run": "michelin_gen",
+ "notes": [],
+ "status": "draft",
+ "picked": [
+  "gen/s01",
+  "gen/s02",
+  "gen/s03",
+  "gen/s04",
+  "gen/s05",
+  "gen/s06",
+  "gen/s07",
+  "gen/s08",
+  "gen/s09",
+  "gen/s10",
+  "gen/s11",
+  "gen/s12",
+  "gen/s13",
+  "gen/s14",
+  "gen/s15",
+  "gen/s16",
+  "gen/s17",
+  "gen/s18",
+  "gen/s19"
+ ],
+ "assets": []
+}
