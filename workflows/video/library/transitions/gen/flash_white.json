@@ -1,0 +1,18 @@
+{
+ "id": "gen/flash_white",
+ "tag": "flash_white",
+ "params": {
+  "frames": 3
+ },
+ "preview": "transitions/gen/flash_white.mp4",
+ "status": "draft",
+ "reel": "gen",
+ "uses": 4,
+ "at_frames": [
+  91,
+  215,
+  542,
+  567
+ ],
+ "params_source": "defaults per tag (not yet measured per use)"
+}

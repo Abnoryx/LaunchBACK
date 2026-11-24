@@ -1,0 +1,15 @@
+{
+ "id": "gen/invert",
+ "tag": "invert",
+ "params": {
+  "frames": 2
+ },
+ "preview": "transitions/gen/invert.mp4",
+ "status": "draft",
+ "reel": "gen",
+ "uses": 1,
+ "at_frames": [
+  441
+ ],
+ "params_source": "defaults per tag (not yet measured per use)"
+}

@@ -45,6 +45,21 @@ What each stage gives (and why it's done this way):
   VLMs reproduce looks but get timing wrong.
 - **Text** (`text.py`): RapidOCR word boxes on changed frames, linked into word tracks with their own move keys.
 
+## 1b. Save the transitions as separate assets (user rule, 2026-11-24)
+Every rescene run also exports each DISTINCT transition on its own, with a preview video the user can watch:
+```bash
+cd workflows/video && python3 -m extract.transitions_export <name>     # reads extract/runs/<name>/measure.json
+```
+Per transition type it writes `library/transitions/<name>/<tag>.json` (spec: tag, frames, params, how many uses, the cut
+frames where the reel uses it, `params_source`) and `<tag>.mp4` (the move on two neutral cards, A paper / B dark, once at real
+speed and then 4x slow, so the move itself can be judged — never the reel's pixels), and adds a `draft` entry to
+`library/catalog.json` `transitions`. Recipes live in `library/transitions.py` (hard_cut, whip, zoom_punch, flash_white,
+dip_black, invert, blur, rgb_split); a tag with no recipe is listed as skipped — add the recipe, don't drop it. Params are
+per-tag defaults until measured per use (say so). **Send the preview mp4s to the user in the same message as the
+storyboard (step 2)**; their corrections (direction, frames, strength, "less glitch") are saved as notes/rules and fix the
+recipe. Commit the previews (small, neutral cards) and push to `main`. For Route A (owned .aep) the project's own layer keys
+give exact frames/eases: pass them as `params` to `transitions.export()` instead of the defaults.
+
 ## 2. Check the breakdown with the user (cheap, before any build)
 Send `storyboard.jpg` and a short shot table (shot, frames, transition in, camera move + ease, words). Ask what's
 wrong. Every correction is saved — see step 5. Don't build before this sign-off: fixing a breakdown costs seconds,

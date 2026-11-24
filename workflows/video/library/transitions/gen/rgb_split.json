@@ -1,0 +1,17 @@
+{
+ "id": "gen/rgb_split",
+ "tag": "rgb_split",
+ "params": {
+  "frames": 3,
+  "shift": 18
+ },
+ "preview": "transitions/gen/rgb_split.mp4",
+ "status": "draft",
+ "reel": "gen",
+ "uses": 2,
+ "at_frames": [
+  121,
+  567
+ ],
+ "params_source": "defaults per tag (not yet measured per use)"
+}

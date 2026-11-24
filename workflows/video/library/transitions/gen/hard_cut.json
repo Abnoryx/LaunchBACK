@@ -1,0 +1,22 @@
+{
+ "id": "gen/hard_cut",
+ "tag": "hard_cut",
+ "params": {
+  "frames": 1
+ },
+ "preview": "transitions/gen/hard_cut.mp4",
+ "status": "draft",
+ "reel": "gen",
+ "uses": 8,
+ "at_frames": [
+  12,
+  79,
+  176,
+  242,
+  344,
+  398,
+  668,
+  709
+ ],
+ "params_source": "defaults per tag (not yet measured per use)"
+}

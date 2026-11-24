@@ -1,0 +1,15 @@
+{
+ "id": "gen/dip_black",
+ "tag": "dip_black",
+ "params": {
+  "frames": 8
+ },
+ "preview": "transitions/gen/dip_black.mp4",
+ "status": "draft",
+ "reel": "gen",
+ "uses": 1,
+ "at_frames": [
+  629
+ ],
+ "params_source": "defaults per tag (not yet measured per use)"
+}

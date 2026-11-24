@@ -1,0 +1,17 @@
+{
+ "id": "gen/blur",
+ "tag": "blur",
+ "params": {
+  "frames": 6
+ },
+ "preview": "transitions/gen/blur.mp4",
+ "status": "draft",
+ "reel": "gen",
+ "uses": 3,
+ "at_frames": [
+  91,
+  215,
+  321
+ ],
+ "params_source": "defaults per tag (not yet measured per use)"
+}

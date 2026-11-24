@@ -1869,7 +1869,15 @@
    "source": "reel f86-96 (camera x 817->1245, ease whip)",
    "status": "draft",
    "note": "currently via solved camera"
-  }
+  },
+  "gen/blur": {"spec": "transitions/gen/blur.json", "preview": "transitions/gen/blur.mp4", "tag": "blur", "frames": 6, "source": "rescene gen run, 3 uses", "status": "draft"},
+  "gen/dip_black": {"spec": "transitions/gen/dip_black.json", "preview": "transitions/gen/dip_black.mp4", "tag": "dip_black", "frames": 8, "source": "rescene gen run, 1 uses", "status": "draft"},
+  "gen/flash_white": {"spec": "transitions/gen/flash_white.json", "preview": "transitions/gen/flash_white.mp4", "tag": "flash_white", "frames": 3, "source": "rescene gen run, 4 uses", "status": "draft"},
+  "gen/hard_cut": {"spec": "transitions/gen/hard_cut.json", "preview": "transitions/gen/hard_cut.mp4", "tag": "hard_cut", "frames": 1, "source": "rescene gen run, 8 uses", "status": "draft"},
+  "gen/invert": {"spec": "transitions/gen/invert.json", "preview": "transitions/gen/invert.mp4", "tag": "invert", "frames": 2, "source": "rescene gen run, 1 uses", "status": "draft"},
+  "gen/rgb_split": {"spec": "transitions/gen/rgb_split.json", "preview": "transitions/gen/rgb_split.mp4", "tag": "rgb_split", "frames": 3, "source": "rescene gen run, 2 uses", "status": "draft"},
+  "gen/whip": {"spec": "transitions/gen/whip.json", "preview": "transitions/gen/whip.mp4", "tag": "whip", "frames": 4, "source": "rescene gen run, 5 uses", "status": "draft"},
+  "gen/zoom_punch": {"spec": "transitions/gen/zoom_punch.json", "preview": "transitions/gen/zoom_punch.mp4", "tag": "zoom_punch", "frames": 4, "source": "rescene gen run, 3 uses", "status": "draft"}
  },
  "camera_moves": {
   "solved_reel_camera": {

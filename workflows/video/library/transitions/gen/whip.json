@@ -1,0 +1,21 @@
+{
+ "id": "gen/whip",
+ "tag": "whip",
+ "params": {
+  "frames": 4,
+  "dir": "left",
+  "blur": 0.018
+ },
+ "preview": "transitions/gen/whip.mp4",
+ "status": "draft",
+ "reel": "gen",
+ "uses": 5,
+ "at_frames": [
+  48,
+  222,
+  270,
+  441,
+  567
+ ],
+ "params_source": "defaults per tag (not yet measured per use)"
+}
