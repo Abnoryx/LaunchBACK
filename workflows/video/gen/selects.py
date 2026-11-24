@@ -27,7 +27,10 @@ def segment(i, s, e, tmp):
 
 
 def main(plan_path, out=None):
-    P = json.load(open(plan_path)); S = LIB.shots(); out = out or os.path.join(os.path.dirname(os.path.abspath(plan_path)), 'selects.mp4')
+    P = json.load(open(plan_path)); S = LIB.shots()
+    if 'shots' not in P:   # group plan: the group's exact scenes in original order, each over its FULL length (no trimming)
+        P['shots'] = [dict(template=x['scene'], text=x.get('text', ''), seconds=x['seconds']) for x in P['scenes']]
+    out = out or os.path.join(os.path.dirname(os.path.abspath(plan_path)), 'selects.mp4')
     tmp = tempfile.mkdtemp(); segs = []
     print('| # | shot | beat text | seconds |\n|---|---|---|---|')
     for i, s in enumerate(P['shots']):
