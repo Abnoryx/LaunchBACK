@@ -1,0 +1,303 @@
+{
+ "group": "gen",
+ "ease": "quad_out",
+ "keep_original_handoffs": true,
+ "scenes": [
+  {
+   "scene": "gen/s01",
+   "seconds": 2.61,
+   "original": [
+    "If you want people",
+    "Actually remember \nyour brand ."
+   ],
+   "text": "A tyre company has | More power over  chefs ."
+  },
+  {
+   "scene": "gen/s02",
+   "seconds": 1.78,
+   "original": [
+    "earnera.co",
+    "If you want people",
+    "You need them to do one thing",
+    "1",
+    "THINK",
+    "!!",
+    "Actually remember \nyour brand ."
+   ],
+   "text": "A tyre company has | Than any single food critic alive | CHEFS | More power over  chefs ."
+  },
+  {
+   "scene": "gen/s03",
+   "seconds": 0.56,
+   "original": [
+    "9:41",
+    "Sunday 11 September 2025",
+    "THINK",
+    "!!",
+    "2",
+    "earnera.co",
+    "“Effect”",
+    "3",
+    "“Generation”",
+    "earnera",
+    "This is the..."
+   ],
+   "text": "19:00 | France, the year 1900 | CHEFS | “Giveaway” | “Free” | It started as..."
+  },
+  {
+   "scene": "gen/s04",
+   "seconds": 1.44,
+   "original": [
+    "9:41",
+    "Sunday 11 September 2025",
+    "THINK",
+    "!!",
+    "2",
+    "earnera.co",
+    "“Effect”",
+    "3",
+    "“Generation”",
+    "earnera",
+    "This is the..."
+   ],
+   "text": "19:00 | France, the year 1900 | CHEFS | “Giveaway” | “Free” | It started as..."
+  },
+  {
+   "scene": "gen/s05",
+   "seconds": 3.39,
+   "original": [
+    "9:41",
+    "Sunday 11 September 2025",
+    "File",
+    "Edit",
+    "Search",
+    "Help",
+    "Notepad",
+    "General -",
+    "THINK",
+    "!!",
+    "2",
+    "earnera.co",
+    "“Effect”",
+    "3",
+    "“Generation”",
+    "earnera",
+    "This is the...",
+    "Understand your message",
+    "My PC",
+    "Files",
+    "Recycle Bin",
+    "Project",
+    "When your audience,",
+    "puts in a little effort ."
+   ],
+   "text": "19:00 | France, the year 1900 | Notes | The problem: | Home | Trash | Guide | 1900. Michelin sold tyres. | Almost nobody owned a car . | CHEFS | “Giveaway” | “Free” | It started as..."
+  },
+  {
+   "scene": "gen/s06",
+   "seconds": 2.22,
+   "original": [
+    "File",
+    "Edit",
+    "Search",
+    "Help",
+    "Notepad",
+    "General -",
+    "Understand your message",
+    "My PC",
+    "earnera",
+    "Files",
+    "Recycle Bin",
+    "Project",
+    "earnera.co",
+    "When your audience,",
+    "puts in a little effort .",
+    "Their brain remembers \nit longer.",
+    "BRAIN"
+   ],
+   "text": "Notes | The problem: | Home | Trash | Guide | 1900. Michelin sold tyres. | Almost nobody owned a car . | A tyre business  needs movement. | MOVEMENT"
+  },
+  {
+   "scene": "gen/s07",
+   "seconds": 1.44,
+   "original": [
+    "does this perfectly",
+    "Nike",
+    "show athletes",
+    "They don’t just"
+   ],
+   "text": "they didn’t have one | Ad budget? | They had | a map."
+  },
+  {
+   "scene": "gen/s08",
+   "seconds": 1.56,
+   "original": [
+    "show athletes",
+    "They don’t just"
+   ],
+   "text": "They had | a map."
+  },
+  {
+   "scene": "gen/s09",
+   "seconds": 2.83,
+   "original": [
+    "Apple",
+    "show athletes",
+    "They don’t just",
+    "your own.",
+    "thinking about",
+    "so you start",
+    "Read 12:30 PM",
+    "they show inner battles",
+    "Micheal Jordan"
+   ],
+   "text": "Free. | They had | a map. | they gave a guide away | Where to | fill up, sleep, | and eat. | Read 7:00 PM | Road Guide"
+  },
+  {
+   "scene": "gen/s10",
+   "seconds": 1.28,
+   "original": [
+    "Apple",
+    "does it too",
+    "on",
+    "Shot",
+    "The"
+   ],
+   "text": "Free. | The guide was | red | small | A"
+  },
+  {
+   "scene": "gen/s11",
+   "seconds": 0.83,
+   "original": [
+    "Apple",
+    "does it too",
+    "on",
+    "Shot",
+    "The",
+    "viewers",
+    "imagine",
+    "Makes",
+    "campaign",
+    "ABOUT",
+    "EARNERA",
+    "iPhone"
+   ],
+   "text": "Free. | The guide was | red | small | A | yes, | this road | said: | that | FREE | GUIDE | book"
+  },
+  {
+   "scene": "gen/s12",
+   "seconds": 2.17,
+   "original": [
+    "on",
+    "Shot",
+    "The",
+    "Thier own",
+    "Ceativity.",
+    "viewers",
+    "imagine",
+    "Makes",
+    "campaign",
+    "ABOUT",
+    "EARNERA",
+    "iPhone",
+    "AND"
+   ],
+   "text": "red | small | A | goes | somewhere. | yes, | this road | said: | that | FREE | GUIDE | book | YES,"
+  },
+  {
+   "scene": "gen/s13",
+   "seconds": 2.39,
+   "original": [
+    "Thier own",
+    "Ceativity.",
+    "AND"
+   ],
+   "text": "goes | somewhere. | YES,"
+  },
+  {
+   "scene": "gen/s14",
+   "seconds": 2.94,
+   "original": [
+    "you’re finishing it \nin your head.",
+    "Watching the ad",
+    "You’re not just",
+    "4 days ago",
+    "View all comments",
+    "That tiny bit of effort?",
+    "earnera.co",
+    "Song - Original audio",
+    "That’s what makes a message unforgettable."
+   ],
+   "text": "The eating was.  One anonymous meal. | the crazy part. | The map wasn’t | One rating. No appeal. | Track - Original audio | Chefs now spend their whole lives"
+  },
+  {
+   "scene": "gen/s15",
+   "seconds": 4.06,
+   "original": [
+    "4 days ago",
+    "View all comments",
+    "That tiny bit of effort?",
+    "earnera.co",
+    "Song - Original audio",
+    "That’s what makes a message unforgettable."
+   ],
+   "text": "One rating. No appeal. | Track - Original audio | Chefs now spend their whole lives"
+  },
+  {
+   "scene": "gen/s16",
+   "seconds": 3.44,
+   "original": [
+    "Use emotion to create meaningful connections that people remember.",
+    "earnera.co",
+    "EMOTION CREATES IMPACT",
+    "story",
+    "EMOTION",
+    "seen a decade ago",
+    "So don’t give everything away",
+    "THAT MAKES\nPEOPLE THINK\nWITH YOU",
+    "OR CHOOSING GROWTH",
+    "ARE YOU CHOOSING COMFORT",
+    "TWIST"
+   ],
+   "text": "Chasing a mark that a tyre company invented. | ONE MEAL. ONE RATING. | mark | MARK | one anonymous meal | Chefs chase it for life | SOMEWHERE FOR PEOPLE TO GO | FIRST THEY GAVE | THEY SOLD TYRES | FIRST"
+  },
+  {
+   "scene": "gen/s17",
+   "seconds": 2.17,
+   "original": [
+    "THAT MAKES\nPEOPLE THINK\nWITH YOU",
+    "earnera.co",
+    "OR CHOOSING GROWTH",
+    "ARE YOU CHOOSING COMFORT",
+    "TWIST",
+    "comment “project”",
+    "Editors"
+   ],
+   "text": "SOMEWHERE FOR PEOPLE TO GO | FIRST THEY GAVE | THEY SOLD TYRES | FIRST | has a “guidebook” | Every business"
+  },
+  {
+   "scene": "gen/s18",
+   "seconds": 2.28,
+   "original": [
+    "comment “project”",
+    "Editors"
+   ],
+   "text": "has a “guidebook” | Every business"
+  },
+  {
+   "scene": "gen/s19",
+   "seconds": 2.44,
+   "original": [
+    "comment “project”",
+    "Editors",
+    "earnera.co",
+    "OR CHOOSING GROWTH",
+    "ARE YOU CHOOSING COMFORT",
+    "Aep file",
+    "ACCESS",
+    "We will \nsend you"
+   ],
+   "text": "has a “guidebook” | Every business | FIRST THEY GAVE | THEY SOLD TYRES | at a time. | ONE | We’re finding  them"
+  }
+ ]
+}
