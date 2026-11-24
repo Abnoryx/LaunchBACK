@@ -54,6 +54,10 @@ Read this before any video work. Every rule below came from the user; keep it cu
 
 - **Transitions: only the user's transitions reel** (user, 2026-11-24, reel DVR92iPjRIw, NOT DL24UePpHWN): swipe (foreground occlusion), mask zoom, shape reveal, momentum match cut, shape morph, difference glitch (use less glitch: one per reel), hard cut. Nothing else. Shots render to their FULL length (never trimmed to estimated beat times), each held long enough to read, script line burned in as caption. The other four reels are lessons, not style: DQu3nYiCepd = 2.5D camera movement, DL24UePpHWN + DdB21JrTK6w = texturising, DaDhDFjAysT = box/match cuts; implement them last. Notes: `research_notes/reels_2026-11-24_user_refs.md`.
 
+- **/gen builds from ONE group of scenes** (user, 2026-11-24): each group is one rescened video; use most if not all of its scenes, the exact shots, in the original order, so cuts/handoffs/transitions come from the original (the Michelin mix-of-reels video was scrapped because its cuts and transitions looked bad). `python3 -m gen.groups`. Never mix groups except one filler scene for a real gap.
+- **One ease family** (user, 2026-11-24): every bezier ease in the scenes becomes the graph in `gen/config.json` `ease` (quad_out now; more graphs later in `library/style.py` EASE_GRAPHS) so scenes from different reels look like one creator's. Done by `extract.aep_template apply` (`ease` param).
+- **No texturising** (user, 2026-11-24): /gen never applies texture, blend-mode or displacement passes. (The tutorial notes stay as knowledge only.)
+
 ## Known blockers / asks
 - Sells step 8 (original touch) waits on the user's content: new text, images/logo, and the brand red hex.
 - Higgsfield downloads need host `d8j0ntlcm91z4.cloudfront.net` allowed in this environment's network settings (user must do it from a computer). Until then the user sends generated images in chat.

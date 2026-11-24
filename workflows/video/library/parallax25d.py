@@ -6,7 +6,7 @@ usage: python3 parallax25d.py <scene: map|stay> <out.mp4> [seconds] [--full]   (
 import os, subprocess, sys
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
-VID = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..')); A = os.path.join(VID, 'library', 'assets')
+VID = os.path.abspath(os.path.join(os.path.dirname(__file__), '..')); A = os.path.join(VID, 'library', 'assets')
 FONT_SERIF = '/home/user/tpl/fonts/kokila.ttf'; FONT_SANS = '/home/user/tpl/fonts/coolvetica_rg.ttf'
 W, H, FPS, F = 1080, 1920, 30, 1000.0
 

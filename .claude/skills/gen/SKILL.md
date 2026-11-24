@@ -55,21 +55,26 @@ silently).
 - Brand kit (picks): red accent, one font pairing + one caption style, arrow whip transition, logo sting, own finish.
 - Brand care: commentary words only — no third-party logos, mascots or marks.
 
-## 4. Shot list -> `gen/runs/<name>/plan.json` + selects video + sign-off
-`python3 -m gen.shotlist gen/runs/<name>/beats.json [--world dark|paper] [--plan gen/runs/<name>/draft.json]` ranks
-EVERY library shot per beat **by fit to the script only**: CLIP similarity of the beat text to the shot's preview frames
-and to its words/notes, a role match (hook / number / payoff prompts) and fit rules (words fit its text slots, digits ->
-a shot that shows numbers, prop wanted -> a shot with a prop). Picks use MMR (relevance minus similarity to shots
-already picked; `select.mmr_lambda` in `gen/config.json`) and never repeat a shot. **SSIM, approval stats and status
-never affect the choice** (user rule). The ranked list is the menu: the brief still decides world flips and the spine;
-pick with judgement and write `plan.json`:
-`{"shots":[{"template","text","seconds","world","invert","text_px","elements","assets":[...],"params":{...}}]}`,
-last shot `logo_reveal`. Gaps -> `cine_scene` (data-driven) or a new template (flag it).
-`python3 -m gen.score gen/runs/<name>/plan.json` must say OK (rules + everything learned).
-Then `python3 -m gen.selects gen/runs/<name>/plan.json` -> `selects.mp4`: the chosen library shots exactly as stored,
-trimmed to each beat, in order, with the beat text burned small at the bottom. Send it with the shot table (it prints
-one) and the brief. Don't commit a selects video that contains bought scenes (licence). **No spend and no build before
-the user signs off.**
+## 4. Pick ONE group, plan its exact scenes -> `gen/runs/<name>/plan.json` + selects video + sign-off
+**User rule (2026-11-24): a reel is built from ONE group of scenes, never a mix.** A group = one rescened video (`python3 -m
+gen.groups` lists them: `sells`, `gen`, `stop`, `psych` = our rebuild of the Psychology Trick). Use most (>= 80%, `gen/config.json`
+`group.min_scene_use`) if not all of its scenes, the EXACT shots, in the ORIGINAL order, so the cuts, handoffs and transitions
+between scenes come straight from the original video (mixing scenes from different videos gave bad cuts and transitions).
+```bash
+python3 -m gen.groups gen/runs/<name>/script.txt --out gen/runs/<name>/plan.json     # ranks groups, plans the best (--group G to force)
+python3 -m gen.score gen/runs/<name>/plan.json                                       # group rules: one group, >=80% of scenes, original order, the ease
+```
+Ranking = text capacity vs script words + group runtime vs spoken length + share of scenes too dense to read (> 4 words/s). It is a
+heuristic: the planner prints the ranking and the per-scene text allotment (first pass, flags scenes that are too fast to read);
+fit the allotment to each scene's original text slots by hand, have the advisor review it, and show the user the group choice.
+Only if the group has a real gap (no scene for a needed beat) fall back to `gen.shotlist` for ONE filler scene, and say so.
+Between scenes keep the original handoff. If a cut or transition must be ADDED, use only the user's transitions reel set
+(`library/transitions/DVR92iPjRIw/`: swipe, mask zoom, shape reveal, match cut, hard cut; difference glitch at most once).
+**Ease:** every bezier ease in every scene becomes the ONE graph in `gen/config.json` `ease` (`quad_out` now; named graphs in
+`library/style.py` `EASE_GRAPHS`, more to come from the user) so scenes look like one creator's. **No texturising** (user, 2026-11-24:
+no texture, blend-mode or displacement passes). Then `python3 -m gen.selects gen/runs/<name>/plan.json` -> `selects.mp4`: the
+group's scenes exactly as stored, in order (don't commit it if it holds bought scenes). Send it with the scene table (scene, seconds,
+allotted text) and the brief. **No spend and no build before the user signs off.**
 
 ## 5. Assets — reuse first
 For each prop: `python3 -m gen.shotlist --assets <tags>` searches every asset in the library (`library/assets/**`
@@ -78,6 +83,10 @@ re-light what exists. Only gaps: quote Higgsfield credits, generate in one consi
 check (turntable for 3D: `scratch/model_turntable_all.py`), add to the index.
 
 ## 6. Build, check, render
+Build per scene with `python3 -m extract.aep_template apply <shot_NN.json> <params.json> <out.json>`; params = `texts` (every layer showing the same
+original string gets the same new text), `accent` (red), `ease` (`quad_out`, from config), `footage` swaps (blank for third-party imagery: logos,
+phones, film stills, people; after swapping video footage run `rm -rf /tmp/engine-cache`, the engine caches video frames by id+time). Render each scene
+over its FULL window (never trimmed), keep the original order and handoffs, no extra effects. (The older per-shot build below still describes our own code templates.)
 `gen/runs/<name>/build.py` in the `scratch/michelin.py` pattern (one template build per shot -> master comp, VO
 timings). Strip-check each shot with CPU stills first. Render with `python3 -m gen.render <project.json> <out.mp4>
 <comps...>` (backend from `gen/config.json`; today Kaggle, ~15–45 min). Check twice: every 3rd frame + every cut at

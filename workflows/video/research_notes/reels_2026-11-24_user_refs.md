@@ -23,7 +23,7 @@ subtle **tilt**. Key rule: **scale-compensate** every layer when it is moved in 
 (the `Depth` script's "Disperse" does that). Mistakes: no scale compensation, no bleed past the frame edges, planes too close in Z (no parallax).
 Engine how-to: plane at z with size = 2*tan(fov/2)*(camZ - z)*aspect (compensation), `depthWrite:false`, camera dolly/truck with easing, DoF blur per plane by |z - focus|.
 
-## DL24UePpHWN + DdB21JrTK6w — TEXTURISING
+## DL24UePpHWN + DdB21JrTK6w — TEXTURISING (knowledge only: NOT used in /gen, user 2026-11-24 'remove the texturising')
 Source textures from texturelabs.org / texturefabrik.com; combine a broad surface (faded newspaper) with a tight one (macro paper grain).
 **Do not lower opacity** (washes out contrast). Instead: stack texture layers above the graphic with a blend mode, remap luminance with
 **Curves/Levels** on the texture, and add **Displacement Map** (luminance for H and V, ~2-5 px) on the graphic so its edges follow the paper fibres.
@@ -43,4 +43,4 @@ Engine how-to: one shared scale function `s(t)=1+0.53*steepEase(t/D)`, show A be
 (Implemented as the `match_cut` transition recipe; a full A/B asset-pair version with real shared anchors is still to build.)
 
 ## To implement (user: "as a last step")
-2.5D camera shots (plane stack + Z dolly + DoF), texture pass for our shots (curves + displacement + blend by texture type), real match-cut shot pairs, Posterize 12 fps finish.
+2.5D camera shots (`library/parallax25d.py`), real match-cut shot pairs. Texture pass is dropped (user, 2026-11-24).

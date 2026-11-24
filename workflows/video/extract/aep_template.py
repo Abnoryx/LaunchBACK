@@ -86,6 +86,30 @@ def recolor(v, band, hue):
     return [round(x, 5) for x in r] + v[3:]
 
 
+def set_eases(d, graph):
+    """Every bezier segment (both keys bezier) of every animated prop gets the cubic-bezier `graph` = (x1, y1, x2, y2): the out-handle of the
+    first key and the in-handle of the second are rewritten as AE temporal ease (speed units/s, influence %). Linear/hold keys stay.
+    Returns the number of segments changed. This is how scenes from different reels get ONE ease family (user rule 2026-11-24)."""
+    x1, y1, x2, y2 = graph; n = 0
+    io, ii = max(0.1, x1 * 100), max(0.1, (1 - x2) * 100); ko = (y1 / x1) if x1 else 0.0; ki = ((1 - y2) / (1 - x2)) if x2 < 1 else 0.0
+    def num(v): return isinstance(v, (int, float)) and not isinstance(v, bool)
+    def walk(ps):
+        nonlocal n
+        for p in ps:
+            ks = p.get('k') or []
+            if not (p.get('syn') or p.get('off')):
+                for a, b in zip(ks, ks[1:]):
+                    if a.get('out') != 6612 or b.get('in') != 6612 or b['t'] <= a['t']: continue
+                    va = a['v'] if isinstance(a['v'], list) else [a['v']]; vb = b['v'] if isinstance(b['v'], list) else [b['v']]
+                    if len(va) != len(vb) or not all(num(x) for x in va + vb): continue
+                    avg = [(q - w) / (b['t'] - a['t']) for w, q in zip(va, vb)]
+                    a['oe'] = [[ko * s, io] for s in avg]; b['ie'] = [[ki * s, ii] for s in avg]; n += 1
+            walk(p.get('c', []))
+    for c in d['comps']:
+        for l in c['layers']: walk(l['props'])
+    return n
+
+
 def apply(tpl_path, params_path, out):
     """params: {"texts": {"<comp>/<i>": "new text" | {text, font, size, fill}}, "accent": [r,g,b] (0-1) or "#rrggbb",
                "footage": {"<id>": "/path/to/new/file"}}"""
@@ -124,6 +148,11 @@ def apply(tpl_path, params_path, out):
                     if is_col(r.get('fill')) and in_band(r['fill'], band): r['fill'] = recolor(r['fill'], band, hue)
     for f in d['footage']:
         if str(f['id']) in P.get('footage', {}): f['file'] = P['footage'][str(f['id'])]
+    ez = P.get('ease')
+    if ez:   # a graph name from library/style.py EASE_GRAPHS (e.g. 'quad_out') or [x1, y1, x2, y2]
+        if isinstance(ez, str):
+            sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')); from library import style as _S; ez = _S.EASE_GRAPHS[ez]
+        print('ease', ez, 'segments rewritten:', set_eases(d, ez))
     json.dump(d, open(out, 'w'))
     print('wrote', out)
 

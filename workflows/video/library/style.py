@@ -114,3 +114,7 @@ def stacked_mark(comp, name, char, t_in, t_out, pos, scale, rot, pal, n=15, step
         comp.transform(L, pos=[pos[0] + k * step[0], pos[1] + k * step[1], pos[2]], scale=[scale, scale, scale], rot=rot)
         layers.append(L)
     return layers
+
+# Named graphs for /gen's `ease` setting (gen/config.json). ONE graph on every scene makes scenes look like one creator's work.
+# User 2026-11-24: quad-out for now, "more later" -> add entries here (x1, y1, x2, y2 of a cubic-bezier) and set `ease` in gen/config.json.
+EASE_GRAPHS = {'quad_out': QUAD_OUT, 'cubic_out': CUBIC_OUT}

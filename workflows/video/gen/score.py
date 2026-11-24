@@ -7,7 +7,22 @@ R = json.load(open(os.path.join(HERE, 'config.json')))['rules']
 LEARNED = os.path.join(HERE, 'rules.json')
 
 
+def score_group(plan):
+    """A group plan = one rescened video's exact scenes in original order (user rule 2026-11-24): pacing, cuts and handoffs belong to the
+    original, so only the group rules are checked: one group, >= min_scene_use of its scenes, original order, the one ease graph."""
+    cfg = json.load(open(os.path.join(HERE, 'config.json'))); bad = []; from . import groups as G
+    g = G.groups().get(plan['group']); ids = [s['scene'] for s in plan['scenes']]
+    if g is None: return [f"unknown group {plan['group']}"]
+    order = [x['id'] for x in g]; used = [i for i in ids if i in order]
+    if len(used) != len(ids): bad.append('plan has scenes from another group')
+    if len(set(used)) < cfg['group']['min_scene_use'] * len(order): bad.append(f"uses {len(set(used))}/{len(order)} scenes of {plan['group']} (need >= {cfg['group']['min_scene_use']:.0%})")
+    if used != sorted(used, key=order.index): bad.append('scenes are not in the original order')
+    if plan.get('ease') != cfg.get('ease'): bad.append(f"ease {plan.get('ease')} != configured {cfg.get('ease')}")
+    return bad
+
+
 def score(plan):
+    if plan.get('group'): return score_group(plan)
     S = plan['shots']; bad = []
     lo, hi = R['shot_seconds']
     for i, s in enumerate(S):

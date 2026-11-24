@@ -15,6 +15,11 @@
    "date": "2026-11-24",
    "note": "I meant to study the content of the videos, not the transitions (2.5D = camera movement, 2 texturising, 1 box cuts); the transitions-only reel is DVR92iPjRIw",
    "change": "Re-watched all five for content; transitions rebuilt from DVR92iPjRIw (swipe, mask_zoom, shape_reveal, match_cut, one diff_glitch); removed the wrong DL24-based stitch"
+  },
+  {
+   "date": "2026-11-24",
+   "note": "Change the set up: remove texturising from the skills; scrap this video; save to the skill to use every scene (if not all) from the same video to help with transitions and cuts, because this looks bad; the generation should use most if not all scenes from one group (each group is one rescened video), the exact shots; change the eases to quad out graphs (more later) so they look like from the same creator",
+   "change": "Removed texturising (finish.py gone, rule added); scrapped the Michelin video; /gen now picks ONE group (gen/groups.py, score_group) and uses its exact scenes in original order; aep_template apply gets an ease param (quad_out) via library/style.py EASE_GRAPHS + gen/config.json ease"
   }
  ],
  "status": "draft",
