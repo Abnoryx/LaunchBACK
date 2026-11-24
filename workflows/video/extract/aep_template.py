@@ -126,8 +126,8 @@ def apply(tpl_path, params_path, out):
                 if is_col(p.get('v')) and inb(p['v']): p['v'] = recolor(p['v'], band, hue)
                 for k in p.get('k', []):
                     if is_col(k['v']) and inb(k['v']): k['v'] = recolor(k['v'], band, hue)
-                if isinstance(p.get('v'), dict) and p['v'].get('_text') and is_col(p['v'].get('fill')) and inb(p['v']['fill']):
-                    p['v']['fill'] = recolor(p['v']['fill'], band, hue)
+                for vv in [p.get('v')] + [k.get('v') for k in p.get('k', [])]:   # Source Text documents (also keyframed)
+                    if isinstance(vv, dict) and is_col(vv.get('fill')) and inb(vv['fill']): vv['fill'] = recolor(vv['fill'], band, hue)
             walk(p.get('c', []))
     for c in d['comps']:
         for l in c['layers']:
@@ -148,6 +148,9 @@ def apply(tpl_path, params_path, out):
                 if is_col(t.get('fill_color')) and inb(t['fill_color']): t['fill_color'] = recolor(t['fill_color'], band, hue)
                 for r in t.get('runs', []):
                     if is_col(r.get('fill')) and inb(r['fill']): r['fill'] = recolor(r['fill'], band, hue)
+                for pp in l['props']:   # the Source Text document was filled with the OLD colour when the text was replaced: recolour it too
+                    for q in pp.get('c', []):
+                        if q['m'] == 'ADBE Text Document' and isinstance(q.get('v'), dict) and is_col(q['v'].get('fill')) and inb(q['v']['fill']): q['v']['fill'] = recolor(q['v']['fill'], band, hue)
     for f in d['footage']:
         if str(f['id']) in P.get('footage', {}): f['file'] = P['footage'][str(f['id'])]
     ez = P.get('ease')

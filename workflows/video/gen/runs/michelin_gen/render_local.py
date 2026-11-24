@@ -6,7 +6,7 @@ jobs = int(sys.argv[3]) if len(sys.argv) > 3 else 2; only = set(sys.argv[4].spli
 def run(e):
     o = f"{out}/{e['label']}.mp4"
     foot = ','.join([os.path.join(VID, 'library/assets')] + [man['footage'][k] for k in e['footage']])
-    extra = e['extra'].replace('footage/', '/home/user/tpl/lib/').replace('/luts.json', '/assets/luts.json') if '--luts' in e['extra'] else e['extra']
+    extra = e['extra'].replace('footage/gen/', '/home/user/tpl/lib/gen/assets/')
     cmd = ['node', 'engine/render.mjs', '--project', e['project'], '--footage', foot, '--comp', e['comp'], '--from', str(e['from']), '--to', str(e['to']), '--fps', '30', *extra.split(), '--out', o]
     r = subprocess.run(cmd, cwd=VID, capture_output=True, text=True)
     print(e['label'], 'ok' if r.returncode == 0 and os.path.exists(o) else 'FAILED ' + r.stderr[-300:], flush=True)
