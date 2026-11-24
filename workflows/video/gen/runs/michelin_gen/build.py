@@ -42,6 +42,14 @@ for f in sorted(glob.glob(f'{TPL}/templates/shot_*.json')):
     for x in t['params']['footage']:   # still images that are mostly green/blue/purple -> red copies (user: make it red coloured)
         pth = os.path.join(TPL, 'assets', x['name'])
         if str(x['id']) not in foot and x['name'].lower().rsplit('.', 1)[-1] in ('jpg', 'jpeg', 'png', 'gif') and os.path.exists(pth) and inband(pth) > 0.05: foot[str(x['id'])] = red_copy(x['id'], pth)
+    for x in t['params']['footage']:   # leftovers the hue test misses: the green-screen smoke clip (video) and the pin
+        pth = os.path.join(TPL, 'assets', x['name']); fid = str(x['id'])
+        if fid in foot or not os.path.exists(pth): continue
+        if re.search(r'smoke', x['name'], re.I):   # green background -> red: rotate hue about -115 degrees
+            o = os.path.join(RED, f'red_{fid}.mp4')
+            if not os.path.exists(o): subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', pth, '-vf', 'hue=h=-115:s=1.15', '-an', '-c:v', 'libx264', '-crf', '16', '-pix_fmt', 'yuv420p', o], check=True)
+            foot[fid] = o
+        elif re.search(r'\bpin\b', x['name'], re.I): foot[fid] = red_copy(x['id'], pth)
     pj = os.path.join(W, f'params_{n:02d}.json'); json.dump(dict(texts=texts, accent='#E10600', bands=[[45, 320]], ease=EASE, footage=foot), open(pj, 'w'))
     out = os.path.join(W, f'proj_{n:02d}.json')
     r = subprocess.run([sys.executable, '-m', 'extract.aep_template', 'apply', f, pj, out], cwd=VID, capture_output=True, text=True); print(sid, r.stdout.strip().split('\n')[0][:90])
