@@ -8,6 +8,7 @@ TPL = '/home/user/tpl/lib/gen'; ASSETS = os.path.join(VID, 'library', 'assets');
 LED = f'{TPL}/assets/led.jpg'   # neutral grey gradient, stands in for photos/wallpapers
 cfg = json.load(open(os.path.join(VID, 'gen', 'config.json'))); EASE = cfg.get('ease', 'quad_out')
 # third-party marks, mascots, people, platform UI: swapped for neutral assets (brand care). Matched on footage name.
+# bands=[[75, 320]]: greens, cyans, blues, purples -> the red accent; yellow/orange stay (user: 'make it red coloured')
 BRAND = re.compile(r'iphone|micheal jordan|saquon|nike|whatsapp|vecteezy|instagram|earnera|IMG_0264|Untitled design|icons\.png|blue tick|^e7650458|d81203|windows xp|clippy', re.I)
 OUT = sys.argv[1] if len(sys.argv) > 1 else 'preview'
 EXTRA = '--samples 1 --preview 540' if OUT == 'preview' else '--samples 4'
@@ -19,7 +20,7 @@ for f in sorted(glob.glob(f'{TPL}/templates/shot_*.json')):
         if k in m: texts[x['id']] = x['text'].replace(k, m[k]) if k else x['text']
         else: texts[x['id']] = ' '; unmapped.setdefault(sid, set()).add(k[:40])   # fine print / unlisted slot: blanked
     foot = {str(x['id']): (LED if re.search(r'wallpaper', x['name'], re.I) else BLANK) for x in t['params']['footage'] if BRAND.search(x['name'])}
-    pj = os.path.join(W, f'params_{n:02d}.json'); json.dump(dict(texts=texts, accent='#E10600', ease=EASE, footage=foot), open(pj, 'w'))
+    pj = os.path.join(W, f'params_{n:02d}.json'); json.dump(dict(texts=texts, accent='#E10600', bands=[[75, 320]], ease=EASE, footage=foot), open(pj, 'w'))
     out = os.path.join(W, f'proj_{n:02d}.json')
     r = subprocess.run([sys.executable, '-m', 'extract.aep_template', 'apply', f, pj, out], cwd=VID, capture_output=True, text=True); print(sid, r.stdout.strip().split('\n')[0][:90])
     a, b = t['window']; entries.append(dict(project=out, comp=t['root'], **{'from': a, 'to': b}, label=f'{n:02d}', footage=['gen'], extra=f"{EXTRA} --luts footage/gen/luts.json"))

@@ -115,16 +115,18 @@ def apply(tpl_path, params_path, out):
                "footage": {"<id>": "/path/to/new/file"}}"""
     tpl = json.load(open(tpl_path)); P = json.load(open(params_path)); d = copy.deepcopy(tpl)
     band = tuple(d['template']['params']['accent']['band'])
+    bands = [tuple(b) for b in P.get('bands', [])] or [band]   # hue bands (degrees) recoloured to the accent; default = the project's own accent band
+    inb = lambda v: any(in_band(v, b) for b in bands)
     acc = P.get('accent')
     if isinstance(acc, str): acc = [int(acc[i:i + 2], 16) / 255 for i in (1, 3, 5)]
     hue = colorsys.rgb_to_hls(*acc)[0] * 360 if acc else None
     def walk(ps):
         for p in ps:
             if hue is not None and not p.get('syn'):
-                if is_col(p.get('v')) and in_band(p['v'], band): p['v'] = recolor(p['v'], band, hue)
+                if is_col(p.get('v')) and inb(p['v']): p['v'] = recolor(p['v'], band, hue)
                 for k in p.get('k', []):
-                    if is_col(k['v']) and in_band(k['v'], band): k['v'] = recolor(k['v'], band, hue)
-                if isinstance(p.get('v'), dict) and p['v'].get('_text') and is_col(p['v'].get('fill')) and in_band(p['v']['fill'], band):
+                    if is_col(k['v']) and inb(k['v']): k['v'] = recolor(k['v'], band, hue)
+                if isinstance(p.get('v'), dict) and p['v'].get('_text') and is_col(p['v'].get('fill')) and inb(p['v']['fill']):
                     p['v']['fill'] = recolor(p['v']['fill'], band, hue)
             walk(p.get('c', []))
     for c in d['comps']:
@@ -143,9 +145,9 @@ def apply(tpl_path, params_path, out):
                         if q['m'] == 'ADBE Text Document' and isinstance(q.get('v'), dict):
                             q['v'].update(text=t['text'], font=t['font'], size=t['font_size'], fill=t['fill_color'])
             if hue is not None:
-                if is_col(t.get('fill_color')) and in_band(t['fill_color'], band): t['fill_color'] = recolor(t['fill_color'], band, hue)
+                if is_col(t.get('fill_color')) and inb(t['fill_color']): t['fill_color'] = recolor(t['fill_color'], band, hue)
                 for r in t.get('runs', []):
-                    if is_col(r.get('fill')) and in_band(r['fill'], band): r['fill'] = recolor(r['fill'], band, hue)
+                    if is_col(r.get('fill')) and inb(r['fill']): r['fill'] = recolor(r['fill'], band, hue)
     for f in d['footage']:
         if str(f['id']) in P.get('footage', {}): f['file'] = P['footage'][str(f['id'])]
     ez = P.get('ease')
