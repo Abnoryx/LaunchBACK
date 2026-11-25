@@ -12,6 +12,9 @@ for s in scenes:
     for k, v in m.items():
         (chrome if k.strip() in CHROME else words).append({'k': k, 'v': v})
     data.append({'id': 's' + n, 'n': n, 'sec': s['seconds'], 'clip': clips.get(n, ''), 'words': words, 'chrome': chrome})
-payload = json.dumps({'scenes': data, 'reel': clips.get('reel', '')}, ensure_ascii=False).replace('<', '\\u003c')
+man = os.path.join(RUN, 'work', 'manifest.json')   # plain concat: a cut is the running total of scene durations
+dur = [round(e['to'] - e['from'], 3) for e in json.load(open(man))['entries']] if os.path.exists(man) else [d['sec'] for d in data]
+cuts = [round(sum(dur[:i + 1]), 3) for i in range(len(dur) - 1)]
+payload = json.dumps({'scenes': data, 'reel': clips.get('reel', ''), 'cuts': cuts}, ensure_ascii=False).replace('<', '\\u003c')
 html = open(os.path.join(HERE, 'page_template.html')).read().replace('/*__DATA__*/{}', payload)
 open(sys.argv[1], 'w').write(html); print('page', len(html), 'bytes;', len(data), 'scenes;', sum(1 for d in data if d['clip']), 'clips')

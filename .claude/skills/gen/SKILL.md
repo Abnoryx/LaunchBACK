@@ -99,6 +99,20 @@ timings). Strip-check each shot with CPU stills first. Render with `python3 -m g
 full rate (text readable and on screen, props right, transitions clean, nothing static). Fix, re-render. Add VO +
 whoosh per cut + own SFX, mix to −14 LUFS. Commit (force-add the render) and send.
 
+## 6b. After the first render — Edit Room with pins (user rule, 2026-11-25)
+
+Fastest loop for round 2+: don't ask the user to describe scenes in chat, let them point.
+1. Cut per-scene preview clips + the whole reel, upload them (Artifact `asset:true`), write `edit_room/clips.json`, `python3 edit_room/build_page.py out.html`, publish the Edit Room (db + assets). Template: `gen/runs/michelin_gen/edit_room/`.
+2. The page has **pins** on the reel and on every scene clip. Each pin has its own mode (changeable and deletable per pin):
+   - **Auto** = selects the thing under the pin (the flying guy, a text card, a badge).
+   - **Precise** = exactly the tapped point, no snapping.
+   - **Frame** = the whole frame (zoom, colour, pacing).
+   A pin dropped within 0.3 s of a cut gets target chips: end of scene N / start of scene N+1 / the cut itself (transition). Reel pins are mapped to a scene by the running total of scene durations (`DATA.cuts`).
+3. When the user says "apply my edits": read `pins/*` and `scenes/*` with ArtifactData (out_dir), then `python3 edit_room/resolve_pins.py <dir> --out resolved.json`. Auto pins are resolved exactly, not guessed: the engine's serve mode shows ONE layer at a time (`setOnly`, cameras and parents stay on), the top-most layer with alpha at the pin pixel wins, recursing into precomps; full-frame backdrops (>80% coverage) are skipped. Output per pin: layer chain, bbox, and the text slot / footage swap it belongs to (so the fix goes to `slots.json` / SWAP in build.py). Takes ~15 s per scene with Auto pins; Frame pins cost nothing.
+4. Apply the edits, re-render ONLY scenes that have a pin or changed words, re-stitch, republish. Write `resolved:{label,bbox}` back to each pin doc (ArtifactData update) so the page shows the box.
+5. Limits: Auto sees the project's layers, not baked pixels — a pin on baked footage returns "nothing owns this pixel" and is treated as Precise. The adjustment-layer shake is off during hit-testing, so boxes can be a few px off in shaky scenes. Optional pixel fallback (not built): SAM 2 on the rendered frame.
+Kill the engine with `kill`, not `terminate` (it ignores SIGTERM and hangs the wait).
+
 ## 7. Learn — automatic, EVERY run (don't skip, don't wait to be asked)
 Learning works through the user's notes turning into rules — never through popularity stats (they don't rank shots).
 - `python3 -m gen.learn pick <name>` once the plan is built (logs the picks in the run).

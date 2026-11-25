@@ -66,3 +66,5 @@ Read this before any video work. Every rule below came from the user; keep it cu
 - Fonts: user supplied Coolvetica (regular cuts only; Heavy cuts are paid). Kokila, Didot, Bradley Hand, Times, Helvetica still wanted from the user's own PC/Mac.
 - Music: decision pending (their bed is an Artlist screen recording — not licensed for us).
 - After Effects: user will buy later when they have a capable computer; templates should stay portable to AE edit lists.
+
+- **Edit Room pins (2026-11-25):** after the first render of a /gen reel, publish the Edit Room with pins; each pin has its own mode (Auto = layer under pin, Precise = exact point, Frame = whole frame), deletable per pin; pins at a cut carry a target (end of N / start of N+1 / the cut). See /gen §6b.
