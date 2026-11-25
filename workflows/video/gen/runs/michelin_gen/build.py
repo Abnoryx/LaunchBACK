@@ -9,6 +9,11 @@ LED = f'{TPL}/assets/led.jpg'   # neutral grey gradient, stands in for photos/wa
 cfg = json.load(open(os.path.join(VID, 'gen', 'config.json'))); EASE = cfg.get('ease', 'quad_out')
 # third-party marks, mascots, people, platform UI: swapped for neutral assets (brand care). Matched on footage name.
 # bands=[[45, 320]]: greens, cyans, blues, purples -> the red accent; yellow/orange stay (user: 'make it red coloured')
+NEW = os.path.join(HERE, 'assets_gen', 'out')   # Higgsfield-generated / made assets, in the exact slots the original animates (user 2026-11-25: no og assets, never blank)
+SWAP = {'1181': 'chef_sticker.png', '1116': 'broll_chef.mp4', '1120': 'sticker_tyre.png', '493': 'phone_book.png', '1429': 'broll_road.mp4', '126': 'avatar.png',
+        '1899': 'avatar.png', '120': 'ui_profile.jpg', '1895': 'ui_post.jpg', '1971': 'tick_red.jpg', '573': 'badge_tyre.png', '553': 'badge_book.png',
+        '2320': 'sticker_book.png', '824': 'desktop_icons.png', '718': 'wallpaper.png', '396': 'sticker_toque.png', '365': 'sticker_tyre.png'}
+SWAP = {k: os.path.join(NEW, v) if v != 'wallpaper.png' else os.path.join(HERE, 'assets_gen', 'wallpaper.png') for k, v in SWAP.items()}
 BRAND = re.compile(r'iphone|micheal jordan|saquon|nike|whatsapp|vecteezy|instagram|earnera|IMG_0264|Untitled design|icons\.png|blue tick|^e7650458|d81203|windows xp|clippy', re.I)
 OUT = sys.argv[1] if len(sys.argv) > 1 else 'preview'
 EXTRA = '--samples 1 --preview 540' if OUT == 'preview' else '--samples 4'
@@ -38,7 +43,7 @@ for f in sorted(glob.glob(f'{TPL}/templates/shot_*.json')):
         k = x['text'].strip()
         if k in m: texts[x['id']] = x['text'].replace(k, m[k]) if k else x['text']
         else: texts[x['id']] = ' '; unmapped.setdefault(sid, set()).add(k[:40])   # fine print / unlisted slot: blanked
-    foot = {str(x['id']): (LED if re.search(r'wallpaper', x['name'], re.I) else BLANK) for x in t['params']['footage'] if BRAND.search(x['name'])}
+    foot = {str(x['id']): SWAP.get(str(x['id']), LED if re.search(r'wallpaper', x['name'], re.I) else BLANK) for x in t['params']['footage'] if BRAND.search(x['name']) or str(x['id']) in SWAP}
     for x in t['params']['footage']:   # still images that are mostly green/blue/purple -> red copies (user: make it red coloured)
         pth = os.path.join(TPL, 'assets', x['name'])
         if str(x['id']) not in foot and x['name'].lower().rsplit('.', 1)[-1] in ('jpg', 'jpeg', 'png', 'gif') and os.path.exists(pth) and inband(pth) > 0.05: foot[str(x['id'])] = red_copy(x['id'], pth)
@@ -53,6 +58,6 @@ for f in sorted(glob.glob(f'{TPL}/templates/shot_*.json')):
     pj = os.path.join(W, f'params_{n:02d}.json'); json.dump(dict(texts=texts, accent='#E10600', bands=[[45, 320]], ease=EASE, footage=foot), open(pj, 'w'))
     out = os.path.join(W, f'proj_{n:02d}.json')
     r = subprocess.run([sys.executable, '-m', 'extract.aep_template', 'apply', f, pj, out], cwd=VID, capture_output=True, text=True); print(sid, r.stdout.strip().split('\n')[0][:90])
-    a, b = t['window']; entries.append(dict(project=out, comp=t['root'], **{'from': a, 'to': b}, label=f'{n:02d}', footage=['gen', 'red'], extra=f"{EXTRA} --luts footage/gen/luts_red.json"))
-json.dump(dict(footage={'gen': f'{TPL}/assets', 'red': RED}, entries=entries, fps=30), open(os.path.join(W, 'manifest.json'), 'w'), indent=1)
+    a, b = t['window']; entries.append(dict(project=out, comp=t['root'], **{'from': a, 'to': b}, label=f'{n:02d}', footage=['gen', 'red', 'new'], extra=f"{EXTRA} --luts footage/gen/luts_red.json"))
+json.dump(dict(footage={'gen': f'{TPL}/assets', 'red': RED, 'new': NEW}, entries=entries, fps=30), open(os.path.join(W, 'manifest.json'), 'w'), indent=1)
 print(len(entries), 'scenes', round(sum(e['to'] - e['from'] for e in entries), 1), 's;', 'blanked (fine print/unlisted):', {k: sorted(v) for k, v in unmapped.items()})

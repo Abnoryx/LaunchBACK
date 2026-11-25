@@ -80,13 +80,12 @@ allotted text) and the brief. **No spend and no build before the user signs off.
 The scenes of a group come with the original video's assets (wallpapers, photos, B-roll, logos, icons, badges). **Do not leave them as-is, and
 never leave a slot empty** (blank slots killed the scene's animation and left nothing to show). For every visible asset that is third-party,
 off-topic for the script (a brain in a tyre scene), plain "og stuff", or has no personality, make a NEW one that fits the script's topic:
-`gen.shotlist --assets` first (our library: `library/assets/m_*.png` tyre, book, map, toque, pump, cloche, bed, `needle_logo.png` = LaunchBack
-logo), otherwise **generate with Higgsfield** (`generate_image`, default `gpt_image_2_6`, ~0.75 credits each; a 5 s video is ~35 credits, so
+`gen.shotlist --assets` first (our library: `library/assets/m_*.png` tyre, book, map, toque, pump, cloche, bed, `launchback_mark.png` = the LaunchBack mark lifted from the logo sting; `needle_logo.png` is the creator's "e", NOT ours), otherwise **generate with Higgsfield** (`generate_image`, default `gpt_image_2_6`, ~0.75 credits each; a 5 s video is ~35 credits, so
 prefer a generated still animated in our engine over generated video). Tips: stickers/icons on a flat magenta background, keyed out, then a white
 die-cut outline; iconic wallpapers/B-roll as 9:16 stills; one consistent look per reel. Quote the total first, keep within the project budget
 (hard cap 100 credits), downloads work (host allowed). Fill the exact slots the original animates (footage ids in the scene's template) so the
 original animation plays on the new asset. **Handle/brand text:** the user's Instagram handle is `launch.back`: it replaces every creator
-watermark/handle (`earnera.co`, post names, profile cards); the LaunchBack logo (`needle_logo.png`) replaces creator logos/avatars.
+watermark/handle (`earnera.co`, post names, profile cards); the LaunchBack mark (`library/assets/launchback_mark.png`) replaces creator logos/avatars (ask the user for the original logo PNG).
 UI chrome (notifications, posts, profiles) gets our badges, names and personality, never blank or third-party.
 
 ## 6. Build, check, render

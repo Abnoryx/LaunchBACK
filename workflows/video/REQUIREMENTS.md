@@ -58,7 +58,7 @@ Read this before any video work. Every rule below came from the user; keep it cu
 - **One ease family** (user, 2026-11-24): every bezier ease in the scenes becomes the graph in `gen/config.json` `ease` (quad_out now; more graphs later in `library/style.py` EASE_GRAPHS) so scenes from different reels look like one creator's. Done by `extract.aep_template apply` (`ease` param).
 - **No texturising** (user, 2026-11-24): /gen never applies texture, blend-mode or displacement passes. (The tutorial notes stay as knowledge only.)
 
-- **Assets are generated, not og** (user, 2026-11-25): in /gen, replace the group's original assets with new Higgsfield-generated (or library) ones that fit the script, in the exact slots the original animates; never blank. Handle = `launch.back` (replaces creator watermarks/post names), LaunchBack logo = `library/assets/needle_logo.png`. Higgsfield: 0.75 credits/image, ~35/5 s video; downloads from the CDN work now.
+- **Assets are generated, not og** (user, 2026-11-25): in /gen, replace the group's original assets with new Higgsfield-generated (or library) ones that fit the script, in the exact slots the original animates; never blank. Handle = `launch.back` (replaces creator watermarks/post names), LaunchBack mark = `library/assets/launchback_mark.png` (lifted from the logo sting; `needle_logo.png` is the creator's 'e', not ours). Higgsfield: 0.75 credits/image, ~35/5 s video; downloads from the CDN work now.
 
 ## Known blockers / asks
 - Sells step 8 (original touch) waits on the user's content: new text, images/logo, and the brand red hex.
