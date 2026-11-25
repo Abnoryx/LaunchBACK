@@ -76,11 +76,18 @@ no texture, blend-mode or displacement passes). Then `python3 -m gen.selects gen
 group's scenes exactly as stored, in order (don't commit it if it holds bought scenes). Send it with the scene table (scene, seconds,
 allotted text) and the brief. **No spend and no build before the user signs off.**
 
-## 5. Assets — reuse first
-For each prop: `python3 -m gen.shotlist --assets <tags>` searches every asset in the library (`library/assets/**`
-and bought .aep libraries in `/home/user/tpl/lib/*/assets`, private: use, never commit), found fresh every run. Reuse, re-tint or
-re-light what exists. Only gaps: quote Higgsfield credits, generate in one consistent prop look (pick #4), cut out,
-check (turntable for 3D: `scratch/model_turntable_all.py`), add to the index.
+## 5. Assets — generate new ones with Higgsfield for ANY part (user rule, 2026-11-25)
+The scenes of a group come with the original video's assets (wallpapers, photos, B-roll, logos, icons, badges). **Do not leave them as-is, and
+never leave a slot empty** (blank slots killed the scene's animation and left nothing to show). For every visible asset that is third-party,
+off-topic for the script (a brain in a tyre scene), plain "og stuff", or has no personality, make a NEW one that fits the script's topic:
+`gen.shotlist --assets` first (our library: `library/assets/m_*.png` tyre, book, map, toque, pump, cloche, bed, `needle_logo.png` = LaunchBack
+logo), otherwise **generate with Higgsfield** (`generate_image`, default `gpt_image_2_6`, ~0.75 credits each; a 5 s video is ~35 credits, so
+prefer a generated still animated in our engine over generated video). Tips: stickers/icons on a flat magenta background, keyed out, then a white
+die-cut outline; iconic wallpapers/B-roll as 9:16 stills; one consistent look per reel. Quote the total first, keep within the project budget
+(hard cap 100 credits), downloads work (host allowed). Fill the exact slots the original animates (footage ids in the scene's template) so the
+original animation plays on the new asset. **Handle/brand text:** the user's Instagram handle is `launch.back`: it replaces every creator
+watermark/handle (`earnera.co`, post names, profile cards); the LaunchBack logo (`needle_logo.png`) replaces creator logos/avatars.
+UI chrome (notifications, posts, profiles) gets our badges, names and personality, never blank or third-party.
 
 ## 6. Build, check, render
 Build per scene with `python3 -m extract.aep_template apply <shot_NN.json> <params.json> <out.json>`; params = `texts` (every layer showing the same

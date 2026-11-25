@@ -58,9 +58,11 @@ Read this before any video work. Every rule below came from the user; keep it cu
 - **One ease family** (user, 2026-11-24): every bezier ease in the scenes becomes the graph in `gen/config.json` `ease` (quad_out now; more graphs later in `library/style.py` EASE_GRAPHS) so scenes from different reels look like one creator's. Done by `extract.aep_template apply` (`ease` param).
 - **No texturising** (user, 2026-11-24): /gen never applies texture, blend-mode or displacement passes. (The tutorial notes stay as knowledge only.)
 
+- **Assets are generated, not og** (user, 2026-11-25): in /gen, replace the group's original assets with new Higgsfield-generated (or library) ones that fit the script, in the exact slots the original animates; never blank. Handle = `launch.back` (replaces creator watermarks/post names), LaunchBack logo = `library/assets/needle_logo.png`. Higgsfield: 0.75 credits/image, ~35/5 s video; downloads from the CDN work now.
+
 ## Known blockers / asks
 - Sells step 8 (original touch) waits on the user's content: new text, images/logo, and the brand red hex.
-- Higgsfield downloads need host `d8j0ntlcm91z4.cloudfront.net` allowed in this environment's network settings (user must do it from a computer). Until then the user sends generated images in chat.
+- (resolved 2026-11-25) Higgsfield CDN downloads work from this environment.
 - Fonts: user supplied Coolvetica (regular cuts only; Heavy cuts are paid). Kokila, Didot, Bradley Hand, Times, Helvetica still wanted from the user's own PC/Mac.
 - Music: decision pending (their bed is an Artlist screen recording — not licensed for us).
 - After Effects: user will buy later when they have a capable computer; templates should stay portable to AE edit lists.
