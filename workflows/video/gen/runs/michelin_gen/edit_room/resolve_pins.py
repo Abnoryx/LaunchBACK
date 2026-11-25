@@ -12,7 +12,8 @@ FOOT = ','.join([os.path.join(VID, 'library/assets'), '/home/user/tpl/lib/gen/as
 
 class Engine:
     """one warm engine process per scene project"""
-    def __init__(s, n, root):
+    def __init__(s, n, root, proj=None):
+        s.cams = {c['name']: [l['i'] for l in c['layers'] if l.get('type') == 'CameraLayer'] for c in (proj or {}).get('comps', [])}
         s.log = open('/tmp/pick_serve.log', 'w')
         s.p = subprocess.Popen(['node', 'engine/render.mjs', '--project', os.path.join(W, f'proj_{n}.json'), '--footage', FOOT, '--comp', root, '--luts',
                                 '/home/user/tpl/lib/gen/assets/luts_red.json', '--serve', str(PORT)], cwd=VID, stdout=s.log, stderr=subprocess.STDOUT); s.root = root
@@ -24,14 +25,14 @@ class Engine:
         r = urllib.request.urlopen(urllib.request.Request(f'http://127.0.0.1:{PORT}/render', json.dumps(q).encode(), {'Content-Type': 'application/json'}), timeout=300); return json.loads(r.read())
     def isolate(s, path, comp, idx):   # path = [(comp name, layer index), ...] of parents that stay on; then only `idx` of `comp`
         s.post({'comp': s.root, 'times': [], 'only': None})
-        for c, i in path: s.post({'comp': s.root, 'times': [], 'only': [i], 'only_comp': c})
-        s.post({'comp': s.root, 'times': [], 'only': idx, 'only_comp': comp})
+        for c, i in path: s.post({'comp': s.root, 'times': [], 'only': [i] + s.cams.get(c, []), 'only_comp': c})   # cameras stay on: 3D layers need them
+        s.post({'comp': s.root, 'times': [], 'only': list(idx) + s.cams.get(comp, []), 'only_comp': comp})
     def mask(s, path, comp, idx, t):   # one render per (layer, time), shared by every pin at that time
-        k = (tuple(path), comp, idx, round(t, 3)); c = s.__dict__.setdefault('cache', {})
-        if k not in c: s.isolate(list(path), comp, [idx]); c[k] = s.alpha(t)
+        k = (tuple(path), comp, tuple(idx), round(t, 3)); c = s.__dict__.setdefault('cache', {})
+        if k not in c: s.isolate(list(path), comp, idx); c[k] = s.alpha(t)
         return c[k]
-    def alpha(s, t): return np.frombuffer(base64.b64decode(s.post({'comp': s.root, 'times': [t], 'w': SZ[0], 'h': SZ[1]})['frames'][0]), np.uint8).reshape(SZ[1], SZ[0], 4)[..., 3] > 16
-    def close(s): s.post({'comp': s.root, 'times': [], 'only': None}); s.p.terminate(); s.p.wait(); time.sleep(1)
+    def alpha(s, t): return np.frombuffer(base64.b64decode(s.post({'comp': s.root, 'times': [t], 'w': SZ[0], 'h': SZ[1]})['frames'][0]), np.uint8).reshape(SZ[1], SZ[0], 4)[..., 3] > 48
+    def close(s): s.post({'comp': s.root, 'times': [], 'only': None}); s.p.kill(); s.p.wait(); time.sleep(1)
 
 
 def candidates(comp):
@@ -39,14 +40,20 @@ def candidates(comp):
                    and not l['name'].lower().startswith(('null', 'primary null'))], key=lambda l: l['i'])
 
 
+def chain_of(comp, l):   # the layer plus its parent chain (parents carry its transform)
+    by = {x['i']: x for x in comp['layers']}; out = [l['i']]; p = l.get('parent')
+    while p is not None and p in by and p not in out: out.append(p); p = by[p].get('parent')
+    return out
+
+
 def descend(eng, proj, comp, t, px, py, path=(), depth=0):
     """-> (chain of layers, bbox 0..1) of the top-most layer under (px, py), recursing into precomps"""
     byid = {c['id']: c for c in proj['comps']}; fallback = None
     for l in candidates(comp):
-        a = eng.mask(path, comp['name'], l['i'], t)
-        if a.mean() > COVER:   # paper textures / full-frame backdrops are not what a pin means; remember as fallback
+        a = eng.mask(path, comp['name'], tuple(chain_of(comp, l)), t)
+        if a.mean() > COVER and l.get('src_type') != 'CompItem':   # paper textures / full-frame backdrops are not what a pin means; remember as fallback
             fallback = fallback or (l, a); continue
-        if not a[max(0, py - 2):py + 3, max(0, px - 2):px + 3].any(): continue
+        if not a[max(0, py - 1):py + 2, max(0, px - 1):px + 2].any(): continue
         node = {'comp': comp['name'], 'layer': l['i'], 'name': l['name'], 'type': l.get('type')}
         if l.get('text'): node['text'] = l['text']['text']
         if l.get('src_type') == 'FootageItem':
@@ -101,7 +108,7 @@ def main(src, out=None):
     for i in sorted(work):
         sid, win, root, _ = S[i]; n = sid; proj = json.load(open(os.path.join(W, f'proj_{n}.json'))); comp = next(c for c in proj['comps'] if c['name'] == root)
         auto = [(p, l) for p, l in work[i] if p.get('mode', 'auto') in ('auto', 'precise')]
-        eng = Engine(n, root) if auto else None
+        eng = Engine(n, root, proj) if auto else None
         for p, local in work[i]:
             r = {'pin': p['id'], 'scene': sid, 'comp_time': round(win[0] + local, 3), 'mode': p.get('mode', 'auto'), 'note': p.get('note', ''), 'between': p['between'], 'target': p.get('target', ''), 'x': p.get('x'), 'y': p.get('y')}
             if p.get('mode', 'auto') == 'frame': r['selection'] = 'the whole frame'
