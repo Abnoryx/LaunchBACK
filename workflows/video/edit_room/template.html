@@ -1,0 +1,281 @@
+<title>LaunchBack Edit Room</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+/* An editing bay, not a form: scene rail | viewer | inspector, transport + timeline under the viewer. On a phone the viewer and timeline stay pinned while the rest scrolls. */
+:root{--bg:#0d0d10;--bar:#131317;--panel:#17171c;--panel2:#1f1f26;--line:#2a2a33;--fg:#ededf2;--muted:#9494a1;--accent:#ff3b30;--accent-ink:#fff;--keep:#34c759;--chg:#f5a524;--ease:cubic-bezier(.2,.8,.2,1);--head:'Space Grotesk','Inter',system-ui,sans-serif;--body:'Inter',system-ui,sans-serif;color-scheme:dark}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#eeedeb;--bar:#fff;--panel:#fff;--panel2:#f0efed;--line:#d8d5d0;--fg:#17171b;--muted:#6a6972;--accent:#e10600;--keep:#0f7a4a;--chg:#b86a00;color-scheme:light}}
+:root[data-theme="light"]{--bg:#eeedeb;--bar:#fff;--panel:#fff;--panel2:#f0efed;--line:#d8d5d0;--fg:#17171b;--muted:#6a6972;--accent:#e10600;--keep:#0f7a4a;--chg:#b86a00;color-scheme:light}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font:14px/1.4 var(--body);-webkit-text-size-adjust:100%;padding-left:env(safe-area-inset-left,0);padding-right:env(safe-area-inset-right,0)}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.app{display:grid;grid-template-columns:136px minmax(0,1fr) 372px;grid-template-rows:48px minmax(0,1fr);height:100dvh;min-height:520px}
+.top{grid-column:1/-1;display:flex;align-items:center;gap:14px;padding:0 14px;background:var(--bar);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0)}
+.top h1{font:700 15px var(--head);margin:0;letter-spacing:-.01em;white-space:nowrap}.top h1 small{font:500 11px var(--body);color:var(--muted);margin-left:8px;letter-spacing:.04em;text-transform:uppercase}
+.sp{flex:1}
+.pill{border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:12px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}.pill b{color:var(--fg)}
+.pill.k b{color:var(--keep)}.pill.c b{color:var(--chg)}
+#sync{font-size:12px;color:var(--muted);min-width:70px;text-align:right}
+.rail{grid-row:2;overflow:auto;background:var(--bar);border-right:1px solid var(--line);padding:8px;display:flex;flex-direction:column;gap:8px}
+.ri{position:relative;border:2px solid transparent;border-radius:8px;background:var(--panel);padding:4px;text-align:left;display:block;width:100%}
+.ri[aria-current="true"]{border-color:var(--accent)}
+.ri video,.ri .ph{width:100%;aspect-ratio:9/16;object-fit:cover;border-radius:5px;background:#000;display:block;pointer-events:none}
+.ri .ph{display:grid;place-items:center;color:var(--muted);font-size:11px}
+.ri .lb{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:4px;font-variant-numeric:tabular-nums}.ri .lb b{color:var(--fg)}
+.ri .dot{position:absolute;top:8px;left:8px;width:10px;height:10px;border-radius:50%;background:transparent;border:2px solid #fff;box-shadow:0 0 0 1px #0006}
+.ri .dot.keep{background:var(--keep)}.ri .dot.change{background:var(--chg)}
+.ri .pc{position:absolute;top:6px;right:6px;background:var(--accent);color:var(--accent-ink);border-radius:999px;font:700 11px/18px var(--body);min-width:18px;text-align:center;padding:0 5px}
+.ri.reel{background:var(--panel2)}.ri.reel .ph{aspect-ratio:16/9;font-weight:600;color:var(--fg)}
+.deck{grid-column:2;grid-row:2;display:flex;flex-direction:column;min-width:0;min-height:0;background:var(--bg)}
+.view{flex:1;min-height:0;display:grid;place-items:center;padding:12px;position:relative}
+.stage{position:relative;height:100%;aspect-ratio:9/16;max-width:100%;background:#000;border-radius:6px;box-shadow:0 0 0 1px var(--line),0 12px 40px #0008;touch-action:manipulation;user-select:none}
+.stage video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block}
+.stage.noclip::after{content:"preview not uploaded";position:absolute;inset:0;display:grid;place-items:center;color:var(--muted)}
+.ov{position:absolute;inset:0;overflow:hidden}.ov.pinning{cursor:crosshair}
+.pin{--pc:var(--accent);position:absolute;border:3px solid var(--pc);background:color-mix(in srgb,var(--pc) 16%,transparent);box-shadow:0 0 0 2px #0007;color:var(--accent-ink);opacity:1;touch-action:none;cursor:grab;
+ transition:left .32s var(--ease),top .32s var(--ease),width .32s var(--ease),height .32s var(--ease),border-radius .32s var(--ease),transform .32s var(--ease),opacity .2s,background .2s}
+.pin.off{opacity:0;pointer-events:none}.pin.sel{box-shadow:0 0 0 2px #fff,0 0 0 5px var(--pc)}
+.pin .n{position:absolute;left:-3px;top:-3px;transform:translate(-45%,-100%);background:var(--pc);color:#fff;border-radius:999px;font:700 11px/18px var(--body);min-width:18px;padding:0 5px;text-align:center;white-space:nowrap;transition:transform .32s var(--ease)}
+.pin[data-m="precise"] .n{transform:rotate(-45deg) translate(-40%,-110%)}
+.pin[data-m="auto"]:not(.rect){border-style:dashed}
+.tools{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);display:flex;gap:6px;background:#000a;backdrop-filter:blur(8px);border:1px solid #fff2;border-radius:999px;padding:5px 6px;z-index:3}
+.tools button{background:transparent;border:0;color:#fff;border-radius:999px;padding:7px 12px;font:600 12px var(--body);min-height:36px}
+.tools button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.hint{position:absolute;top:18px;left:50%;transform:translateX(-50%);background:#000b;color:#fff;border-radius:999px;padding:5px 12px;font-size:12px;pointer-events:none;opacity:0;transition:opacity .25s;z-index:3;white-space:nowrap}.hint.show{opacity:1}
+.tp{border-top:1px solid var(--line);background:var(--bar);padding:8px 12px 10px;display:flex;flex-direction:column;gap:8px}
+.tr{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.tr button{background:var(--panel2);border:1px solid var(--line);border-radius:8px;min-width:44px;min-height:44px;font:600 14px var(--body)}
+.tr button.play{min-width:56px;background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.tr .tc{font:500 13px ui-monospace,Menlo,monospace;color:var(--muted);margin-left:6px;font-variant-numeric:tabular-nums;white-space:nowrap}.tr .tc b{color:var(--fg);font-weight:500}
+.tl{position:relative;height:64px;border-radius:8px;background:var(--panel2);border:1px solid var(--line);touch-action:none;cursor:ew-resize;overflow:hidden;outline-offset:2px}
+.blk{position:absolute;top:22px;bottom:4px;border-radius:5px;background:var(--panel);border:1px solid var(--line);font:600 10px/1 var(--body);color:var(--muted);padding:4px 5px;overflow:hidden;white-space:nowrap;pointer-events:none}
+.blk.cur{background:color-mix(in srgb,var(--accent) 18%,var(--panel));color:var(--fg);border-color:var(--accent)}
+.blk.keep::after,.blk.change::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--keep)}.blk.change::after{background:var(--chg)}
+.mk{position:absolute;top:2px;width:14px;height:14px;transform:translateX(-50%) rotate(45deg);background:var(--pc,var(--accent));border:2px solid var(--bg);border-radius:3px;pointer-events:none}
+.mk.sel{outline:2px solid #fff}
+.ph-line{position:absolute;top:0;bottom:0;width:2px;background:#fff;box-shadow:0 0 0 1px #0008;pointer-events:none;transform:translateX(-1px)}
+.ph-line::before{content:"";position:absolute;top:-1px;left:-5px;border:6px solid transparent;border-top-color:#fff;border-bottom:0}
+.insp{grid-column:3;grid-row:2;background:var(--bar);border-left:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+.tabs{display:flex;border-bottom:1px solid var(--line);position:relative}
+.tabs button{flex:1;background:transparent;border:0;padding:12px 6px;font:600 13px var(--body);color:var(--muted);min-height:44px}
+.tabs button[aria-selected="true"]{color:var(--fg)}
+.tabs i{position:absolute;bottom:-1px;left:0;height:2px;width:33.333%;background:var(--accent);transition:transform .3s var(--ease)}
+.pane{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:12px}
+.pane[hidden]{display:none}
+.empty{color:var(--muted);font-size:13px;border:1px dashed var(--line);border-radius:10px;padding:16px;text-align:center}
+.row{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:8px}
+.row.sel{border-color:var(--pc,var(--accent))}
+.row .hd{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.row .bd{background:var(--pc,var(--accent));color:#fff;border-radius:999px;font:700 11px/18px var(--body);min-width:18px;padding:0 6px;text-align:center}
+.row .tm{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.row button.sm,.row select{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 10px;min-height:44px;font-size:12px;font-weight:600}
+.row button.x{color:var(--accent)}
+.mode{position:relative;display:flex;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:2px;isolation:isolate}
+.mode .th{position:absolute;top:2px;bottom:2px;left:2px;width:calc((100% - 4px)/3);background:var(--pc,var(--accent));border-radius:7px;transition:transform .3s var(--ease);z-index:-1}
+.mode button{flex:1;background:transparent;border:0;padding:6px 8px;min-height:40px;font:600 12px var(--body);color:var(--muted);border-radius:7px}
+.mode button[aria-pressed="true"]{color:#fff}
+.tg{display:flex;gap:4px;flex-wrap:wrap}.tg button{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:12px;min-height:40px}.tg button[aria-pressed="true"]{border-color:var(--chg);color:var(--chg)}
+.res{font-size:12px;color:var(--keep)}
+.grp{border:1px solid var(--pc);border-radius:12px;padding:8px;display:flex;flex-direction:column;gap:8px;background:color-mix(in srgb,var(--pc) 8%,var(--panel))}
+.grp>.gh{display:flex;align-items:center;gap:8px;font:700 13px var(--head)}.grp .sw{width:12px;height:12px;border-radius:4px;background:var(--pc)}
+textarea,input[type=text]{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px;min-height:44px}
+textarea{min-height:64px;resize:vertical}
+input.changed{border-color:var(--chg)}
+label.f{display:block;font-size:11px;color:var(--muted);margin:0 0 3px;overflow-wrap:anywhere}
+.seg{display:flex;gap:6px}.seg button{flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:8px;min-height:44px;font-weight:600}
+.seg button[aria-pressed="true"].k{border-color:var(--keep);color:var(--keep)}.seg button[aria-pressed="true"].c{border-color:var(--chg);color:var(--chg)}
+details summary{cursor:pointer;color:var(--muted);font-size:12px;min-height:32px}
+.keys{font-size:12px;color:var(--muted)}.keys kbd{background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font:500 11px ui-monospace,Menlo,monospace;color:var(--fg)}
+@media (max-width:900px){
+ .app{display:block;height:auto}
+ .top{position:sticky;top:0;z-index:30;height:calc(44px + env(safe-area-inset-top,0));flex-wrap:nowrap;overflow:hidden}.top h1 small,.pill.hide{display:none}
+ .deck{position:sticky;top:calc(44px + env(safe-area-inset-top,0));z-index:25;height:min(52dvh,500px)}
+ .view{padding:6px}
+ .tp{padding:6px 10px 8px}.tl{height:54px}
+ .rail{flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line);padding:8px}.ri{width:76px;flex:none}.ri.reel{width:116px}
+ .insp{border-left:0;min-height:60dvh}
+ .keys{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition-duration:.01ms!important;animation-duration:.01ms!important}}
+</style>
+<div class="app" id="app">
+  <header class="top"><h1 id="ttl">Edit Room<small id="sub"></small></h1><span class="sp"></span>
+    <span class="pill k hide"><b id="nKeep">0</b> keep</span><span class="pill c hide"><b id="nChg">0</b> change</span><span class="pill"><b id="nPin">0</b> pins</span><span class="pill hide"><b id="nWords">0</b> lines</span><span id="sync">loading…</span></header>
+  <nav class="rail" id="rail" aria-label="Scenes"></nav>
+  <main class="deck">
+    <div class="view"><div class="stage" id="stage"><video id="vid" playsinline preload="metadata" muted></video><div class="ov pinning" id="ov"></div>
+      <div class="hint" id="hint"></div>
+      <div class="tools"><button id="bPin" type="button" aria-pressed="true" title="Pin tool (P)">📍 Pin</button><button id="bLoop" type="button" aria-pressed="false" title="Loop (L)">Loop</button><button id="bSnd" type="button" aria-pressed="false" title="Sound (M)">Sound</button></div></div></div>
+    <div class="tp">
+      <div class="tr"><button id="bPrev" type="button" aria-label="Previous scene" title="Previous scene ([)">⏮</button><button id="bBack" type="button" aria-label="Back one frame" title="Back one frame (←)">◂</button><button class="play" id="bPlay" type="button" aria-label="Play" title="Play / pause (Space)">▶</button><button id="bFwd" type="button" aria-label="Forward one frame" title="Forward one frame (→)">▸</button><button id="bNext" type="button" aria-label="Next scene" title="Next scene (])">⏭</button><span class="tc"><b id="tcNow">0:00.00</b> / <span id="tcEnd">0:00.00</span> · f<span id="fr">0</span></span></div>
+      <div class="tl" id="tl" role="slider" tabindex="0" aria-label="Timeline" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+    </div>
+  </main>
+  <aside class="insp">
+    <div class="tabs" role="tablist"><button role="tab" aria-selected="true" data-t="pins" type="button">Pins</button><button role="tab" aria-selected="false" data-t="words" type="button">Words</button><button role="tab" aria-selected="false" data-t="proj" type="button">Project</button><i id="tabInk"></i></div>
+    <section class="pane" id="p-pins"></section>
+    <section class="pane" id="p-words" hidden></section>
+    <section class="pane" id="p-proj" hidden><label class="f" for="projNote">Notes for the whole reel</label><textarea id="projNote" placeholder="Pace, colours, voice-over, music…"></textarea>
+      <p class="keys"><kbd>Space</kbd> play · <kbd>←</kbd><kbd>→</kbd> frame · <kbd>⇧</kbd>+arrows 1 s · <kbd>[</kbd><kbd>]</kbd> scene · <kbd>P</kbd> pin tool · <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> Auto/Precise/Frame · <kbd>Del</kbd> delete pin</p></section>
+  </aside>
+</div>
+<script>
+(function(){
+const DATA=/*__DATA__*/{};
+const $=s=>document.querySelector(s);
+const el=(t,a,c)=>{const e=document.createElement(t);for(const k in(a||{})){if(k==='class')e.className=a[k];else if(k==='text')e.textContent=a[k];else e.setAttribute(k,a[k])}(c||[]).forEach(x=>e.append(x));return e};
+const COLORS=['#ff3b30','#3b8cff','#f5a524','#34c759','#bf5af2','#00c7be'],FPS=30;
+const gcol=g=>g?COLORS[(g.charCodeAt(0)-65)%COLORS.length]:'';
+const fmt=t=>{t=Math.max(0,t||0);const m=Math.floor(t/60);return m+':'+(t-m*60).toFixed(2).padStart(5,'0')};
+let db=null,saveOk=true;const st={},timers={},chain={},pins={},groups={},ptimers={},pchain={};
+const S={key:'reel',sel:null,tool:true,tab:'pins'};
+DATA.scenes.forEach(s=>{st[s.id]={status:'',note:'',words:Object.fromEntries(s.words.map(w=>[w.k,w.v])),chrome:Object.fromEntries(s.chrome.map(w=>[w.k,w.v]))}});
+['reel'].concat(DATA.scenes.map(s=>s.id)).forEach(k=>{pins[k]=[];groups[k]={}});
+const vid=$('#vid'),ov=$('#ov'),stage=$('#stage'),tl=$('#tl');
+if(DATA.title)$('#ttl').firstChild.textContent=DATA.title;$('#sub').textContent=DATA.sub||'';
+/* ---- helpers ---- */
+const sceneOf=k=>DATA.scenes.find(s=>s.id===k);
+const src=k=>k==='reel'?DATA.reel:(sceneOf(k)||{}).clip;
+const total=()=>vid.duration&&isFinite(vid.duration)?vid.duration:(S.key==='reel'?(DATA.cuts.length?DATA.cuts[DATA.cuts.length-1]+DATA.scenes[DATA.scenes.length-1].sec:0):(sceneOf(S.key)||{sec:0}).sec);
+const bounds=()=>{if(S.key!=='reel')return[{a:0,b:total(),s:sceneOf(S.key)}];const a=[0].concat(DATA.cuts),b=DATA.cuts.concat([total()]);return DATA.scenes.map((s,i)=>({a:a[i],b:Math.max(b[i],a[i]+.01),s}))};
+const sceneIdx=t=>{if(S.key!=='reel')return DATA.scenes.findIndex(s=>s.id===S.key);let i=0;while(i<DATA.cuts.length&&t>=DATA.cuts[i]-.0001)i++;return i};
+const cutNear=t=>{if(S.key!=='reel')return null;for(let i=0;i<DATA.cuts.length;i++)if(Math.abs(t-DATA.cuts[i])<.3)return i;return null};
+const sel=()=>pins[S.key].find(p=>p.id===S.sel);
+function hint(m){const h=$('#hint');h.textContent=m;h.classList.add('show');clearTimeout(hint.t);hint.t=setTimeout(()=>h.classList.remove('show'),1600)}
+/* ---- saving ---- */
+function sync(m){const e=$('#sync');e.textContent=!db?'not saving here':m==='saving'?'saving…':!saveOk?'save failed':'saved'}
+const done=()=>{saveOk=true;sync()},fail=e=>{saveOk=false;sync(e)};
+function wordsEdited(s){return s.words.concat(s.chrome).filter(w=>(st[s.id].words[w.k]??st[s.id].chrome[w.k])!==w.v).length}
+function saveScene(s){clearTimeout(timers[s.id]);timers[s.id]=setTimeout(()=>{if(!db)return;const x=st[s.id];const body={status:x.status,note:x.note,words:s.words.map(w=>({k:w.k,v:x.words[w.k]})),chrome:s.chrome.map(w=>({k:w.k,v:x.chrome[w.k]})),edited:wordsEdited(s),at:new Date().toISOString()};
+ chain[s.id]=(chain[s.id]||Promise.resolve()).then(()=>db.doc('scenes/'+s.id).set(body)).then(done,fail);delete timers[s.id]},700);sync('saving')}
+function savePins(k){clearTimeout(ptimers[k]);ptimers[k]=setTimeout(()=>{if(!db)return;const body={pins:pins[k].map(p=>({id:p.id,t:p.t,x:p.x,y:p.y,mode:p.mode,note:p.note||'',group:p.group||'',target:p.target||'',between:p.between||null,resolved:p.resolved||null})),groups:groups[k],at:new Date().toISOString()};
+ pchain[k]=(pchain[k]||Promise.resolve()).then(()=>db.doc('pins/'+k).set(body)).then(done,fail);delete ptimers[k]},500);sync('saving')}
+function stats(){let k=0,c=0,w=0,n=0;DATA.scenes.forEach(s=>{const x=st[s.id];if(x.status==='keep')k++;if(x.status==='change')c++;w+=wordsEdited(s)});for(const key in pins)n+=pins[key].length;$('#nKeep').textContent=k;$('#nChg').textContent=c;$('#nWords').textContent=w;$('#nPin').textContent=n}
+/* ---- rail ---- */
+const railEls={};
+function buildRail(){const r=$('#rail');const mk=(key,label,sub,clip,cls)=>{const b=el('button',{class:'ri '+(cls||''),type:'button','aria-current':'false','aria-label':label},[]);
+  b.append(clip?el('video',{src:clip+'#t=0.1',muted:'',playsinline:'',preload:'metadata'}):el('div',{class:'ph',text:cls==='reel'?'Whole reel':'no preview'}));
+  if(key!=='reel')b.append(el('i',{class:'dot'}));b.append(el('span',{class:'pc',hidden:''}),el('div',{class:'lb'},[el('b',{text:label}),el('span',{text:sub})]));b.onclick=()=>open(key);railEls[key]=b;r.append(b)};
+ mk('reel','Reel',total()?fmt(total()).slice(0,-3)+'s':'',DATA.reel?'':'','reel');
+ DATA.scenes.forEach(s=>mk(s.id,'S'+s.n,s.sec.toFixed(1)+'s',s.clip))}
+function paintRail(){for(const key in railEls){const b=railEls[key];b.setAttribute('aria-current',String(key===S.key));const pc=b.querySelector('.pc'),n=pins[key].length;pc.hidden=!n;pc.textContent=n;const d=b.querySelector('.dot');if(d){const s=st[key];d.className='dot '+(s.status||'')}}}
+/* ---- opening a clip ---- */
+function open(key,t){S.key=key;S.sel=null;const u=src(key);stage.classList.toggle('noclip',!u);if(u){if(vid.getAttribute('src')!==u)vid.src=u}else vid.removeAttribute('src');vid.currentTime=0;
+ Object.values(pinEls).forEach(e=>e.remove());for(const k in pinEls)delete pinEls[k];buildTl();renderPins();renderWords();paintRail();place();if(t!=null)seek(t);{const r=$('#rail'),b=railEls[key],rb=r.getBoundingClientRect(),bb=b.getBoundingClientRect();r.scrollTop+=Math.min(0,bb.top-rb.top)+Math.max(0,bb.bottom-rb.bottom);r.scrollLeft+=Math.min(0,bb.left-rb.left)+Math.max(0,bb.right-rb.right)}}
+function seek(t){const d=total();vid.currentTime=Math.min(Math.max(0,t),Math.max(0,d-.001));tick()}
+/* ---- timeline ---- */
+let blkEls=[],mkEls={};
+function buildTl(){tl.textContent='';blkEls=[];mkEls={};const d=total()||1;bounds().forEach(b=>{const e=el('div',{class:'blk',text:'S'+b.s.n});e.style.left=(b.a/d*100)+'%';e.style.width=((b.b-b.a)/d*100)+'%';tl.append(e);blkEls.push(e)});tl.append(el('div',{class:'ph-line',id:'phl'}));drawMarks();paintBlocks()}
+function paintBlocks(){const d=total()||1;bounds().forEach((b,i)=>{const e=blkEls[i];if(!e)return;e.style.left=(b.a/d*100)+'%';e.style.width=((b.b-b.a)/d*100)+'%';e.className='blk'+(b.s.id===curScene().id?' cur':'')+' '+(st[b.s.id].status||'')})}
+function drawMarks(){Object.values(mkEls).forEach(e=>e.remove());mkEls={};const d=total()||1;pins[S.key].forEach(p=>{const e=el('div',{class:'mk'+(p.id===S.sel?' sel':'')});e.style.left=(p.t/d*100)+'%';e.style.setProperty('--pc',gcol(p.group)||'var(--accent)');tl.append(e);mkEls[p.id]=e})}
+function scrubTo(ev){const r=tl.getBoundingClientRect();seek((Math.min(Math.max(ev.clientX-r.left,0),r.width)/r.width)*total())}
+let scrubbing=false;tl.addEventListener('pointerdown',e=>{scrubbing=true;tl.setPointerCapture(e.pointerId);vid.pause();scrubTo(e);e.preventDefault()});
+tl.addEventListener('pointermove',e=>{if(scrubbing)scrubTo(e)});tl.addEventListener('pointerup',()=>{scrubbing=false});tl.addEventListener('pointercancel',()=>{scrubbing=false});
+tl.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();seek(vid.currentTime+(e.key==='ArrowLeft'?-1:1)*(e.shiftKey?1:1/FPS))}});
+const curScene=()=>DATA.scenes[Math.min(Math.max(sceneIdx(vid.currentTime||0),0),DATA.scenes.length-1)];
+let lastScene=null;
+function tick(){const t=vid.currentTime||0,d=total()||1;$('#tcNow').textContent=fmt(t);$('#tcEnd').textContent=fmt(d);$('#fr').textContent=Math.round(t*FPS);$('#phl').style.left=(t/d*100)+'%';tl.setAttribute('aria-valuenow',String(Math.round(t/d*100)));
+ const cs=curScene();if(cs.id!==lastScene){lastScene=cs.id;paintBlocks();renderWords()}place()}
+function loop(){tick();if(!vid.paused)requestAnimationFrame(loop)}
+vid.addEventListener('play',()=>{$('#bPlay').textContent='❚❚';$('#bPlay').setAttribute('aria-label','Pause');loop()});
+vid.addEventListener('pause',()=>{$('#bPlay').textContent='▶';$('#bPlay').setAttribute('aria-label','Play');tick()});
+['timeupdate','seeked','loadedmetadata','durationchange'].forEach(ev=>vid.addEventListener(ev,()=>{if(ev==='loadedmetadata'||ev==='durationchange')buildTl();tick()}));
+/* ---- transport ---- */
+const toggle=()=>vid.paused?vid.play().catch(()=>{}):vid.pause();
+$('#bPlay').onclick=toggle;$('#bBack').onclick=()=>{vid.pause();seek(vid.currentTime-1/FPS)};$('#bFwd').onclick=()=>{vid.pause();seek(vid.currentTime+1/FPS)};
+const jump=dir=>{if(S.key==='reel'){const t=vid.currentTime,b=[0].concat(DATA.cuts);let i=b.findIndex(x=>x>t+.05);i=dir>0?(i<0?b.length-1:i):Math.max(0,(i<0?b.length:i)-(t-b[Math.max(0,(i<0?b.length:i)-1)]>.3?1:2));seek(b[Math.min(Math.max(i,0),b.length-1)])}else{const i=DATA.scenes.findIndex(s=>s.id===S.key)+dir;if(DATA.scenes[i])open(DATA.scenes[i].id)}};
+$('#bPrev').onclick=()=>jump(-1);$('#bNext').onclick=()=>jump(1);
+$('#bPin').onclick=()=>{S.tool=!S.tool;paintTool()};$('#bLoop').onclick=()=>{vid.loop=!vid.loop;$('#bLoop').setAttribute('aria-pressed',String(vid.loop))};$('#bSnd').onclick=()=>{vid.muted=!vid.muted;$('#bSnd').setAttribute('aria-pressed',String(!vid.muted))};
+function paintTool(){$('#bPin').setAttribute('aria-pressed',String(S.tool));ov.classList.toggle('pinning',S.tool)}
+/* ---- pins on the viewer (one element per pin, restyled in place so shape changes animate = the morph) ---- */
+const pinEls={};
+function crect(){const W=ov.clientWidth,H=ov.clientHeight,vw=vid.videoWidth||9,vh=vid.videoHeight||16,r=Math.min(W/vw,H/vh),w=vw*r,h=vh*r;return{x:(W-w)/2,y:(H-h)/2,w:w,h:h}}
+function place(){const R=crect(),t=vid.currentTime||0;pins[S.key].forEach(p=>{let e=pinEls[p.id];if(!e){e=el('div',{class:'pin','data-id':p.id},[el('span',{class:'n'})]);ov.append(e);pinEls[p.id]=e;wirePin(e,p)}
+  const idx=pins[S.key].indexOf(p)+1;e.firstChild.textContent=idx;e.dataset.m=p.mode;e.style.setProperty('--pc',gcol(p.group)||'var(--accent)');e.classList.toggle('sel',p.id===S.sel);
+  let x,y,w,h,rad,tf='none';const cx=R.x+p.x*R.w,cy=R.y+p.y*R.h,b=p.resolved&&p.resolved.bbox;
+  if(p.mode==='frame'){x=R.x;y=R.y;w=R.w;h=R.h;rad='6px'}
+  else if(p.mode==='auto'&&b){x=R.x+b[0]*R.w;y=R.y+b[1]*R.h;w=(b[2]-b[0])*R.w;h=(b[3]-b[1])*R.h;rad='10px'}
+  else if(p.mode==='precise'){w=h=18;x=cx-9;y=cy-9;rad='4px';tf='rotate(45deg)'}
+  else{w=h=34;x=cx-17;y=cy-17;rad='999px'}
+  e.classList.toggle('rect',p.mode==='auto'&&!!b);Object.assign(e.style,{left:x+'px',top:y+'px',width:w+'px',height:h+'px',borderRadius:rad,transform:tf});
+  e.classList.toggle('off',Math.abs(p.t-t)>.6&&p.id!==S.sel)});
+ Object.keys(pinEls).forEach(id=>{if(!pins[S.key].some(p=>p.id===id)){pinEls[id].remove();delete pinEls[id]}})}
+function wirePin(e,p){let drag=null;e.addEventListener('pointerdown',ev=>{ev.stopPropagation();select(p.id);const R=crect();drag={sx:ev.clientX,sy:ev.clientY,x:p.x,y:p.y,R:R,moved:false};e.setPointerCapture(ev.pointerId)});
+ e.addEventListener('pointermove',ev=>{if(!drag)return;const dx=ev.clientX-drag.sx,dy=ev.clientY-drag.sy;if(!drag.moved&&Math.hypot(dx,dy)<4)return;drag.moved=true;if(p.mode==='frame')return;p.x=+Math.min(1,Math.max(0,drag.x+dx/drag.R.w)).toFixed(4);p.y=+Math.min(1,Math.max(0,drag.y+dy/drag.R.h)).toFixed(4);p.resolved=null;e.style.transition='none';place()});
+ e.addEventListener('pointerup',()=>{if(drag&&drag.moved){e.style.transition='';savePins(S.key)}drag=null});e.addEventListener('click',ev=>ev.stopPropagation())}
+ov.addEventListener('click',ev=>{const R=crect(),b=ov.getBoundingClientRect(),px=ev.clientX-b.left-R.x,py=ev.clientY-b.top-R.y;
+ if(!S.tool){toggle();return}
+ if(px<0||py<0||px>R.w||py>R.h)return;vid.pause();addPin(+(px/R.w).toFixed(4),+(py/R.h).toFixed(4))});
+let seq=0;
+function addPin(x,y,mode){const t=Math.round((vid.currentTime||0)*100)/100;const p={id:S.key+'-'+Date.now().toString(36)+(seq++),t:t,x:x,y:y,mode:mode||'auto',note:'',group:'',target:''};
+ const ci=cutNear(t);if(ci!==null){p.between=[ci,ci+1];p.target='cut';hint('Pin at the cut between scene '+(ci+1)+' and '+(ci+2))}
+ pins[S.key].push(p);pins[S.key].sort((a,b)=>a.t-b.t);S.sel=p.id;S.tab='pins';tabs();stats();paintRail();drawMarks();renderPins();place();savePins(S.key)}
+function select(id){S.sel=id;drawMarks();document.querySelectorAll('.row[data-id]').forEach(r=>{r.classList.toggle('sel',r.dataset.id===id);if(r.dataset.id===id){const pn=$('#p-pins'),d=r.getBoundingClientRect(),q=pn.getBoundingClientRect();if(d.top<q.top||d.bottom>q.bottom)pn.scrollTop+=d.top-q.top-12}});place()}
+function setMode(p,m){p.mode=m;if(m!=='auto')p.resolved=p.resolved;place();savePins(S.key)}
+function delPin(p){const a=pins[S.key];a.splice(a.indexOf(p),1);if(S.sel===p.id)S.sel=null;if(p.group&&!a.some(q=>q.group===p.group))delete groups[S.key][p.group];stats();paintRail();drawMarks();renderPins();place();savePins(S.key)}
+/* ---- pins tab: loose pins, then one card per Change (a group of pins that share one note) ---- */
+function nextLetter(){const used=new Set(Object.keys(groups[S.key]));pins[S.key].forEach(p=>p.group&&used.add(p.group));let i=0;while(used.has(String.fromCharCode(65+i)))i++;return String.fromCharCode(65+i)}
+function pinRow(p,i){const a=pins[S.key],idx=a.indexOf(p),col=gcol(p.group)||'var(--accent)';
+ const r=el('div',{class:'row'+(p.id===S.sel?' sel':''),'data-id':p.id});r.style.setProperty('--pc',col);
+ const si=S.key==='reel'?sceneIdx(p.t):null;
+ const th=el('i',{class:'th'});const m=['auto','precise','frame'];th.style.transform='translateX('+m.indexOf(p.mode)*100+'%)';
+ const mc=el('div',{class:'mode',role:'group','aria-label':'Pin '+(idx+1)+' mode'},[th]);
+ const labels={auto:'Auto',precise:'Precise',frame:'Frame'};m.forEach(k=>{const b=el('button',{type:'button','aria-pressed':String(p.mode===k),text:labels[k],title:{auto:'Selects the thing under the pin',precise:'Exactly this spot',frame:'The whole frame'}[k]});
+  b.onclick=e=>{e.stopPropagation();setMode(p,k);th.style.transform='translateX('+m.indexOf(k)*100+'%)';mc.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)))};mc.append(b)});
+ const go=el('button',{class:'sm',type:'button',text:'Go'});go.onclick=e=>{e.stopPropagation();vid.pause();seek(p.t);select(p.id)};
+ const gs=el('select',{'aria-label':'Group pin '+(idx+1)});[['','No group']].concat(Object.keys(groups[S.key]).sort().map(g=>[g,'Change '+g])).concat([['+','New change']]).forEach(o=>gs.append(el('option',{value:o[0],text:o[1]})));gs.value=p.group||'';
+ gs.onchange=e=>{e.stopPropagation();let g=gs.value;if(g==='+'){g=nextLetter();groups[S.key][g]=groups[S.key][g]||{note:''}}const old=p.group;p.group=g;if(old&&!pins[S.key].some(q=>q.group===old)&&!(groups[S.key][old]&&groups[S.key][old].note))delete groups[S.key][old];drawMarks();renderPins();place();savePins(S.key)};
+ const del=el('button',{class:'sm x',type:'button','aria-label':'Delete pin '+(idx+1),text:'Delete'});del.onclick=e=>{e.stopPropagation();delPin(p)};
+ const hd=el('div',{class:'hd'},[el('span',{class:'bd',text:idx+1}),el('span',{class:'tm',text:fmt(p.t)+(si!==null?' · S'+DATA.scenes[si].n:'')}),el('span',{class:'sp'}),go,del]);
+ const kids=[hd,mc];
+ if(p.between)kids.push(el('div',{class:'tg'},[['out','End of scene '+(p.between[0]+1)],['in','Start of scene '+(p.between[1]+1)],['cut','The cut itself']].map(o=>{const b=el('button',{type:'button','aria-pressed':String(p.target===o[0]),text:o[1]});b.onclick=e=>{e.stopPropagation();p.target=o[0];renderPins();savePins(S.key)};return b})));
+ kids.push(gs);
+ if(!p.group){const n=el('textarea',{placeholder:'What should change here?','aria-label':'Note for pin '+(idx+1)});n.value=p.note||'';n.oninput=()=>{p.note=n.value;savePins(S.key)};kids.push(n)}
+ if(p.resolved)kids.push(el('div',{class:'res',text:'Resolved: '+p.resolved.label}));
+ r.append(...kids);r.onclick=()=>{vid.pause();seek(p.t);select(p.id)};return r}
+function renderPins(){const pane=$('#p-pins'),keep=document.activeElement&&pane.contains(document.activeElement)&&document.activeElement.tagName==='TEXTAREA'?document.activeElement:null;if(keep)return;pane.textContent='';const a=pins[S.key];
+ if(!a.length){pane.append(el('div',{class:'empty',text:'Tap the video to drop a pin. Auto selects the thing under it, Precise keeps the exact spot, Frame selects the whole frame. Group pins into one Change so they share a note.'}));return}
+ const loose=a.filter(p=>!p.group);if(loose.length){pane.append(el('div',{class:'keys',text:'Single pins'}));loose.forEach(p=>pane.append(pinRow(p)))}
+ const gl=new Set(Object.keys(groups[S.key]));a.forEach(p=>p.group&&gl.add(p.group));
+ [...gl].sort().forEach(g=>{const mem=a.filter(p=>p.group===g);if(!mem.length&&!(groups[S.key][g]||{}).note)return;groups[S.key][g]=groups[S.key][g]||{note:''};
+  const card=el('div',{class:'grp'});card.style.setProperty('--pc',gcol(g));
+  const un=el('button',{class:'sm',type:'button',text:'Ungroup',style:'margin-left:auto;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 10px;min-height:44px;font-size:12px;font-weight:600'});un.onclick=()=>{mem.forEach(p=>p.group='');delete groups[S.key][g];drawMarks();renderPins();place();savePins(S.key)};
+  const note=el('textarea',{placeholder:'One note for all '+mem.length+' pins: what is the change?','aria-label':'Note for change '+g});note.value=groups[S.key][g].note||'';note.oninput=()=>{groups[S.key][g].note=note.value;savePins(S.key)};
+  card.append(el('div',{class:'gh'},[el('i',{class:'sw'}),el('span',{text:'Change '+g+' · '+mem.length+' pin'+(mem.length===1?'':'s')}),un]),note);mem.forEach(p=>card.append(pinRow(p)));pane.append(card)})}
+/* ---- words tab: the scene under the playhead ---- */
+const ui={};
+function renderWords(){const pane=$('#p-words');if(pane.contains(document.activeElement)&&document.activeElement.matches('input,textarea'))return;pane.textContent='';const s=curScene();if(!s)return;const x=st[s.id];
+ const k=el('button',{class:'k',type:'button','aria-pressed':String(x.status==='keep'),text:'Keep'}),c=el('button',{class:'c',type:'button','aria-pressed':String(x.status==='change'),text:'Change'});
+ k.onclick=()=>{x.status=x.status==='keep'?'':'keep';stats();paintRail();paintBlocks();renderWords();saveScene(s)};c.onclick=()=>{x.status=x.status==='change'?'':'change';stats();paintRail();paintBlocks();renderWords();saveScene(s)};
+ pane.append(el('div',{class:'keys',text:'Scene '+s.n+' · '+s.sec.toFixed(1)+' s (follows the playhead)'}),el('div',{class:'seg'},[k,c]));
+ const mk=(w,store)=>{const id='w-'+s.id+'-'+Math.abs([...w.k].reduce((a,ch)=>(a*31+ch.charCodeAt(0))|0,7));const inp=el('input',{type:'text',id:id,autocomplete:'off',spellcheck:'false'});inp.value=store[w.k];inp.classList.toggle('changed',store[w.k]!==w.v);
+  inp.addEventListener('input',()=>{store[w.k]=inp.value;inp.classList.toggle('changed',inp.value!==w.v);stats();saveScene(s)});return el('div',{},[el('label',{class:'f','for':id,text:'was: '+w.k.replace(/\n/g,' ⏎ ')}),inp])};
+ s.words.forEach(w=>pane.append(mk(w,x.words)));
+ if(s.chrome.length)pane.append(el('details',{},[el('summary',{text:'Small text & watermarks ('+s.chrome.length+')'}),el('div',{style:'display:flex;flex-direction:column;gap:9px;margin-top:8px'},s.chrome.map(w=>mk(w,x.chrome)))]));
+ const n=el('textarea',{placeholder:'Note for this scene: bigger text, swap the picture, slower…','aria-label':'Note for scene '+s.n});n.value=x.note||'';n.oninput=()=>{x.note=n.value;saveScene(s)};pane.append(el('label',{class:'f',text:'Scene note'}),n)}
+/* ---- tabs ---- */
+function tabs(){document.querySelectorAll('.tabs button').forEach((b,i)=>{const on=b.dataset.t===S.tab;b.setAttribute('aria-selected',String(on));if(on)$('#tabInk').style.transform='translateX('+i*100+'%)';$('#p-'+b.dataset.t).hidden=!on})}
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{S.tab=b.dataset.t;tabs()});
+/* ---- keyboard ---- */
+document.addEventListener('keydown',e=>{if(e.target.matches('input,textarea,select')||e.metaKey||e.ctrlKey||e.altKey)return;const k=e.key;
+ if(k===' '){e.preventDefault();toggle()}else if(k==='ArrowLeft'||k==='ArrowRight'){e.preventDefault();vid.pause();seek(vid.currentTime+(k==='ArrowLeft'?-1:1)*(e.shiftKey?1:1/FPS))}
+ else if(k==='['){jump(-1)}else if(k===']'){jump(1)}else if(k==='p'||k==='P'){S.tool=!S.tool;paintTool();hint(S.tool?'Pin tool on':'Pin tool off')}
+ else if(k==='l'||k==='L'){$('#bLoop').click()}else if(k==='m'||k==='M'){$('#bSnd').click()}
+ else if(k==='1'||k==='2'||k==='3'){const p=sel();if(p){const m=['auto','precise','frame'][+k-1];setMode(p,m);renderPins()}}
+ else if(k==='Delete'||k==='Backspace'){const p=sel();if(p){e.preventDefault();delPin(p)}}});
+/* ---- project note + boot ---- */
+const pn=$('#projNote');let pt;pn.addEventListener('input',()=>{clearTimeout(pt);pt=setTimeout(()=>{if(db)db.doc('project/main').set({note:pn.value,at:new Date().toISOString()}).then(done,fail)},700);sync('saving')});
+new ResizeObserver(place).observe(stage);
+buildRail();tabs();paintTool();open(DATA.reel?'reel':DATA.scenes[0].id);stats();sync();
+(async()=>{try{db=await claude.use('db')}catch(e){db=null}
+ if(!db){sync();return}
+ const t=setTimeout(()=>{$('#sync').textContent='can’t reach saved edits yet'},10000);
+ db.collection('scenes').onSnapshot(snap=>{clearTimeout(t);snap.docs.forEach(d=>{const s=DATA.scenes.find(z=>z.id===d.id);if(!s||!d.exists)return;const v=d.data(),x=st[s.id];if(timers[s.id])return;x.status=v.status||'';x.note=v.note||'';(v.words||[]).forEach(w=>{if(w.k in x.words)x.words[w.k]=w.v});(v.chrome||[]).forEach(w=>{if(w.k in x.chrome)x.chrome[w.k]=w.v})});stats();paintRail();paintBlocks();renderWords();sync()},()=>{$('#sync').textContent='saved edits unavailable'});
+ db.collection('pins').onSnapshot(snap=>{snap.docs.forEach(d=>{const k=d.id;if(!(k in pins)||!d.exists||ptimers[k])return;const v=d.data();pins[k]=(v.pins||[]).map(p=>Object.assign({note:'',group:'',target:''},p));groups[k]=v.groups||{}});stats();paintRail();drawMarks();renderPins();place()},()=>{});
+ db.doc('project/main').onSnapshot(d=>{if(d.exists&&document.activeElement!==pn)pn.value=d.data().note||''},()=>{});
+})();
+})();
+</script>

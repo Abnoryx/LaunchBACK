@@ -173,3 +173,7 @@ sells, gen, Zeigarnik when bought. Which reel in `tpl/reels/names.txt` matches s
 Route A steps 3–8 (see above). Font ID (DINOv2 Google-Fonts classifier → render-and-compare shortlist), colour/finish measurement, audio (VO word
 timing, stems, SFX onsets), archetype auto-matcher, automatic fit loop, layer masks (SAM 2 / omnimatte need a GPU).
 Order and choices: `EXTRACT_PLAN.md` phases P2–P4 and the research report's ranked list.
+
+
+## After the templates are built — Edit Room (same page as /gen)
+To let the user review and mark up a rescened reel (pins with Auto / Precise / Frame modes, grouped Changes, word edits, notes): render previews, upload clips (`asset:true`), `python3 workflows/video/edit_room/room_from_templates.py <lib/<reel>/templates> clips.json room.json "<title>"`, `python3 workflows/video/edit_room/build.py room.json page.html`, publish with `db` + `assets`. Read their pins with ArtifactData and resolve them with `gen/runs/michelin_gen/edit_room/resolve_pins.py` (see /gen §6b).

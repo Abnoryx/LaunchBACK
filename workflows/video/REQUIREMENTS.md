@@ -68,3 +68,4 @@ Read this before any video work. Every rule below came from the user; keep it cu
 - After Effects: user will buy later when they have a capable computer; templates should stay portable to AE edit lists.
 
 - **Edit Room pins (2026-11-25):** after the first render of a /gen reel, publish the Edit Room with pins; each pin has its own mode (Auto = layer under pin, Precise = exact point, Frame = whole frame), deletable per pin; pins at a cut carry a target (end of N / start of N+1 / the cut). See /gen §6b.
+- **Edit Room is one shared editor (2026-11-25):** `workflows/video/edit_room/` serves /gen AND /rescene; pro-editor layout (rail, viewer, timeline, inspector), pins can be grouped into one Change, pins morph between Auto/Precise/Frame shapes.

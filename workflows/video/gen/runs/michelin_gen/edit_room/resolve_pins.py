@@ -98,7 +98,9 @@ def main(src, out=None):
     S = scenes(); work = {}   # scene index -> [(pin, local t)]
     for f in sorted(glob.glob(os.path.join(src, '**', '*.json'), recursive=True)):
         name = os.path.basename(f)[:-5]; d = json.load(open(f)); d = d.get('data', d)
+        gr = d.get('groups') or {}
         for p in d.get('pins') or []:
+            if p.get('group'): p = dict(p, note=(gr.get(p['group']) or {}).get('note', ''))   # grouped pins share their change's note
             if name == 'reel':
                 i, local, between = locate(p['t'], S)
             else:
@@ -110,7 +112,7 @@ def main(src, out=None):
         auto = [(p, l) for p, l in work[i] if p.get('mode', 'auto') in ('auto', 'precise')]
         eng = Engine(n, root, proj) if auto else None
         for p, local in work[i]:
-            r = {'pin': p['id'], 'scene': sid, 'comp_time': round(win[0] + local, 3), 'mode': p.get('mode', 'auto'), 'note': p.get('note', ''), 'between': p['between'], 'target': p.get('target', ''), 'x': p.get('x'), 'y': p.get('y')}
+            r = {'pin': p['id'], 'scene': sid, 'comp_time': round(win[0] + local, 3), 'mode': p.get('mode', 'auto'), 'note': p.get('note', ''), 'group': p.get('group', ''), 'between': p['between'], 'target': p.get('target', ''), 'x': p.get('x'), 'y': p.get('y')}
             if p.get('mode', 'auto') == 'frame': r['selection'] = 'the whole frame'
             else:
                 px, py = int(p['x'] * (SZ[0] - 1)), int(p['y'] * (SZ[1] - 1)); chain, bbox = descend(eng, proj, comp, win[0] + local, px, py)
@@ -119,8 +121,11 @@ def main(src, out=None):
                 if not chain and p.get('mode', 'auto') == 'auto': r['selection'] = 'nothing owns this pixel (baked footage): treat as a point'
             results.append(r)
         if eng: eng.close()
+    changes = {}   # a group is ONE change: its pins' targets + the shared note
+    for r in results: changes.setdefault(r['group'] or r['pin'], []).append(r)
+    results = [dict(r, change=(r['group'] or r['pin'])) for r in results]
     if out: json.dump(results, open(out, 'w'), indent=1, ensure_ascii=False)
-    for r in results: print(f"pin {r['pin']} | {r['scene']} @ {r['comp_time']}s | {r['mode']} | {r['selection']}" + (f" | between {r['between'][0]} -> {r['between'][1]}" if r['between'] else '') + (f" | links: {r['links']}" if r.get('links') else '') + f" | note: {r['note']}")
+    for r in results: print(f"{('change ' + r['group'] + ' / ') if r['group'] else ''}pin {r['pin']} | {r['scene']} @ {r['comp_time']}s | {r['mode']} | {r['selection']}" + (f" | between {r['between'][0]} -> {r['between'][1]}" if r['between'] else '') + (f" | links: {r['links']}" if r.get('links') else '') + f" | note: {r['note']}")
     return results
 
 
