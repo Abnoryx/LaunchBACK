@@ -12,7 +12,7 @@ cfg = json.load(open(os.path.join(VID, 'gen', 'config.json'))); EASE = cfg.get('
 NEW = os.path.join(HERE, 'assets_gen', 'out')   # Higgsfield-generated / made assets, in the exact slots the original animates (user 2026-11-25: no og assets, never blank)
 SWAP = {'1181': 'chef_sticker.png', '1116': 'broll_chef.mp4', '1120': 'sticker_tyre.png', '493': 'phone_book.png', '1429': 'broll_road.mp4', '126': 'avatar.png',
         '1899': 'avatar.png', '120': 'ui_profile.jpg', '1895': 'ui_post.jpg', '1971': 'tick_red.jpg', '573': 'badge_tyre.png', '553': 'badge_book.png',
-        '2320': 'sticker_book.png', '394': 'wallpaper.png', '824': 'desktop_icons.png', '718': 'wallpaper.png', '396': 'sticker_toque.png', '365': 'sticker_tyre.png'}
+        '2320': 'sticker_book.png', '824': 'desktop_icons.png', '718': 'wallpaper.png', '396': 'sticker_toque.png', '365': 'sticker_tyre.png'}
 SWAP = {k: os.path.join(NEW, v) if v != 'wallpaper.png' else os.path.join(HERE, 'assets_gen', 'wallpaper.png') for k, v in SWAP.items()}
 BRAND = re.compile(r'iphone|micheal jordan|saquon|nike|whatsapp|vecteezy|instagram|earnera|IMG_0264|Untitled design|icons\.png|blue tick|^e7650458|d81203|windows xp|clippy', re.I)
 OUT = sys.argv[1] if len(sys.argv) > 1 else 'preview'
@@ -36,6 +36,19 @@ def inband(path):
     im = Image.open(path).convert('RGBA'); im.thumbnail((120, 120)); hsv = np.array(im.convert('RGB').convert('HSV')); m = np.array(im.getchannel('A')) > 50
     if not m.any(): return 0
     h = hsv[..., 0].astype(float) * 360 / 255; return float(((hsv[..., 1] > 64) & (h >= 45) & (h <= 320))[m].mean())
+def wallpaper_inject(path):
+    """The hero collage ('scene 3', also the phone lock screen) has a white solid at the bottom and a recoloured paper above it: make the solid the Eiffel
+    wallpaper and multiply the red paper over it, so a red-tinted iconic wallpaper shows behind the stickers (user: 'there's no wallpaper')."""
+    d = json.load(open(path)); c = next((c for c in d['comps'] if c['name'] == 'scene 3'), None)
+    if not c: return
+    solid = next((l for l in c['layers'] if l['name'] == 'White Solid 3'), None); paper = next((l for l in c['layers'] if l['name'].startswith('Texturelabs_Paper')), None)
+    if not solid or not paper: return
+    users = [l for cc in d['comps'] for l in cc['layers'] if l.get('src_id') == solid['src_id'] and l.get('src_type') == 'FootageItem']
+    assert len(users) == 1, 'solid is shared'
+    f = next(f for f in d['footage'] if f['id'] == solid['src_id'])
+    f.update(name='wallpaper_1080.png', source_type='FileSource', file=os.path.join(NEW, 'wallpaper_1080.png'), is_still=True); f.pop('color', None)
+    paper['blending_mode'] = 5216   # MULTIPLY
+    json.dump(d, open(path, 'w'))
 slots = json.load(open(os.path.join(HERE, 'slots.json'))); entries = []; unmapped = {}
 for f in sorted(glob.glob(f'{TPL}/templates/shot_*.json')):
     n = int(re.search(r'shot_(\d+)', f).group(1)); sid = f'gen/s{n:02d}'; t = json.load(open(f))['template']; m = slots[sid]; texts = {}
@@ -59,6 +72,7 @@ for f in sorted(glob.glob(f'{TPL}/templates/shot_*.json')):
     pj = os.path.join(W, f'params_{n:02d}.json'); json.dump(dict(texts=texts, accent='#E10600', bands=[[45, 320]], ease=EASE, footage=foot), open(pj, 'w'))
     out = os.path.join(W, f'proj_{n:02d}.json')
     r = subprocess.run([sys.executable, '-m', 'extract.aep_template', 'apply', f, pj, out], cwd=VID, capture_output=True, text=True); print(sid, r.stdout.strip().split('\n')[0][:90])
+    wallpaper_inject(out)
     a, b = t['window']; entries.append(dict(project=out, comp=t['root'], **{'from': a, 'to': b}, label=f'{n:02d}', footage=['gen', 'red', 'new'], extra=f"{EXTRA} --luts footage/gen/luts_red.json"))
 json.dump(dict(footage={'gen': f'{TPL}/assets', 'red': RED, 'new': NEW}, entries=entries, fps=30), open(os.path.join(W, 'manifest.json'), 'w'), indent=1)
 print(len(entries), 'scenes', round(sum(e['to'] - e['from'] for e in entries), 1), 's;', 'blanked (fine print/unlisted):', {k: sorted(v) for k, v in unmapped.items()})
