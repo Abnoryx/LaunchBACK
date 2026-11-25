@@ -32,11 +32,12 @@ d = cv2.dilate(al, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (31, 31))); out 
 out.paste(Image.new('RGBA', chef.size, (255, 255, 255, 255)), mask=Image.fromarray(d)); out.alpha_composite(chef); out.save(os.path.join(O, 'chef_sticker.png'))
 
 # 3) B-roll clips from stills (camera moves, 1620x1080 landscape like the original slot / 720x1280 portrait)
-def clip(src, out, w, h, secs, pan):
-    fc = f"scale=w='trunc({w}*(1.0+0.16*t/{secs})/2)*2':h=-2:eval=frame,crop={w}:{h}:x='(iw-{w})/2':y='{pan}'"
+def clip(src, out, w, h, secs, pan, period=None):   # period: the move repeats (the original clips are long and the scenes seek deep into them)
+    ph = f"mod(t,{period})/{period}" if period else f"t/{secs}"
+    fc = f"scale=w='trunc({w}*(1.0+0.16*{ph})/2)*2':h=-2:eval=frame,crop={w}:{h}:x='(iw-{w})/2':y='{pan.replace('PH', ph)}'"
     subprocess.run(['ffmpeg', '-v', 'error', '-y', '-loop', '1', '-framerate', '30', '-i', src, '-t', str(secs), '-vf', fc + ',format=yuv420p', '-c:v', 'libx264', '-crf', '17', '-an', out], check=True)
-clip(os.path.join(G, 'wallpaper.png'), os.path.join(O, 'broll_road.mp4'), 1620, 1080, 16, f"(ih-{1080})*(1-t/16)")           # tilt up from the road to the tower
-clip(os.path.join(G, 'chef_broll.png'), os.path.join(O, 'broll_chef.mp4'), 720, 1280, 16, "(ih-1280)/2")                 # slow push-in on the chef
+clip(os.path.join(G, 'wallpaper.png'), os.path.join(O, 'broll_road.mp4'), 1620, 1080, 150, "(ih-1080)*(1-PH)", period=16)           # tilt up from the road to the tower
+clip(os.path.join(G, 'chef_broll.png'), os.path.join(O, 'broll_chef.mp4'), 720, 1280, 30, "(ih-1280)/2", period=15)                 # slow push-in on the chef
 
 # 4) red leather 'book' bezel in place of the phone frame (same alpha: the screen stays transparent)
 ph = Image.open(os.path.join(TPL, 'iphone.png')).convert('RGBA'); al = np.asarray(ph.getchannel('A')); h, w = al.shape

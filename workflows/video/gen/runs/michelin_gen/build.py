@@ -12,7 +12,7 @@ cfg = json.load(open(os.path.join(VID, 'gen', 'config.json'))); EASE = cfg.get('
 NEW = os.path.join(HERE, 'assets_gen', 'out')   # Higgsfield-generated / made assets, in the exact slots the original animates (user 2026-11-25: no og assets, never blank)
 SWAP = {'1181': 'chef_sticker.png', '1116': 'broll_chef.mp4', '1120': 'sticker_tyre.png', '493': 'phone_book.png', '1429': 'broll_road.mp4', '126': 'avatar.png',
         '1899': 'avatar.png', '120': 'ui_profile.jpg', '1895': 'ui_post.jpg', '1971': 'tick_red.jpg', '573': 'badge_tyre.png', '553': 'badge_book.png',
-        '2320': 'sticker_book.png', '824': 'desktop_icons.png', '718': 'wallpaper.png', '396': 'sticker_toque.png', '365': 'sticker_tyre.png'}
+        '2320': 'sticker_book.png', '394': 'wallpaper.png', '824': 'desktop_icons.png', '718': 'wallpaper.png', '396': 'sticker_toque.png', '365': 'sticker_tyre.png'}
 SWAP = {k: os.path.join(NEW, v) if v != 'wallpaper.png' else os.path.join(HERE, 'assets_gen', 'wallpaper.png') for k, v in SWAP.items()}
 BRAND = re.compile(r'iphone|micheal jordan|saquon|nike|whatsapp|vecteezy|instagram|earnera|IMG_0264|Untitled design|icons\.png|blue tick|^e7650458|d81203|windows xp|clippy', re.I)
 OUT = sys.argv[1] if len(sys.argv) > 1 else 'preview'
@@ -42,6 +42,7 @@ for f in sorted(glob.glob(f'{TPL}/templates/shot_*.json')):
     for x in t['params']['texts']:
         k = x['text'].strip()
         if k in m: texts[x['id']] = x['text'].replace(k, m[k]) if k else x['text']
+        if sid == 'gen/s06' and k == 'BRAIN': texts[x['id']] = {'text': m[k], 'fill': [0.88, 0.02, 0.0]}   # TYRES in red: the original dark text vanishes on a dark tyre
         else: texts[x['id']] = ' '; unmapped.setdefault(sid, set()).add(k[:40])   # fine print / unlisted slot: blanked
     foot = {str(x['id']): SWAP.get(str(x['id']), LED if re.search(r'wallpaper', x['name'], re.I) else BLANK) for x in t['params']['footage'] if BRAND.search(x['name']) or str(x['id']) in SWAP}
     for x in t['params']['footage']:   # still images that are mostly green/blue/purple -> red copies (user: make it red coloured)
