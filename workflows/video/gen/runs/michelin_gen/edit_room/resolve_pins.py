@@ -6,7 +6,7 @@ pin = {id, t (seconds in that clip; for the reel, in the reel), x, y (0..1 of th
 import base64, glob, json, os, re, subprocess, sys, time, urllib.request
 import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__)); RUN = os.path.dirname(HERE); VID = os.path.abspath(os.path.join(RUN, '..', '..', '..')); sys.path.insert(0, VID)
-W = os.path.join(RUN, 'work'); PORT = 8765; SZ = (270, 480); CUT_EPS = 0.35
+W = os.path.join(RUN, 'work'); PORT = 8765; SZ = (270, 480); CUT_EPS = 0.35; COVER = 0.8
 FOOT = ','.join([os.path.join(VID, 'library/assets'), '/home/user/tpl/lib/gen/assets', os.path.join(W, 'footage_red2'), os.path.join(RUN, 'assets_gen', 'out')])
 
 
@@ -26,6 +26,10 @@ class Engine:
         s.post({'comp': s.root, 'times': [], 'only': None})
         for c, i in path: s.post({'comp': s.root, 'times': [], 'only': [i], 'only_comp': c})
         s.post({'comp': s.root, 'times': [], 'only': idx, 'only_comp': comp})
+    def mask(s, path, comp, idx, t):   # one render per (layer, time), shared by every pin at that time
+        k = (tuple(path), comp, idx, round(t, 3)); c = s.__dict__.setdefault('cache', {})
+        if k not in c: s.isolate(list(path), comp, [idx]); c[k] = s.alpha(t)
+        return c[k]
     def alpha(s, t): return np.frombuffer(base64.b64decode(s.post({'comp': s.root, 'times': [t], 'w': SZ[0], 'h': SZ[1]})['frames'][0]), np.uint8).reshape(SZ[1], SZ[0], 4)[..., 3] > 16
     def close(s): s.post({'comp': s.root, 'times': [], 'only': None}); s.p.terminate(); s.p.wait(); time.sleep(1)
 
@@ -37,9 +41,11 @@ def candidates(comp):
 
 def descend(eng, proj, comp, t, px, py, path=(), depth=0):
     """-> (chain of layers, bbox 0..1) of the top-most layer under (px, py), recursing into precomps"""
-    byid = {c['id']: c for c in proj['comps']}
+    byid = {c['id']: c for c in proj['comps']}; fallback = None
     for l in candidates(comp):
-        eng.isolate(list(path), comp['name'], [l['i']]); a = eng.alpha(t)
+        a = eng.mask(path, comp['name'], l['i'], t)
+        if a.mean() > COVER:   # paper textures / full-frame backdrops are not what a pin means; remember as fallback
+            fallback = fallback or (l, a); continue
         if not a[max(0, py - 2):py + 3, max(0, px - 2):px + 3].any(): continue
         node = {'comp': comp['name'], 'layer': l['i'], 'name': l['name'], 'type': l.get('type')}
         if l.get('text'): node['text'] = l['text']['text']
@@ -50,6 +56,8 @@ def descend(eng, proj, comp, t, px, py, path=(), depth=0):
             inner = descend(eng, proj, byid[l['src_id']], t, px, py, tuple(path) + ((comp['name'], l['i']),), depth + 1)
             if inner[0]: return [node] + inner[0], inner[1]
         return [node], bbox
+    if fallback and depth > 0:   # only a backdrop is under the pin: name it so the note still has a target
+        l, a = fallback; return [{'comp': comp['name'], 'layer': l['i'], 'name': l['name'] + ' (backdrop)', 'type': l.get('type')}], [0, 0, 1, 1]
     return [], None
 
 
