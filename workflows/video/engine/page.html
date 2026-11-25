@@ -59,6 +59,14 @@ window.setProject = async (pj, compName) => {
   await eng.init(cv); eng.images = images;
   comp = pj.comps.find((c) => c.name === (compName || cfg.comp));
 };
+// pick mode (server): show only some layers of one comp, to find which layer owns a pixel (/gen Edit Room pins). only = null restores.
+const _en = new Map();
+window.setOnly = (compName, only) => {
+  if (!only) { for (const [L, v] of _en) L.enabled = v; _en.clear(); return true; }   // restore every comp touched, whatever comp was named
+  const c = eng.compsByName.get(compName); if (!c) return false;
+  for (const L of c.layers) { if (!_en.has(L)) _en.set(L, L.enabled); L.enabled = only.includes(L.i); }
+  return true;
+};
 // small RGBA frame (for scoring), scaled on a 2D canvas
 window.renderSmall = async (t, w, h) => {
   await window.renderFrame(t, true);

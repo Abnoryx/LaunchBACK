@@ -100,6 +100,7 @@ if (args.serve) {
       try {
         const q = JSON.parse(body || '{}');
         if (q.project) await page.evaluate(([pj, cn]) => window.setProject(pj, cn), [q.project, q.comp]);
+        if (q.only !== undefined) await page.evaluate(([cn, only]) => window.setOnly(cn, only), [q.only_comp || q.comp, q.only]);   // layer isolation (pins)
         const frames = [];
         for (const t of q.times || []) frames.push(await page.evaluate(([t, w, h]) => window.renderSmall(t, w, h), [t, q.w || 360, q.h || 640]));
         res.writeHead(200, { 'Content-Type': 'application/json' });
