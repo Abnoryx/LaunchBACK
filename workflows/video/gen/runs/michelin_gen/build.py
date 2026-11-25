@@ -42,8 +42,8 @@ for f in sorted(glob.glob(f'{TPL}/templates/shot_*.json')):
     for x in t['params']['texts']:
         k = x['text'].strip()
         if k in m: texts[x['id']] = x['text'].replace(k, m[k]) if k else x['text']
-        if sid == 'gen/s06' and k == 'BRAIN': texts[x['id']] = {'text': m[k], 'fill': [0.88, 0.02, 0.0]}   # TYRES in red: the original dark text vanishes on a dark tyre
         else: texts[x['id']] = ' '; unmapped.setdefault(sid, set()).add(k[:40])   # fine print / unlisted slot: blanked
+        if sid == 'gen/s06' and k == 'BRAIN': texts[x['id']] = {'text': m[k], 'fill': [0.88, 0.02, 0.0]}   # TYRES in red: the original dark text vanishes on a dark tyre
     foot = {str(x['id']): SWAP.get(str(x['id']), LED if re.search(r'wallpaper', x['name'], re.I) else BLANK) for x in t['params']['footage'] if BRAND.search(x['name']) or str(x['id']) in SWAP}
     for x in t['params']['footage']:   # still images that are mostly green/blue/purple -> red copies (user: make it red coloured)
         pth = os.path.join(TPL, 'assets', x['name'])
