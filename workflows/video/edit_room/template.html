@@ -228,8 +228,9 @@ function refresh(anim){stats();paintRail();drawMarks();renderPins();place(anim);
 function changed(){tidy();refresh(true);savePins(S.key)}
 const selPins=()=>pins[S.key].filter(p=>S.sel.has(p.id));
 const nextLetter=()=>{const used=new Set(Object.keys(groups[S.key]));pins[S.key].forEach(p=>p.group&&used.add(p.group));let i=0;while(used.has(String.fromCharCode(65+i)))i++;return String.fromCharCode(65+i)};
-function groupSel(){if(!S.sel.size)return;mutate(()=>{const g=nextLetter();groups[S.key][g]={note:''};selPins().forEach(p=>{p.group=g})});hint('Grouped into one change')}
-function addTo(g){mutate(()=>selPins().forEach(p=>{p.group=g}))}
+function joinNotes(g){const G=groups[S.key][g];selPins().forEach(p=>{const n=(p.note||'').trim();if(n){G.note=((G.note||'').trim()?G.note.trim()+'\n':'')+n;p.note=''}})}
+function groupSel(){if(!S.sel.size)return;mutate(()=>{const g=nextLetter();groups[S.key][g]={note:''};joinNotes(g);selPins().forEach(p=>{p.group=g});S.focusNote=g});hint('Grouped into one change: write the change below')}
+function addTo(g){mutate(()=>{joinNotes(g);selPins().forEach(p=>{p.group=g})})}
 function ungroupSel(){mutate(()=>selPins().forEach(p=>{p.group=''}))}
 function bulkMode(m){mutate(()=>selPins().forEach(p=>{p.mode=m}))}
 function delSel(){if(!S.sel.size)return;mutate(()=>{pins[S.key]=pins[S.key].filter(p=>!S.sel.has(p.id));S.sel=new Set()})}
@@ -305,7 +306,7 @@ function renderPins(){const pane=$('#p-pins'),fa=document.activeElement,fk=fa&&p
    const un=el('button',{class:'sm',type:'button',text:'Ungroup'});un.onclick=()=>mutate(()=>{mem.forEach(p=>{p.group=''})});
    const note=el('textarea',{placeholder:'One note for the whole change: what should happen?','aria-label':'Note for change '+g,'data-fk':'g'+g});note.value=groups[S.key][g].note||'';note.oninput=()=>{groups[S.key][g].note=note.value;savePins(S.key)};
    card.append(el('div',{class:'gh'},[title,el('span',{class:'sp'}),add,un]),note);mem.forEach(p=>card.append(rowFor(p)));pane.append(card)})}
- pane.scrollTop=top;if(fk){const n=pane.querySelector('[data-fk="'+fk+'"]');if(n){n.focus();try{n.setSelectionRange(ss,se)}catch(e){}}}}
+ pane.scrollTop=top;if(S.focusNote){const n=pane.querySelector('[data-fk="g'+S.focusNote+'"]');S.focusNote='';if(n){n.scrollIntoView({block:'nearest'});n.focus()}}else if(fk){const n=pane.querySelector('[data-fk="'+fk+'"]');if(n){n.focus();try{n.setSelectionRange(ss,se)}catch(e){}}}}
 /* ---- words tab: the scene under the playhead ---- */
 const ui={};
 function renderWords(){const pane=$('#p-words');if(pane.contains(document.activeElement)&&document.activeElement.matches('input,textarea'))return;pane.textContent='';const s=curScene();if(!s)return;const x=st[s.id];
@@ -339,8 +340,8 @@ buildRail();tabs();paintTool();open(DATA.reel?'reel':DATA.scenes[0].id);stats();
 (async()=>{try{db=await claude.use('db')}catch(e){db=null}
  if(!db){sync();return}
  const t=setTimeout(()=>{$('#sync').textContent='can’t reach saved edits yet'},10000);
- db.collection('scenes').onSnapshot(snap=>{clearTimeout(t);snap.docs.forEach(d=>{const s=DATA.scenes.find(z=>z.id===d.id);if(!s||!d.exists)return;const v=d.data(),x=st[s.id];if(timers[s.id]||(v.by===me&&loaded['s'+s.id]))return;loaded['s'+s.id]=1;x.status=v.status||'';x.note=v.note||'';(v.words||[]).forEach(w=>{if(w.k in x.words)x.words[w.k]=w.v});(v.chrome||[]).forEach(w=>{if(w.k in x.chrome)x.chrome[w.k]=w.v})});stats();paintRail();paintBlocks();renderWords();sync()},()=>{$('#sync').textContent='saved edits unavailable'});
- db.collection('pins').onSnapshot(snap=>{snap.docs.forEach(d=>{const k=d.id;if(!(k in pins)||!d.exists||ptimers[k]||dragging)return;const v=d.data();if(v.by===me&&loaded['p'+k])return;loaded['p'+k]=1;pins[k]=(v.pins||[]).map(p=>Object.assign({note:'',group:'',target:''},p));groups[k]=v.groups||{};if(k===S.key)tidy()});refresh()},()=>{});
+ db.collection('scenes').onSnapshot(snap=>{clearTimeout(t);snap.docs.forEach(d=>{const s=DATA.scenes.find(z=>z.id===d.id);if(!s||!d.exists)return;const v=d.data(),x=st[s.id];if(timers[s.id]||v.by===me)return;x.status=v.status||'';x.note=v.note||'';(v.words||[]).forEach(w=>{if(w.k in x.words)x.words[w.k]=w.v});(v.chrome||[]).forEach(w=>{if(w.k in x.chrome)x.chrome[w.k]=w.v})});stats();paintRail();paintBlocks();renderWords();sync()},()=>{$('#sync').textContent='saved edits unavailable'});
+ db.collection('pins').onSnapshot(snap=>{let got=false;snap.docs.forEach(d=>{const k=d.id;if(!(k in pins)||!d.exists||ptimers[k]||dragging)return;const v=d.data();if(v.by===me)return;got=true;pins[k]=(v.pins||[]).map(p=>Object.assign({note:'',group:'',target:''},p));groups[k]=v.groups||{};if(k===S.key)tidy()});if(got)refresh()},()=>{});
  db.doc('project/main').onSnapshot(d=>{if(d.exists&&document.activeElement!==pn)pn.value=d.data().note||''},()=>{});
 })();
 })();
