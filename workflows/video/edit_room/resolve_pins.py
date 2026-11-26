@@ -1,28 +1,41 @@
 """Resolve Edit Room pins (Auto = the exact layer under the pin, Precise = the point, Frame = the whole frame, plus pins at the cut between scenes).
 How Auto works: the render engine's serve mode can show only chosen layers (`only`), so 'which layer owns this pixel' is exact, not guessed: for each candidate
 layer (top-most first) render the scene with only that layer (and its precomp parents) and test the pixel's alpha; recurse into precomps.
-usage: python3 edit_room/resolve_pins.py <dir with pins/<scene>.json and pins/reel.json (ArtifactData out_dir)> [--out resolved.json]
+usage: python3 edit_room/resolve_pins.py <dir with pins/reel.json (+ legacy pins/sNN.json) from ArtifactData out_dir> --run gen/runs/<run> [--out resolved.json]
+Run-agnostic and parallel-safe: reads the run's work/manifest.json, picks a free port, uses its own engine cache.
 pin = {id, t (seconds in that clip; for the reel, in the reel), x, y (0..1 of the frame), mode: auto|precise|frame, note, target?}"""
-import base64, glob, json, os, re, subprocess, sys, time, urllib.request
+import base64, glob, json, os, re, socket, subprocess, sys, tempfile, time, urllib.request
 import numpy as np
-HERE = os.path.dirname(os.path.abspath(__file__)); RUN = os.path.dirname(HERE); VID = os.path.abspath(os.path.join(RUN, '..', '..', '..')); sys.path.insert(0, VID)
-W = os.path.join(RUN, 'work'); PORT = 8765; SZ = (270, 480); CUT_EPS = 0.35; COVER = 0.8
-FOOT = ','.join([os.path.join(VID, 'library/assets'), '/home/user/tpl/lib/gen/assets', os.path.join(W, 'footage_red2'), os.path.join(RUN, 'assets_gen', 'out')])
+HERE = os.path.dirname(os.path.abspath(__file__)); VID = os.path.dirname(HERE); sys.path.insert(0, VID)
+SZ = (270, 480); CUT_EPS = 0.35; COVER = 0.8
+RUN = W = MAN = None   # set by main(--run): every run has its own work dir, manifest, engine cache and port, so parallel runs never collide
+
+
+def free_port():
+    with socket.socket() as k: k.bind(('127.0.0.1', 0)); return k.getsockname()[1]
+
+
+def engine_args(entry):
+    """footage dirs + luts for one scene exactly as the render used them (from the run's render manifest)"""
+    foot = [os.path.join(VID, 'library/assets')] + [MAN['footage'][k] for k in entry['footage']]
+    m = re.search(r'--luts\s+(\S+)', entry.get('extra', '')); luts = m.group(1).replace('footage/gen/', '/home/user/tpl/lib/gen/assets/') if m else None
+    return ','.join(foot), luts
 
 
 class Engine:
     """one warm engine process per scene project"""
-    def __init__(s, n, root, proj=None):
+    def __init__(s, n, root, proj=None, entry=None):
         s.cams = {c['name']: [l['i'] for l in c['layers'] if l.get('type') == 'CameraLayer'] for c in (proj or {}).get('comps', [])}
-        s.log = open('/tmp/pick_serve.log', 'w')
-        s.p = subprocess.Popen(['node', 'engine/render.mjs', '--project', os.path.join(W, f'proj_{n}.json'), '--footage', FOOT, '--comp', root, '--luts',
-                                '/home/user/tpl/lib/gen/assets/luts_red.json', '--serve', str(PORT)], cwd=VID, stdout=s.log, stderr=subprocess.STDOUT); s.root = root
+        s.port = free_port(); s.log_path = tempfile.mktemp(prefix='pick_serve_', suffix='.log'); s.log = open(s.log_path, 'w'); foot, luts = engine_args(entry)
+        cmd = ['node', 'engine/render.mjs', '--project', os.path.join(W, f'proj_{n}.json'), '--footage', foot, '--comp', root, '--cache', '/tmp/engine-cache-' + os.path.basename(RUN), '--serve', str(s.port)]
+        if luts: cmd += ['--luts', luts]
+        s.p = subprocess.Popen(cmd, cwd=VID, stdout=s.log, stderr=subprocess.STDOUT); s.root = root
         for _ in range(60):
-            if 'serving' in open('/tmp/pick_serve.log').read(): return
+            if 'serving' in open(s.log_path).read(): return
             time.sleep(2)
         raise RuntimeError('engine serve did not start')
     def post(s, q):
-        r = urllib.request.urlopen(urllib.request.Request(f'http://127.0.0.1:{PORT}/render', json.dumps(q).encode(), {'Content-Type': 'application/json'}), timeout=300); return json.loads(r.read())
+        r = urllib.request.urlopen(urllib.request.Request(f'http://127.0.0.1:{s.port}/render', json.dumps(q).encode(), {'Content-Type': 'application/json'}), timeout=300); return json.loads(r.read())
     def isolate(s, path, comp, idx):   # path = [(comp name, layer index), ...] of parents that stay on; then only `idx` of `comp`
         s.post({'comp': s.root, 'times': [], 'only': None})
         for c, i in path: s.post({'comp': s.root, 'times': [], 'only': [i] + s.cams.get(c, []), 'only_comp': c})   # cameras stay on: 3D layers need them
@@ -69,8 +82,7 @@ def descend(eng, proj, comp, t, px, py, path=(), depth=0):
 
 
 def scenes():   # one row per rendered scene, from the render manifest: (label, [from, to], root comp, seconds)
-    m = json.load(open(os.path.join(W, 'manifest.json')))
-    return [(e['label'], (e['from'], e['to']), e['comp'], round(e['to'] - e['from'], 2)) for e in m['entries']]
+    return [(e['label'], (e['from'], e['to']), e['comp'], round(e['to'] - e['from'], 2)) for e in MAN['entries']]
 
 
 def locate(reel_t, S):   # reel seconds -> (scene index, local t, between)
@@ -94,10 +106,13 @@ def link(sid, chain):   # layer -> the text slot / footage swap it belongs to
     return out
 
 
-def main(src, out=None):
+def main(src, out=None, run=None):
+    global RUN, W, MAN; RUN = os.path.abspath(run); W = os.path.join(RUN, 'work'); MAN = json.load(open(os.path.join(W, 'manifest.json')))
     S = scenes(); work = {}   # scene index -> [(pin, local t)]
     for f in sorted(glob.glob(os.path.join(src, '**', '*.json'), recursive=True)):
-        name = os.path.basename(f)[:-5]; d = json.load(open(f)); d = d.get('data', d)
+        name = os.path.basename(f)[:-5]
+        if not re.fullmatch(r'reel|s\d+|scene\d+', name): continue   # only pin docs (reel, legacy sNN), never other json in the folder
+        d = json.load(open(f)); d = d.get('data', d)
         gr = d.get('groups') or {}
         for p in d.get('pins') or []:
             if p.get('group'): p = dict(p, note=(gr.get(p['group']) or {}).get('note', ''))   # grouped pins share their change's note
@@ -110,7 +125,7 @@ def main(src, out=None):
     for i in sorted(work):
         sid, win, root, _ = S[i]; n = sid; proj = json.load(open(os.path.join(W, f'proj_{n}.json'))); comp = next(c for c in proj['comps'] if c['name'] == root)
         auto = [(p, l) for p, l in work[i] if p.get('mode', 'auto') in ('auto', 'precise')]
-        eng = Engine(n, root, proj) if auto else None
+        eng = Engine(n, root, proj, next(e for e in MAN['entries'] if e['label'] == n)) if auto else None
         for p, local in work[i]:
             r = {'pin': p['id'], 'scene': sid, 'comp_time': round(win[0] + local, 3), 'mode': p.get('mode', 'auto'), 'note': p.get('note', ''), 'group': p.get('group', ''), 'between': p['between'], 'target': p.get('target', ''), 'x': p.get('x'), 'y': p.get('y')}
             if p.get('mode', 'auto') == 'frame': r['selection'] = 'the whole frame'
@@ -130,4 +145,6 @@ def main(src, out=None):
 
 
 if __name__ == '__main__':
-    a = sys.argv[1:]; main(a[0], a[a.index('--out') + 1] if '--out' in a else None)
+    a = sys.argv[1:]
+    if '--run' not in a: sys.exit('usage: resolve_pins.py <pins dir> --run gen/runs/<run> [--out resolved.json]')
+    main(a[0], a[a.index('--out') + 1] if '--out' in a else None, a[a.index('--run') + 1])

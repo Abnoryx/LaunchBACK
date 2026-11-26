@@ -9,5 +9,5 @@ for f in sorted(glob.glob(f'{d}/shot_*.json')):
     n = '%02d' % int(re.search(r'shot_(\d+)', f).group(1)); i = scene_info(f)
     scenes.append({'id': 's' + n, 'n': n, 'sec': i['seconds'], 'clip': clips.get(n, ''), 'words': [{'k': s, 'v': s} for s in i['strings']], 'chrome': []})
 cuts = [round(sum(s['sec'] for s in scenes[:i + 1]), 3) for i in range(len(scenes) - 1)]
-json.dump({'title': sys.argv[4] if len(sys.argv) > 4 else 'Rescene', 'sub': 'rescene', 'reel': clips.get('reel', ''), 'cuts': cuts, 'scenes': scenes}, open(out, 'w'), ensure_ascii=False)
+json.dump({'title': sys.argv[4] if len(sys.argv) > 4 else 'Rescene', 'run': os.path.basename(os.path.dirname(os.path.abspath(d))), 'sub': 'rescene · ' + os.path.basename(os.path.dirname(os.path.abspath(d))), 'reel': clips.get('reel', ''), 'cuts': cuts, 'scenes': scenes}, open(out, 'w'), ensure_ascii=False)
 print(len(scenes), 'scenes ->', out)

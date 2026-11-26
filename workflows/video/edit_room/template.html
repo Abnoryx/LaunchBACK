@@ -191,7 +191,7 @@ const S={key:'reel',sel:new Set(),active:'',newMode:'auto',multi:false,ghosts:tr
 DATA.scenes.forEach(s=>{st[s.id]={status:'',note:'',words:Object.fromEntries(s.words.map(w=>[w.k,w.v])),chrome:Object.fromEntries(s.chrome.map(w=>[w.k,w.v]))}});
 ['reel'].concat(DATA.scenes.map(s=>s.id)).forEach(k=>{pins[k]=[];groups[k]={}});
 const vid=$('#vid'),ov=$('#ov'),stage=$('#stage'),tl=$('#tl');
-if(DATA.title)$('#ttl').firstChild.textContent=DATA.title;$('#sub').textContent=(DATA.sub||'')+' · build 11';
+if(DATA.title)$('#ttl').firstChild.textContent=DATA.title;$('#sub').textContent=(DATA.sub||'')+' · build 12';
 /* ---- helpers ---- */
 const sceneOf=k=>DATA.scenes.find(s=>s.id===k);
 const src=k=>k==='reel'?DATA.reel:(sceneOf(k)||{}).clip;

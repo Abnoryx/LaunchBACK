@@ -9,8 +9,15 @@
 4. Publish with capabilities `db` + `assets`, to the SAME artifact URL for that run (never a new link per version). Header shows the build number.
 5. Give the user the link with the render. Stop attaching the lab only after the user approves the final version.
 
+## Working on several runs in parallel (labs never mix)
+- **One artifact per run**, registered in `edit_room/labs.json` (`python3 edit_room/lab.py get|set|list`). A run's first version publishes a NEW artifact; every later version republishes to that run's URL. Never publish run B to run A's URL.
+- The page data (pins, notes, words) lives in that artifact's own db, so two labs can never see each other's data. The header shows the run id so you can tell labs apart.
+- Everything on disk is per run: `gen/runs/<run>/` (room.json, clips.json, work/), test fixtures in their own temp dir, `resolve_pins.py --run gen/runs/<run>` (own manifest, own free port, own engine cache `/tmp/engine-cache-<run>`), so resolvers for different runs can run side by side.
+- Use a separate scratch HTML file per run when publishing (e.g. `<scratch>/<run>_lab.html`), not a shared `edit_room.html`.
+- Two chat sessions on the SAME run still share one lab: last write wins per document, so coordinate or use separate runs.
+
 ## Data model (so nothing "disappears")
 - ONE pin store, `pins/reel`, in reel time (+ `groups`, one note per Change). Scene clips are windows onto it: a pin dropped on a clip lands in the reel store; every view shows every pin (dim ghost away from its moment, clickable only near it).
 - Old per-scene docs `pins/sNN` are folded into `pins/reel` once and marked `migrated`.
 - Writes carry a client id (`by`) and are never applied back to the writer; the first update after load is merged by id (union), later ones replace only if newer and no write is in flight.
-- Resolver: `gen/runs/michelin_gen/edit_room/resolve_pins.py` reads `pins/reel` (+ legacy sNN).
+- Resolver: `python3 edit_room/resolve_pins.py <dir> --run gen/runs/<run>` reads `pins/reel` (+ legacy sNN).
