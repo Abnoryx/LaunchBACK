@@ -223,6 +223,7 @@ const H=k=>hist[k]||(hist[k]={u:[],r:[]});
 const snapNow=()=>JSON.stringify({p:pins[S.key],g:groups[S.key]});
 function mutate(fn){const h=H(S.key);h.u.push(snapNow());if(h.u.length>80)h.u.shift();h.r=[];fn();changed()}
 function undo(redo){const h=H(S.key),from=redo?h.r:h.u,to=redo?h.u:h.r;if(!from.length){hint(redo?'Nothing to redo':'Nothing to undo');return}to.push(snapNow());const o=JSON.parse(from.pop());pins[S.key]=o.p;groups[S.key]=o.g;changed();hint(redo?'Redone':'Undone')}
+function fixGroups(k){const g=groups[k];pins[k].forEach(p=>{if(p.group&&!g[p.group])g[p.group]={note:''}})}
 function tidy(){const a=pins[S.key],g=groups[S.key];a.sort((x,y)=>x.t-y.t);Object.keys(g).forEach(k=>{if(!a.some(p=>p.group===k)&&!(g[k].note||'').trim())delete g[k]});a.forEach(p=>{if(p.group&&!g[p.group])g[p.group]={note:''}});const ids=new Set(a.map(p=>p.id));[...S.sel].forEach(i=>{if(!ids.has(i))S.sel.delete(i)});if(S.active&&!g[S.active])S.active=''}
 function refresh(anim){stats();paintRail();drawMarks();renderPins();place(anim);paintBanner()}
 function changed(){tidy();refresh(true);savePins(S.key)}
@@ -295,7 +296,7 @@ function actionBar(){const ps=selPins(),n=ps.length,modes=new Set(ps.map(p=>p.mo
  gl.forEach(g=>{if(!ps.every(p=>p.group===g))acts.append(btn('Add to '+g,()=>addTo(g)))});
  if(ps.some(p=>p.group))acts.append(btn('Ungroup',ungroupSel));
  acts.append(btn('Delete',delSel,'dang'));b.append(head,md,acts);return b}
-function renderPins(){const pane=$('#p-pins'),fa=document.activeElement,fk=fa&&pane.contains(fa)&&fa.dataset&&fa.dataset.fk,ss=fk?fa.selectionStart:0,se=fk?fa.selectionEnd:0,top=pane.scrollTop;pane.textContent='';const a=pins[S.key];
+function renderPins(){fixGroups(S.key);const pane=$('#p-pins'),fa=document.activeElement,fk=fa&&pane.contains(fa)&&fa.dataset&&fa.dataset.fk,ss=fk?fa.selectionStart:0,se=fk?fa.selectionEnd:0,top=pane.scrollTop;pane.textContent='';const a=pins[S.key];
  if(!a.length){pane.append(el('div',{class:'empty',text:'No pins yet. Turn on Pin mode, then tap the video: Auto selects the thing under the pin, Precise keeps the exact spot, Frame selects the whole frame. Select several pins and Group them so one note covers one change.'}))}
  else{if(S.sel.size)pane.append(actionBar());
   const loose=a.filter(p=>!p.group);if(loose.length){pane.append(el('div',{class:'sech',text:'Single pins · '+loose.length}));loose.forEach(p=>pane.append(rowFor(p)))}
@@ -341,7 +342,7 @@ buildRail();tabs();paintTool();open(DATA.reel?'reel':DATA.scenes[0].id);stats();
  if(!db){sync();return}
  const t=setTimeout(()=>{$('#sync').textContent='can’t reach saved edits yet'},10000);
  db.collection('scenes').onSnapshot(snap=>{clearTimeout(t);snap.docs.forEach(d=>{const s=DATA.scenes.find(z=>z.id===d.id);if(!s||!d.exists)return;const v=d.data(),x=st[s.id];if(timers[s.id]||v.by===me)return;x.status=v.status||'';x.note=v.note||'';(v.words||[]).forEach(w=>{if(w.k in x.words)x.words[w.k]=w.v});(v.chrome||[]).forEach(w=>{if(w.k in x.chrome)x.chrome[w.k]=w.v})});stats();paintRail();paintBlocks();renderWords();sync()},()=>{$('#sync').textContent='saved edits unavailable'});
- db.collection('pins').onSnapshot(snap=>{let got=false;snap.docs.forEach(d=>{const k=d.id;if(!(k in pins)||!d.exists||ptimers[k]||dragging)return;const v=d.data();if(v.by===me)return;got=true;pins[k]=(v.pins||[]).map(p=>Object.assign({note:'',group:'',target:''},p));groups[k]=v.groups||{};if(k===S.key)tidy()});if(got)refresh()},()=>{});
+ db.collection('pins').onSnapshot(snap=>{let got=false;snap.docs.forEach(d=>{const k=d.id;if(!(k in pins)||!d.exists||ptimers[k]||dragging)return;const v=d.data();if(v.by===me)return;got=true;pins[k]=(v.pins||[]).map(p=>Object.assign({note:'',group:'',target:''},p));groups[k]=v.groups||{};fixGroups(k);if(k===S.key)tidy()});if(got)refresh()},()=>{});
  db.doc('project/main').onSnapshot(d=>{if(d.exists&&document.activeElement!==pn)pn.value=d.data().note||''},()=>{});
 })();
 })();
