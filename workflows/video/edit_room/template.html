@@ -153,11 +153,16 @@ details summary{cursor:pointer;color:var(--muted);font-size:12px;min-height:32px
  #abw{position:sticky;top:calc(var(--top) + var(--deck));z-index:24;margin:-12px -12px 0;background:var(--bar)}
  .ab{box-shadow:0 8px 16px #0008;padding:8px 12px;gap:6px}.ab .mode,.ab label.f,.ab textarea{display:none}.ab button{min-height:40px}
 }
+.push{border:0;border-radius:999px;background:var(--accent);color:var(--accent-ink);font:600 12px var(--body);padding:6px 14px;min-height:36px;white-space:nowrap;transition:transform .45s var(--spring),background-color .3s,color .3s,padding .45s var(--spring),opacity .3s}
+.push[disabled]{opacity:.35;cursor:default}.push.busy{padding:6px 22px;background:var(--panel2);color:var(--muted)}.push.sent{background:var(--panel2);color:var(--fg);box-shadow:inset 0 0 0 1px var(--line);padding:6px 20px}
+#typDone{display:none;position:fixed;right:12px;top:calc(var(--top,44px) + 8px);z-index:60}
+@keyframes pulse{0%{box-shadow:0 0 0 0 var(--fg)}60%{box-shadow:0 0 0 6px transparent}}textarea.pulse{animation:pulse 1.3s var(--spring) 2}
+@media (max-width:900px){.deck{transition:height .5s var(--spring)}body.typing{--deck:0px}body.typing .deck{overflow:hidden}body.typing #typDone{display:block}.top .push{padding:5px 11px}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important;animation-delay:0s!important}}
 </style>
 <div class="app" id="app">
   <header class="top"><h1 id="ttl">Edit Room<small id="sub"></small></h1><span class="sp"></span>
-    <span class="pill k hide"><b id="nKeep">0</b> keep</span><span class="pill c hide"><b id="nChg">0</b> change</span><span class="pill"><b id="nPin">0</b> pins</span><span class="pill hide"><b id="nWords">0</b> lines</span><span id="sync">loading…</span></header>
+    <span class="pill k hide"><b id="nKeep">0</b> keep</span><span class="pill c hide"><b id="nChg">0</b> change</span><span class="pill"><b id="nPin">0</b> pins</span><span class="pill hide"><b id="nWords">0</b> lines</span><span id="sync">loading…</span><button class="push" id="push" type="button" disabled title="Send your edits to Claude">Send to Claude</button></header><button class="push" id="typDone" type="button">Done</button>
   <nav class="rail" id="rail" aria-label="Scenes"></nav>
   <main class="deck">
     <div class="view"><div class="stage" id="stage" data-p="play"><video id="vid" playsinline preload="metadata" muted poster="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></video><div class="ld"><i></i></div><div class="pbig"><span class="pi"><i></i><i></i></span></div><div class="ov pinning" id="ov"></div>
@@ -174,6 +179,7 @@ details summary{cursor:pointer;color:var(--muted);font-size:12px;min-height:32px
     <section class="pane" id="p-pins"><div class="gr" id="abw" inert><div class="gi" id="abi"></div></div><div id="plist" style="display:contents"></div></section>
     <section class="pane" id="p-words" hidden></section>
     <section class="pane" id="p-proj" hidden><label class="f" for="projNote">Notes for the whole reel</label><textarea id="projNote" placeholder="Pace, colours, voice-over, music…"></textarea>
+      <p class="keys" style="display:block">Edits save by themselves. To hand them to Claude, tap <b>Send to Claude</b> (top right), or tell Claude in chat: <b>apply my edits</b>.</p>
       <p class="keys"><kbd>Space</kbd> play · <kbd>←</kbd><kbd>→</kbd> frame · <kbd>⇧</kbd>+arrows 1 s · <kbd>[</kbd><kbd>]</kbd> scene · <kbd>P</kbd> pin mode · <kbd>G</kbd> group · <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> Auto/Precise/Frame · <kbd>Del</kbd> delete · <kbd>Ctrl</kbd>+<kbd>Z</kbd> undo</p></section>
   </aside>
 </div>
@@ -186,12 +192,12 @@ const FPS=30,LBL={auto:'Auto',precise:'Precise',frame:'Frame'},TIP={auto:'Select
 const TRANSP='data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
 const fmt=t=>{t=Math.max(0,t||0);const m=Math.floor(t/60);return m+':'+(t-m*60).toFixed(2).padStart(5,'0')};
 const retrig=(e,c)=>{e.classList.remove(c);void e.offsetWidth;e.classList.add(c)};
-let db=null,saveOk=true;const writing={},pendSave={};const st={},timers={},chain={},pins={},groups={},ptimers={},pchain={};
+let db=null,saveOk=true;const writing={},pendSave={},pfn={},sfn={};const st={},timers={},chain={},pins={},groups={},ptimers={},pchain={};
 const S={key:'reel',sel:new Set(),active:'',newMode:'auto',multi:false,ghosts:true,tool:false,tab:'pins'};
 DATA.scenes.forEach(s=>{st[s.id]={status:'',note:'',words:Object.fromEntries(s.words.map(w=>[w.k,w.v])),chrome:Object.fromEntries(s.chrome.map(w=>[w.k,w.v]))}});
 ['reel'].concat(DATA.scenes.map(s=>s.id)).forEach(k=>{pins[k]=[];groups[k]={}});
 const vid=$('#vid'),ov=$('#ov'),stage=$('#stage'),tl=$('#tl');
-if(DATA.title)$('#ttl').firstChild.textContent=DATA.title;$('#sub').textContent=(DATA.sub||'')+' · build 12';
+if(DATA.title)$('#ttl').firstChild.textContent=DATA.title;$('#sub').textContent=(DATA.sub||'')+' · build 13';
 /* ---- helpers ---- */
 const sceneOf=k=>DATA.scenes.find(s=>s.id===k);
 const src=k=>k==='reel'?DATA.reel:(sceneOf(k)||{}).clip;
@@ -209,10 +215,11 @@ const me=Math.random().toString(36).slice(2,10);
 function sync(m){const e=$('#sync'),t=!db?'not saving here':m==='saving'?'saving…':!saveOk?'save failed':'saved';if(e.textContent!==t){e.textContent=t;retrig(e,'sw')}}
 const done=()=>{saveOk=true;sync()},fail=e=>{saveOk=false;sync(e)};
 function wordsEdited(s){return s.words.concat(s.chrome).filter(w=>(st[s.id].words[w.k]??st[s.id].chrome[w.k])!==w.v).length}
-function saveScene(s){clearTimeout(timers[s.id]);timers[s.id]=setTimeout(()=>{delete timers[s.id];if(!db){pendSave['s'+s.id]=1;return}const x=st[s.id];const body={by:me,status:x.status,note:x.note,words:s.words.map(w=>({k:w.k,v:x.words[w.k]})),chrome:s.chrome.map(w=>({k:w.k,v:x.chrome[w.k]})),edited:wordsEdited(s),at:new Date().toISOString()};
- writing['s'+s.id]=(writing['s'+s.id]||0)+1;chain[s.id]=(chain[s.id]||Promise.resolve()).then(()=>db.doc('scenes/'+s.id).set(body)).then(done,fail).then(()=>{writing['s'+s.id]--})},700);sync('saving')}
-function savePins(k){lastLocal=Date.now();clearTimeout(ptimers[k]);ptimers[k]=setTimeout(()=>{delete ptimers[k];if(!db){pendSave['p'+k]=1;return}const body={by:me,pins:pins[k].map(p=>({id:p.id,t:p.t,x:p.x,y:p.y,mode:p.mode,note:p.note||'',group:p.group||'',target:p.target||'',between:p.between||null,resolved:p.resolved||null})),groups:groups[k],at:(lastSaveAt=new Date().toISOString())};
- writing['p'+k]=(writing['p'+k]||0)+1;pchain[k]=(pchain[k]||Promise.resolve()).then(()=>db.doc('pins/'+k).set(body)).then(done,fail).then(()=>{writing['p'+k]--})},500);sync('saving')}
+function saveScene(s){clearTimeout(timers[s.id]);const run=sfn[s.id]=()=>{delete timers[s.id];if(!db){pendSave['s'+s.id]=1;return}const x=st[s.id];const body={by:me,status:x.status,note:x.note,words:s.words.map(w=>({k:w.k,v:x.words[w.k]})),chrome:s.chrome.map(w=>({k:w.k,v:x.chrome[w.k]})),edited:wordsEdited(s),at:new Date().toISOString()};
+ writing['s'+s.id]=(writing['s'+s.id]||0)+1;chain[s.id]=(chain[s.id]||Promise.resolve()).then(()=>db.doc('scenes/'+s.id).set(body)).then(done,fail).then(()=>{writing['s'+s.id]--})};timers[s.id]=setTimeout(run,700);sync('saving')}
+function savePins(k){lastLocal=Date.now();clearTimeout(ptimers[k]);const run=pfn[k]=()=>{delete ptimers[k];if(!db){pendSave['p'+k]=1;return}const body={by:me,pins:pins[k].map(p=>({id:p.id,t:p.t,x:p.x,y:p.y,mode:p.mode,note:p.note||'',group:p.group||'',target:p.target||'',between:p.between||null,resolved:p.resolved||null})),groups:groups[k],at:(lastSaveAt=new Date().toISOString())};
+ writing['p'+k]=(writing['p'+k]||0)+1;pchain[k]=(pchain[k]||Promise.resolve()).then(()=>db.doc('pins/'+k).set(body)).then(done,fail).then(()=>{writing['p'+k]--})};ptimers[k]=setTimeout(run,500);sync('saving')}
+async function flushAll(){for(const k in ptimers){clearTimeout(ptimers[k]);pfn[k]&&pfn[k]()}DATA.scenes.forEach(x=>{if(timers[x.id]){clearTimeout(timers[x.id]);sfn[x.id]&&sfn[x.id]()}});await Promise.all([...Object.values(pchain),...Object.values(chain)].map(q=>q.catch(()=>{})))}
 function stats(){let k=0,c=0,w=0,n=0;DATA.scenes.forEach(s=>{const x=st[s.id];if(x.status==='keep')k++;if(x.status==='change')c++;w+=wordsEdited(s)});n=pins.reel.length;setNum('nKeep',k);setNum('nChg',c);setNum('nWords',w);setNum('nPin',n)}
 /* ---- loading: our own morphing loader instead of the browser's grey play icon; thumbnails load two at a time, after the main clip ---- */
 function watch(v,host){const on=()=>host.classList.add('loading'),off=()=>host.classList.remove('loading');['loadstart','waiting','stalled'].forEach(e=>v.addEventListener(e,on));['canplay','playing','seeked','loadeddata'].forEach(e=>v.addEventListener(e,()=>{off();if(v.readyState>=2)host.classList.add('ready')}));v.addEventListener('error',off)}
@@ -392,7 +399,7 @@ function renderPins(){fixGroups('reel');const pane=$('#p-pins'),list=$('#plist')
    card.append(el('div',{class:'gh'},[title,el('span',{class:'sp'}),add,un,dg]),noteBox(g,'g'));mem.forEach(p=>card.append(rowFor(p)));list.append(card);seenGrp.add(g)});
   if(loose.length){list.append(el('div',{class:'sech',text:'Single pins · '+loose.length}));loose.forEach(p=>list.append(rowFor(p)))}}
  a.forEach(p=>seenRow.add(p.id));lastOpen=S.sel.size===1?[...S.sel][0]:'';
- pane.scrollTop=top;if(S.focusNote){const n=pane.querySelector('[data-fk="g'+S.focusNote+'"]');S.focusNote='';if(n){n.scrollIntoView({block:'center',behavior:'smooth'});n.focus({preventScroll:true})}}else if(fk){const n=pane.querySelector('[data-fk="'+fk+'"]');if(n){n.focus({preventScroll:true});try{n.setSelectionRange(ss,se)}catch(e){}}}}
+ pane.scrollTop=top;if(S.focusNote){const n=pane.querySelector('[data-fk="g'+S.focusNote+'"]');S.focusNote='';if(n){n.scrollIntoView({block:'center',behavior:'smooth'});if(matchMedia('(pointer:coarse)').matches){retrig(n,'pulse')}else n.focus({preventScroll:true})}}else if(fk){const n=pane.querySelector('[data-fk="'+fk+'"]');if(n){n.focus({preventScroll:true});try{n.setSelectionRange(ss,se)}catch(e){}}}}
 /* ---- words tab: the scene under the playhead ---- */
 function renderWords(anim){const pane=$('#p-words');if(pane.contains(document.activeElement)&&document.activeElement.matches('input,textarea'))return;pane.textContent='';const s=curScene();if(!s)return;const x=st[s.id];
  const k=el('button',{type:'button','aria-pressed':String(x.status==='keep'),text:'Keep'}),c=el('button',{type:'button','aria-pressed':String(x.status==='change'),text:'Change'});
@@ -421,6 +428,21 @@ document.addEventListener('keydown',e=>{if(e.target.matches('input,textarea,sele
  else if(k==='1'||k==='2'||k==='3'){if(S.sel.size)bulkMode(MODES[+k-1]);else{S.newMode=MODES[+k-1];paintBanner()}}
  else if(k==='Delete'||k==='Backspace'){if(S.sel.size){e.preventDefault();delAnimated()}}
  else if(k==='Escape'){S.sel=new Set();S.active='';S.tool=false;paintTool();refresh()}});
+/* ---- phone keyboard: while typing, the video area folds away so the keyboard never squeezes it to a sliver (pins are not gone, just collapsed) ---- */
+const mq=matchMedia('(max-width:900px)');let typT;
+document.addEventListener('focusin',e=>{if(mq.matches&&e.target.closest&&e.target.closest('.insp')&&e.target.matches('textarea,input')){clearTimeout(typT);document.body.classList.add('typing');const t=e.target;setTimeout(()=>{if(document.activeElement===t)t.scrollIntoView({block:'center',behavior:'smooth'})},380)}});
+if(window.visualViewport)visualViewport.addEventListener('resize',()=>{const a=document.activeElement;if(document.body.classList.contains('typing')&&a&&a.matches&&a.matches('textarea,input'))setTimeout(()=>a.scrollIntoView({block:'center'}),120)});
+document.addEventListener('focusout',()=>{clearTimeout(typT);typT=setTimeout(()=>{if(!(document.activeElement&&document.activeElement.matches&&document.activeElement.matches('textarea,input')))document.body.classList.remove('typing')},200)});
+$('#typDone').onclick=()=>{if(document.activeElement&&document.activeElement.blur)document.activeElement.blur()};
+/* ---- send edits to Claude: flush saves, then post a comment that reaches Claude ---- */
+(async()=>{const btn=$('#push');let cm=null;try{cm=await claude.use('comments')}catch(e){cm=null}
+ const label='Send to Claude';async function ready(){if(!cm||!cm.sendToClaude){btn.title='Tell Claude in chat: apply my edits';return}try{const c=await cm.canSendToClaude();btn.disabled=c!=='available';btn.title=c==='available'?'Save and send your edits to Claude':'Not available here: tell Claude in chat "apply my edits"'}catch(e){btn.disabled=true}}
+ await ready();
+ btn.onclick=async()=>{if(btn.disabled||!cm)return;btn.classList.add('busy');btn.textContent='Sending…';try{await flushAll();const pn=pins.reel.length,gn=Object.keys(groups.reel).length,w=DATA.scenes.reduce((a,x)=>a+wordsEdited(x),0),ch=DATA.scenes.filter(x=>st[x.id].status==='change').length;
+   const anchor=await cm.anchorFor(btn);await cm.sendToClaude({anchor:anchor,text:'Apply my edits ('+(DATA.run||'lab')+'): '+pn+' pin'+(pn===1?'':'s')+' in '+gn+' change'+(gn===1?'':'s')+', '+w+' edited line'+(w===1?'':'s')+', '+ch+' scene'+(ch===1?'':'s')+' marked Change. Read pins/reel, scenes/* and project/main, resolve the pins, re-render only what changed, and republish.'});
+   btn.classList.remove('busy');btn.classList.add('sent');btn.textContent='Sent ✓';hint('Sent. Claude will reply in the comments');setTimeout(()=>{btn.classList.remove('sent');btn.textContent=label},3500)}
+  catch(e){btn.classList.remove('busy');btn.textContent=label;hint(e&&e.code==='consent_required'?'Not sent: allow comments for this page, then try again':'Could not send. Tell Claude in chat: apply my edits')}};
+})();
 /* ---- project note + boot ---- */
 const pn=$('#projNote');let pt;pn.addEventListener('input',()=>{clearTimeout(pt);pt=setTimeout(()=>{if(db)db.doc('project/main').set({note:pn.value,at:new Date().toISOString()}).then(done,fail)},700);sync('saving')});
 new ResizeObserver(()=>place()).observe(stage);

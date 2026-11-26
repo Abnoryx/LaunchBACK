@@ -5,7 +5,7 @@ const ok=(c,m)=>{log.push((c?'PASS ':'FAIL ')+m);if(!c)fails++};
 const STUB=cfg=>`window.__cfg=${JSON.stringify(cfg)};(()=>{const cfg=window.__cfg,docs={},cbs={};window.__docs=docs;
  const mk=(c,id)=>({id,exists:true,data:()=>JSON.parse(JSON.stringify(docs[c+'/'+id]))});
  for(const k in (cfg.init||{}))docs[k]=cfg.init[k];
- window.claude={use:async()=>{if(cfg.dbLate)await new Promise(r=>setTimeout(r,cfg.dbLate));return{doc:p=>({set:async b=>{docs[p]=JSON.parse(JSON.stringify(b));const [c,id]=p.split('/');setTimeout(()=>(cbs[c]||[]).forEach(f=>f({docs:[mk(c,id)]})),cfg.echo||250)},onSnapshot:()=>{}}),
+ window.claude={use:async(n)=>{if(n==='comments')return{canSendToClaude:async()=>cfg.cmState||'available',anchorFor:async()=>({path:'x',x:0,y:0}),sendToClaude:async t=>{(window.__sent=window.__sent||[]).push(t);return{threadId:'t',commentId:'c'}}};if(n!=='db')return null;if(cfg.dbLate)await new Promise(r=>setTimeout(r,cfg.dbLate));return{doc:p=>({set:async b=>{docs[p]=JSON.parse(JSON.stringify(b));const [c,id]=p.split('/');setTimeout(()=>(cbs[c]||[]).forEach(f=>f({docs:[mk(c,id)]})),cfg.echo||250)},onSnapshot:()=>{}}),
   collection:c=>({onSnapshot:f=>{(cbs[c]=cbs[c]||[]).push(f);const snap0=JSON.parse(JSON.stringify(cfg.init||{}));setTimeout(()=>f({docs:Object.keys(snap0).filter(k=>k.startsWith(c+'/')).map(k=>({id:k.split('/')[1],exists:true,data:()=>JSON.parse(JSON.stringify(snap0[k]))}))}),cfg.delay||300)}})}}}})();`;
 async function open(b,vp,cfg){const pg=await b.newPage({viewport:vp});pg.errs=[];pg.on('pageerror',e=>pg.errs.push(String(e)));await pg.addInitScript(STUB(cfg||{}));
  await pg.route('**/fonts.googleapis.com/**',r=>r.fulfill({status:200,body:''}));await pg.goto('file://'+page_);await pg.waitForFunction(()=>document.getElementById('vid').readyState>=2,null,{timeout:20000});await pg.waitForTimeout(700);return pg}
@@ -71,5 +71,21 @@ for(const [name,vp] of [['desktop',{width:1280,height:800}],['phone',{width:390,
  ok(pg.errs.length===0,T('no page errors (layout/undo)'));await pg.close();
  pg=await open(b,vp,{dbLate:2500});await pg.click('#bPin');await seek(pg,.3);await tap(pg,.5,.5);await pg.waitForTimeout(3500);
  const dN=await js(pg,()=>window.__docs&&window.__docs['pins/reel']);ok(!!dN&&dN.pins.length===1,T('a pin dropped before the db connected is saved once it does'));await pg.close();
+ /* N: push edits to Claude (saves are flushed first), and the unavailable state */
+ pg=await open(b,vp);await pg.click('#bPin');await seek(pg,.3);await tap(pg,.5,.5);await js(pg,()=>document.getElementById('bPin').click());
+ ok(await js(pg,()=>!document.getElementById('push').disabled),T('Send to Claude is enabled when comments are available'));
+ await js(pg,()=>document.getElementById('push').click());await pg.waitForTimeout(900);
+ const sent=await js(pg,()=>window.__sent||[]);ok(sent.length===1&&/1 pin/.test(sent[0].text)&&/Apply my edits/.test(sent[0].text),T('sends one "Apply my edits" message with the pin count'));
+ ok(((await doc(pg))||{pins:[]}).pins.length===1,T('edits were saved before sending (no 500 ms wait needed)'));await pg.close();
+ pg=await open(b,vp,{cmState:'no_session'});ok(await js(pg,()=>document.getElementById('push').disabled),T('Send to Claude is disabled when no session can receive it'));await pg.close();
+ /* O: phone keyboard. The video area must fold away while typing and come back, pins intact */
+ if(name==='phone'){pg=await open(b,vp);await pg.click('#bPin');await seek(pg,.2);await tap(pg,.3,.4);await seek(pg,.25);await tap(pg,.6,.6);await js(pg,()=>document.getElementById('bPin').click());await pg.keyboard.press('Escape');
+  await js(pg,()=>{document.querySelectorAll('#plist .row .ck')[0].click();document.querySelectorAll('#plist .row .ck')[1].click()});await pg.waitForTimeout(300);await js(pg,()=>document.querySelector('.ab .pri').click());await pg.waitForTimeout(900);
+  const sh0=(await pg.locator('#stage').boundingBox()).height;await js(pg,()=>document.querySelector('.grp textarea').focus());await pg.setViewportSize({width:390,height:330});await pg.waitForTimeout(900);
+  ok(await js(pg,()=>document.body.classList.contains('typing')),T('typing mode folds the video area while the keyboard is open'));
+  const tb=await pg.evaluate(()=>{const r=document.querySelector('.grp textarea').getBoundingClientRect();return [r.top,r.bottom,innerHeight]});ok(tb[0]>=0&&tb[1]<=tb[2]+2,T('the note box stays visible above the keyboard ('+tb.map(Math.round).join('/')+')'));
+  await js(pg,()=>document.getElementById('typDone').click());await pg.setViewportSize(vp);await pg.waitForTimeout(1000);
+  const sh1=(await pg.locator('#stage').boundingBox()).height;ok(!await js(pg,()=>document.body.classList.contains('typing'))&&sh1>=sh0-4,T('video area comes back after typing ('+Math.round(sh0)+'px -> '+Math.round(sh1)+'px)'));
+  ok(await pg.locator('.pin').count()===2&&pg.errs.length===0,T('pins intact after the keyboard cycle'));await pg.close()}
 }
 await b.close();console.log(log.join('\n'));console.log(fails?'\n'+fails+' FAILED':'\nALL PASSED');process.exit(fails?1:0)})();

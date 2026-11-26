@@ -6,8 +6,11 @@
 1. Preview clips per scene + whole reel -> upload (Artifact `asset:true`) -> `clips.json`.
 2. Build: /gen `python3 gen/runs/<run>/edit_room/build_page.py out.html` (writes room.json then calls `build.py`); /rescene `python3 edit_room/room_from_templates.py <lib/<reel>/templates> clips.json room.json "<title>"` then `python3 edit_room/build.py room.json out.html`.
 3. **Test twice, both must pass:** `python3 edit_room/tests/make_fixture.py room.json <tmpdir>` then `node edit_room/tests/run.cjs <tmpdir>/page.html` (run it two separate times). It covers load, pin drop, ghosts, grouping, group cards, notes, delete/reset/undo, drag after undo, scene<->reel pins, late snapshot merge, legacy migration, echo, phone 390x664 layout, pre-db saves.
-4. Publish with capabilities `db` + `assets`, to the SAME artifact URL for that run (never a new link per version). Header shows the build number.
+4. Publish with capabilities `{db:{}, assets:{}, comments:{}}` (comments powers the **Send to Claude** button), to the SAME artifact URL for that run (never a new link per version). Header shows the build number.
 5. Give the user the link with the render. Stop attaching the lab only after the user approves the final version.
+
+## Handing edits over
+Edits autosave. The page's **Send to Claude** button (top right) flushes saves, then posts a comment "Apply my edits (<run>): …" that wakes the session watching that lab; fallback: the user types "apply my edits" in chat. On a phone the video area folds away while the keyboard is open (body.typing) and no field is auto-focused on touch.
 
 ## Working on several runs in parallel (labs never mix)
 - **One artifact per run**, registered in `edit_room/labs.json` (`python3 edit_room/lab.py get|set|list`). A run's first version publishes a NEW artifact; every later version republishes to that run's URL. Never publish run B to run A's URL.
