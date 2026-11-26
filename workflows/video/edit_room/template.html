@@ -158,7 +158,7 @@ const S={key:'reel',sel:new Set(),active:'',newMode:'auto',multi:false,tool:fals
 DATA.scenes.forEach(s=>{st[s.id]={status:'',note:'',words:Object.fromEntries(s.words.map(w=>[w.k,w.v])),chrome:Object.fromEntries(s.chrome.map(w=>[w.k,w.v]))}});
 ['reel'].concat(DATA.scenes.map(s=>s.id)).forEach(k=>{pins[k]=[];groups[k]={}});
 const vid=$('#vid'),ov=$('#ov'),stage=$('#stage'),tl=$('#tl');
-if(DATA.title)$('#ttl').firstChild.textContent=DATA.title;$('#sub').textContent=DATA.sub||'';
+if(DATA.title)$('#ttl').firstChild.textContent=DATA.title;$('#sub').textContent=(DATA.sub||'')+' · build 9';
 /* ---- helpers ---- */
 const sceneOf=k=>DATA.scenes.find(s=>s.id===k);
 const src=k=>k==='reel'?DATA.reel:(sceneOf(k)||{}).clip;
@@ -287,6 +287,7 @@ function rowFor(p){const a=pins[S.key],idx=a.indexOf(p),open=S.sel.size===1&&S.s
   if(p.resolved)kids.push(el('div',{class:'res',text:'Resolved: '+p.resolved.label}));
   const bd=el('div',{class:'bdy'},kids);bd.onclick=e=>e.stopPropagation();r.append(bd)}
  return r}
+function noteBox(g,pre){const n=el('textarea',{placeholder:'Write the change for Change '+g+' (one note for all its pins)','aria-label':'Note for change '+g,'data-fk':pre+g,'data-gn':g});n.value=groups[S.key][g].note||'';n.oninput=()=>{groups[S.key][g].note=n.value;document.querySelectorAll('textarea[data-gn="'+g+'"]').forEach(o=>{if(o!==n)o.value=n.value});savePins(S.key)};return n}
 function actionBar(){const ps=selPins(),n=ps.length,modes=new Set(ps.map(p=>p.mode)),gl=Object.keys(groups[S.key]).sort(),allSame=ps.every(p=>p.group&&p.group===ps[0].group);
  const b=el('div',{class:'ab'}),btn=(t,f,c,a)=>{const x=el('button',{type:'button',class:c||'',text:t});if(a!==undefined)x.setAttribute('aria-pressed',String(a));x.onclick=f;return x};
  const head=el('div',{class:'abh'},[el('b',{text:n+' selected'}),btn('Select all',()=>{S.sel=new Set(pins[S.key].map(p=>p.id));refresh()},'ghost'),btn('Clear',()=>{S.sel=new Set();refresh()},'ghost')]);
@@ -295,7 +296,7 @@ function actionBar(){const ps=selPins(),n=ps.length,modes=new Set(ps.map(p=>p.mo
  if(!(allSame&&ps[0].group&&ps.length===pins[S.key].filter(p=>p.group===ps[0].group).length))acts.append(btn(n>1?'Group as one change':'New change',groupSel,'pri'));
  gl.forEach(g=>{if(!ps.every(p=>p.group===g))acts.append(btn('Add to '+g,()=>addTo(g)))});
  if(ps.some(p=>p.group))acts.append(btn('Ungroup',ungroupSel));
- acts.append(btn('Delete',delSel,'dang'));b.append(head,md,acts);return b}
+ acts.append(btn('Delete',delSel,'dang'));b.append(head);const g0=ps.length&&ps.every(p=>p.group&&p.group===ps[0].group)?ps[0].group:'';if(g0){fixGroups(S.key);b.append(el('label',{class:'f',text:'Change '+g0+' · write the change here'}),noteBox(g0,'b'))}b.append(md,acts);return b}
 function renderPins(){fixGroups(S.key);const pane=$('#p-pins'),fa=document.activeElement,fk=fa&&pane.contains(fa)&&fa.dataset&&fa.dataset.fk,ss=fk?fa.selectionStart:0,se=fk?fa.selectionEnd:0,top=pane.scrollTop;pane.textContent='';const a=pins[S.key];
  if(!a.length){pane.append(el('div',{class:'empty',text:'No pins yet. Turn on Pin mode, then tap the video: Auto selects the thing under the pin, Precise keeps the exact spot, Frame selects the whole frame. Select several pins and Group them so one note covers one change.'}))}
  else{if(S.sel.size)pane.append(actionBar());
@@ -305,7 +306,7 @@ function renderPins(){fixGroups(S.key);const pane=$('#p-pins'),fa=document.activ
    const title=el('button',{class:'gt',type:'button',text:'Change '+g+' · '+mem.length+' pin'+(mem.length===1?'':'s'),title:'Select all pins in this change'});title.onclick=()=>{S.sel=new Set(mem.map(p=>p.id));refresh()};
    const add=el('button',{class:'sm',type:'button',text:'+ Pin'});add.onclick=()=>{S.active=g;S.tool=true;paintTool();refresh();hint('Tap the video to add pins to Change '+g)};
    const un=el('button',{class:'sm',type:'button',text:'Ungroup'});un.onclick=()=>mutate(()=>{mem.forEach(p=>{p.group=''})});
-   const note=el('textarea',{placeholder:'One note for the whole change: what should happen?','aria-label':'Note for change '+g,'data-fk':'g'+g});note.value=groups[S.key][g].note||'';note.oninput=()=>{groups[S.key][g].note=note.value;savePins(S.key)};
+   const note=noteBox(g,'g');
    card.append(el('div',{class:'gh'},[title,el('span',{class:'sp'}),add,un]),note);mem.forEach(p=>card.append(rowFor(p)));pane.append(card)})}
  pane.scrollTop=top;if(S.focusNote){const n=pane.querySelector('[data-fk="g'+S.focusNote+'"]');S.focusNote='';if(n){n.scrollIntoView({block:'nearest'});n.focus()}}else if(fk){const n=pane.querySelector('[data-fk="'+fk+'"]');if(n){n.focus();try{n.setSelectionRange(ss,se)}catch(e){}}}}
 /* ---- words tab: the scene under the playhead ---- */
