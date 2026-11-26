@@ -175,5 +175,5 @@ timing, stems, SFX onsets), archetype auto-matcher, automatic fit loop, layer ma
 Order and choices: `EXTRACT_PLAN.md` phases P2–P4 and the research report's ranked list.
 
 
-## After the templates are built — Edit Room (same page as /gen)
-To let the user review and mark up a rescened reel (pins with Auto / Precise / Frame modes, grouped Changes, word edits, notes): render previews, upload clips (`asset:true`), `python3 workflows/video/edit_room/room_from_templates.py <lib/<reel>/templates> clips.json room.json "<title>"`, `python3 workflows/video/edit_room/build.py room.json page.html`, publish with `db` + `assets`. Read their pins with ArtifactData and resolve them with `gen/runs/michelin_gen/edit_room/resolve_pins.py` (see /gen §6b).
+## EVERY version ships with the Edit Lab (user rule, 2026-11-26)
+Every rescene deliverable (first pass and every revision) comes with the Edit Lab until the user approves the final version: the same shared page as /gen (`workflows/video/edit_room/`, checklist in `edit_room/README.md`). Render previews, upload clips (`asset:true`), `python3 workflows/video/edit_room/room_from_templates.py <lib/<reel>/templates> clips.json room.json "<title>"`, `python3 workflows/video/edit_room/build.py room.json page.html`, run `node workflows/video/edit_room/tests/run.cjs` TWICE (both must pass), publish with `db` + `assets` to the same artifact URL, give the link with the render. Read pins with ArtifactData (`pins/reel`) and resolve with `gen/runs/michelin_gen/edit_room/resolve_pins.py` (see /gen §6b).

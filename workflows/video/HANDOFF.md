@@ -58,3 +58,5 @@ Built and tested against a mock GitHub API (list, delete template/asset, edit no
   (3) `library/assets/logo/*.png` (incl. launchback_src.png) are git-ignored and missing: logo_reveal renders black; the logo sting for shot 23
   was cut from renders/michelin_v2_quad_1080p.mp4. Force-add the logo PNGs once the user re-sends them. (4) gen.previews of bought scenes made
   before the footage was harvested are degraded (missing textures). (5) ElevenLabs key was declined: no VO, timings estimated, no SFX/music yet.
+
+- **Edit Lab (build 11+):** `workflows/video/edit_room/` (README = ship checklist; template.html; build.py; tests/run.cjs). Published artifact https://claude.ai/artifact/6xxWDVcMFoMxEH9b1iZHJ6 for the Michelin run. Every render version must ship with it until the user approves the final.

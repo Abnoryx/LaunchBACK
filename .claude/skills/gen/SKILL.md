@@ -99,9 +99,10 @@ timings). Strip-check each shot with CPU stills first. Render with `python3 -m g
 full rate (text readable and on screen, props right, transitions clean, nothing static). Fix, re-render. Add VO +
 whoosh per cut + own SFX, mix to −14 LUFS. Commit (force-add the render) and send.
 
-## 6b. After the first render — Edit Room with pins (user rule, 2026-11-25)
+## 6b. EVERY version ships with the Edit Lab (user rule, 2026-11-25/26)
 
-Fastest loop for round 2+: don't ask the user to describe scenes in chat, let them point.
+**Mandatory:** the first render AND every later round come with the Edit Lab (the Edit Room page, current shared template in `workflows/video/edit_room/`, full checklist in `edit_room/README.md`) until the user approves the final version. Test it TWICE (`node edit_room/tests/run.cjs`, both runs must pass) before publishing, republish to the same artifact URL, and hand the link over with the render. Don't ask the user to describe scenes in chat, let them point.
+Data model: ONE pin store in reel time (`pins/reel`); scene clips are windows onto it; nothing disappears when switching views. Pins on any view are dim ghosts away from their moment. Delete: × on every row, Delete on a change, Reset pins (two taps, undoable).
 1. Cut per-scene preview clips + the whole reel, upload them (Artifact `asset:true`), write `edit_room/clips.json`, `python3 gen/runs/<run>/edit_room/build_page.py out.html` (writes room.json, then the SHARED builder `workflows/video/edit_room/build.py` + `template.html`), publish with capabilities `db` + `assets`. The same page serves /rescene (`edit_room/room_from_templates.py`). Layout: scene rail | viewer | inspector (Pins / Words / Project), transport + timeline with scene blocks and pin markers; on a phone the viewer and timeline stay pinned. Keys: Space, ←/→ frame, ⇧ 1 s, [ ] scene, P pin tool, 1/2/3 mode, Del.
 2. The page has **pins** on the reel and on every scene clip. Each pin has its own mode (changeable and deletable per pin):
    - **Auto** = selects the thing under the pin (the flying guy, a text card, a badge).
