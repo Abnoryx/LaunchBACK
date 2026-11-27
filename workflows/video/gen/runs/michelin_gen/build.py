@@ -83,13 +83,15 @@ def edits_r10(n, path):
             cp = copy.deepcopy(src); cp['src_id'] = 99718; cp['i'] = max(l['i'] for l in c['layers']) + 1; cp['track_matte_type'] = 5012; cp['has_track_matte'] = False; cp['matte_layer'] = None; cp['parent'] = None; cp['three_d_layer'] = False; cp['name'] = 'wallpaper full'
             _set(cp, 'Transform/Position', [540.0, 960.0, 0.0]); _set(cp, 'Transform/Anchor Point', [w / 2, h / 2, 0.0]); k = max(1080 / w, 1920 / h) * 100; _set(cp, 'Transform/Scale', [k, k, 100.0])
             c['layers'].append(cp)
+        for l in c['layers']:
+            if l['name'] == 'likess ': l['enabled'] = False   # the post's photo (multiplied over the plate)
         for l in _layers(d, 'scene 5', lambda l: l['name'] == 'led.jpg'): l['enabled'] = False
     if n == 8:   # 'the guy is at a weird angle': straighten and fit the chef sticker
         for l in _layers(d, 'micheal jordan', lambda l: l['name'] == 'micheal jordan.png'): _set(l, 'Transform/Z Rotation', -9.0); _scale(l, 0.86)
     if n == 13:  # the stray original word ' Memories' stays; the other two words are rewritten in slots.json
         pass
-    if n == 15:  # 'the photo remove': the grey placeholder photo (BEAN LEAK clip, not shipped) on top of the post
-        pass   # footage 2088 is swapped for a white plate in the footage map (below)
+    if n == 15:  # 'the photo remove' + 'that line is catchy not smooth': Shape Layer 2 is the dark placeholder photo card (and its stepping edge) behind the caption -> gone; caption goes dark
+        for l in _layers(d, 'scene 11', lambda l: l['name'] == 'Shape Layer 2' and l['i'] == 24): l['enabled'] = False
     json.dump(d, open(path, 'w'))
 EDITED = {1, 2, 4, 5, 8, 13, 15, 19}
 slots = json.load(open(os.path.join(HERE, 'slots.json'))); entries = []; unmapped = {}
@@ -102,7 +104,6 @@ for f in sorted(glob.glob(f'{TPL}/templates/shot_*.json')):
         if sid == 'gen/s15' and k.startswith('That’s what makes'): texts[x['id']] = {'text': m[k], 'fill': [0.08, 0.08, 0.08]}
         if sid == 'gen/s06' and k == 'BRAIN': texts[x['id']] = {'text': m[k], 'fill': [0.88, 0.02, 0.0]}   # TYRES in red: the original dark text vanishes on a dark tyre
     foot = {str(x['id']): SWAP.get(str(x['id']), LED if re.search(r'wallpaper', x['name'], re.I) else BLANK) for x in t['params']['footage'] if BRAND.search(x['name']) or str(x['id']) in SWAP}
-    if sid == 'gen/s15': foot['2088'] = os.path.join(NEW, 'paper_plate.png')   # the placeholder photo -> plain white plate
     for x in t['params']['footage']:   # still images that are mostly green/blue/purple -> red copies (user: make it red coloured)
         pth = os.path.join(TPL, 'assets', x['name'])
         if str(x['id']) not in foot and x['name'].lower().rsplit('.', 1)[-1] in ('jpg', 'jpeg', 'png', 'gif') and os.path.exists(pth) and inband(pth) > 0.05: foot[str(x['id'])] = red_copy(x['id'], pth)
