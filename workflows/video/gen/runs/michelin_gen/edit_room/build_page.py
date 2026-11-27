@@ -15,6 +15,6 @@ for s in scenes:
 man = os.path.join(RUN, 'work', 'manifest.json')   # plain concat: a cut is the running total of scene durations
 dur = [round(e['to'] - e['from'], 3) for e in json.load(open(man))['entries']] if os.path.exists(man) else [d['sec'] for d in data]
 cuts = [round(sum(dur[:i + 1]), 3) for i in range(len(dur) - 1)]
-room = {'title': 'Michelin reel', 'run': 'michelin_gen', 'sub': 'michelin_gen · round 2', 'scenes': data, 'reel': clips.get('reel', ''), 'cuts': cuts}
+room = {'title': 'Michelin reel', 'run': 'michelin_gen', 'sub': 'michelin_gen · round 3', 'scenes': data, 'reel': clips.get('reel', ''), 'cuts': cuts}
 tmp = os.path.join(HERE, 'room.json'); json.dump(room, open(tmp, 'w'), ensure_ascii=False)
 import subprocess; subprocess.run([sys.executable, os.path.join(HERE, '..', '..', '..', '..', 'edit_room', 'build.py'), tmp, sys.argv[1]], check=True)
