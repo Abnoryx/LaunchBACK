@@ -45,12 +45,15 @@ yy = np.linspace(0, 1, h)[:, None]; base = np.dstack([150 + 60 * yy * np.ones((h
 noise = np.random.default_rng(3).normal(0, 7, (h, w))[..., None]; leather = np.clip(base + noise, 0, 255)
 edge = cv2.dilate(al, np.ones((9, 9), np.uint8)) - cv2.erode(al, np.ones((9, 9), np.uint8)); gold = np.array([226, 178, 76])
 rgb = np.where(edge[..., None] > 0, gold, leather); book = Image.fromarray(np.dstack([rgb, al]).astype(np.uint8), 'RGBA'); book.save(os.path.join(O, 'phone_book.png'))
+# black bezel (user round 3: 'phone border black instead'): dark leather body, thin graphite rim instead of gold
+base_k = np.dstack([22 + 8 * yy * np.ones((h, w))] * 3); leather_k = np.clip(base_k + noise * .5, 0, 255); rgb_k = np.where(edge[..., None] > 0, np.array([70, 70, 74]), leather_k)
+Image.fromarray(np.dstack([rgb_k, al]).astype(np.uint8), 'RGBA').save(os.path.join(O, 'phone_black.png'))
 
 # 5) logo avatar (the real LaunchBack mark lifted from the logo sting), red tick, badges, icons
-mark = Image.open(os.path.join(O, 'launchback_mark.png')).convert('RGBA')
+mark = trim(Image.open(os.path.join(O, 'launchback_mark.png')).convert('RGBA'))   # trim the empty padding so the mark really fills the avatar (user round 3: 'increase logo size')
 def avatar(sz):
     a = Image.new('RGBA', (sz, sz), (0, 0, 0, 0)); d = ImageDraw.Draw(a); d.ellipse((0, 0, sz - 1, sz - 1), fill=(14, 14, 14, 255))
-    m = mark.copy(); m.thumbnail((int(sz * .62), int(sz * .62))); a.alpha_composite(m, ((sz - m.width) // 2, (sz - m.height) // 2)); return a
+    m = mark.copy(); m.thumbnail((int(sz * .66), int(sz * .66))); a.alpha_composite(m, ((sz - m.width) // 2, (sz - m.height) // 2)); return a
 avatar(1024).save(os.path.join(O, 'avatar.png'))
 def seal(sz):   # red 12-point verified seal with a white check
     s = Image.new('RGBA', (sz, sz), (255, 255, 255, 0)); d = ImageDraw.Draw(s); cx = cy = sz / 2; pts = []
@@ -91,3 +94,23 @@ d.text((60, 560), 'LaunchBack | Finding the guidebook', font=F(BOLD, 50), fill=(
 d.rounded_rectangle((60, 760, 700, 880), 24, fill=(235, 235, 235)); d.text((110, 786), 'Following', font=F(BOLD, 52), fill=(20, 20, 20)); d.rounded_rectangle((730, 760, 1360, 880), 24, fill=(235, 235, 235)); d.text((860, 786), 'Message', font=F(BOLD, 52), fill=(20, 20, 20))
 for i, n in enumerate(['chef_broll', 'photo1', 'photo2']): prof.paste(fit(os.path.join(G, f'{n}.png'), (530, 760)), (i * 540, 1040))
 prof.save(os.path.join(O, 'ui_profile.jpg'), quality=94); print('assets:', sorted(os.listdir(O)))
+
+# 7) tyre icon for scene 8 (user round 3: "use an actual real-world logo, free to use"): an original flat tyre pictogram drawn here (no third-party mark, nothing to license),
+# red rim + black tyre with tread blocks + white highlight ring. Replaces the generated sticker in the 'nike logo' slot.
+def tyre_icon(sz=1024):
+    import math
+    s = 4; S = sz * s; im = Image.new('RGBA', (S, S), (0, 0, 0, 0)); d = ImageDraw.Draw(im); c = S / 2
+    d.ellipse((S * .04, S * .04, S * .96, S * .96), fill=(18, 18, 18, 255))
+    for k in range(24):   # tread blocks around the outer edge
+        a = 2 * math.pi * k / 24; r0, r1 = S * .43, S * .495; w = S * .028
+        px, py = math.cos(a), math.sin(a); qx, qy = -py, px
+        d.polygon([(c + px * r0 + qx * w, c + py * r0 + qy * w), (c + px * r1 + qx * w, c + py * r1 + qy * w), (c + px * r1 - qx * w, c + py * r1 - qy * w), (c + px * r0 - qx * w, c + py * r0 - qy * w)], fill=(48, 48, 50, 255))
+    d.ellipse((S * .22, S * .22, S * .78, S * .78), fill=(225, 6, 0, 255))           # red rim
+    d.ellipse((S * .26, S * .26, S * .74, S * .74), fill=(150, 4, 0, 255))
+    for k in range(5):   # five spokes
+        a = 2 * math.pi * k / 5 - math.pi / 2; px, py = math.cos(a), math.sin(a); qx, qy = -py, px; w = S * .045
+        d.polygon([(c + qx * w, c + qy * w), (c + px * S * .245 + qx * w * .7, c + py * S * .245 + qy * w * .7), (c + px * S * .245 - qx * w * .7, c + py * S * .245 - qy * w * .7), (c - qx * w, c - qy * w)], fill=(243, 237, 225, 255))
+    d.ellipse((S * .44, S * .44, S * .56, S * .56), fill=(243, 237, 225, 255)); d.ellipse((S * .47, S * .47, S * .53, S * .53), fill=(18, 18, 18, 255))
+    d.arc((S * .07, S * .07, S * .93, S * .93), 200, 250, fill=(255, 255, 255, 120), width=int(S * .012))   # soft highlight
+    return im.resize((sz, sz), Image.LANCZOS)
+tyre_icon().save(os.path.join(O, 'tyre_icon.png'))
