@@ -61,8 +61,8 @@ silently).
 ## 4. Pick ONE group, plan its exact scenes -> `gen/runs/<name>/plan.json` + selects video + sign-off
 **User rule (2026-11-28): never build two reels in a row from the same source reel's shots.** A reel used by a previous run is blocked for 7 days (`gen/config.json` `group.cooldown_days`); the ledger is `gen/usage.json` (`python3 -m gen.usage` shows it and what is blocked). `gen.groups` skips blocked reels by itself (and warns if you force one; `--ignore-cooldown` only if the user says so). After a run's reel is delivered, record it: `python3 -m gen.usage record <group> <run>`. Reels become available again after a week.
 **User rule (2026-11-24): a reel is built from ONE group of scenes, never a mix.** A group = one rescened video (`python3 -m
-gen.groups` lists them: `sells`, `gen`, `stop`, `psych` = our rebuild of the Psychology Trick). Use most (>= 80%, `gen/config.json`
-`group.min_scene_use`) if not all of its scenes, the EXACT shots, in the ORIGINAL order, so the cuts, handoffs and transitions
+gen.groups` lists them: `sells`, `gen`, `stop`, `psych` = our rebuild of the Psychology Trick). Use its scenes in order from the start, as many as the script fills (`gen/config.json`
+`group.min_scene_use` is only a planner hint); **scenes after the voice-over ends are cut from the end, never filled with made-up captions** (user, 2026-11-28: "if it's not used remove it from the end"), the EXACT shots, in the ORIGINAL order, so the cuts, handoffs and transitions
 between scenes come straight from the original video (mixing scenes from different videos gave bad cuts and transitions).
 ```bash
 python3 -m gen.groups gen/runs/<name>/script.txt --out gen/runs/<name>/plan.json     # ranks groups, plans the best (--group G to force)

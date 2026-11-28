@@ -7,7 +7,8 @@ plan = json.load(open(os.path.join(RUN, 'plan.json')))
 clips = json.load(open(os.path.join(HERE, 'clips.json'))) if os.path.exists(os.path.join(HERE, 'clips.json')) else {}
 CHROME = {'1', 'st', '+', '| |', '2 min ago', 'Follow', 'View all notification', 'Earnera.co', 'earnera.co', 'earnera', 'iMessage', 'Today, 11:11'}
 data = []
-for e, s in zip(man['entries'], plan['scenes']):
+KEEP = int(os.environ.get('KEEP', '17'))   # scenes after the voice-over ends are dropped (user, 2026-11-28)
+for e, s in list(zip(man['entries'], plan['scenes']))[:KEEP]:
     n = e['label']; words, chrome = [], []
     for k in dict.fromkeys(x.strip() for x in s.get('original', [])):
         if k in slots: (chrome if k in CHROME else words).append({'k': k, 'v': slots[k]})

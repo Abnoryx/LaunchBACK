@@ -76,3 +76,4 @@ Read this before any video work. Every rule below came from the user; keep it cu
 - **Selects must be SENT (2026-11-28):** the user can't open repo paths; send `selects.mp4` with `SendUserFile` before asking for sign-off.
 - **Placeholder VO (2026-11-28):** no ElevenLabs -> use Higgsfield audio, cheapest option, as placeholder VO (quote first).
 - **Online assets (2026-11-28):** search the web for legally usable real assets (free-licence/CC0 footage, photos, AE/motion elements); log licence + credit in brief.md.
+- **No filler at the end (2026-11-28):** if the group runs longer than the voice-over, cut the unused scenes from the end. Never pad with captions that aren't in the script; the 80% scene-use figure is not a rule that forces filler.
