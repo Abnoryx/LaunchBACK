@@ -1,0 +1,171 @@
+{
+ "group": "psych",
+ "ease": "quad_out",
+ "keep_original_handoffs": true,
+ "scenes": [
+  {
+   "scene": "hero_word",
+   "seconds": 3.23,
+   "original": [
+    "ever",
+    "WONDER",
+    "why",
+    "test drive",
+    "work so",
+    "well",
+    "?"
+   ],
+   "text": "What you're watching took forty hours. You'll"
+  },
+  {
+   "scene": "disc_brain",
+   "seconds": 1.47,
+   "original": [
+    "it\u2019s called",
+    "Endowment",
+    "effect"
+   ],
+   "text": "see it in"
+  },
+  {
+   "scene": "word_panel",
+   "seconds": 2.0,
+   "original": [
+    "Once",
+    "something",
+    "feels like it\u2019s",
+    "YOURS"
+   ],
+   "text": "about eight seconds. Here's the"
+  },
+  {
+   "scene": "hand_flame",
+   "seconds": 1.63,
+   "original": [
+    "don\u2019t wanna",
+    "Let it Go"
+   ],
+   "text": "same thing before it got clean."
+  },
+  {
+   "scene": "word_prop_pop",
+   "seconds": 3.2,
+   "original": [
+    "Apple",
+    "let you",
+    "iphone 15",
+    "use the phone",
+    "before you",
+    "buy"
+   ],
+   "text": "Forty layers. Nine versions. Four deleted. One"
+  },
+  {
+   "scene": "brand_box",
+   "seconds": 3.67,
+   "original": [
+    "IKEA",
+    "Good Stuff !!",
+    "soft sofa\ntop rated\nlovely bed",
+    "invites you to",
+    "Sit",
+    "touch",
+    "imagine"
+   ],
+   "text": "rebuilt from scratch at two in the morning because the audio changed"
+  },
+  {
+   "scene": "calendar_flip",
+   "seconds": 3.07,
+   "original": [
+    "Casper",
+    "gives you",
+    "nights to",
+    "sleep",
+    "on it"
+   ],
+   "text": "length by half a second. Nobody"
+  },
+  {
+   "scene": "statement_flip",
+   "seconds": 2.97,
+   "original": [
+    "This isn\u2019t just",
+    "marketing",
+    "it\u2019s",
+    "psychology"
+   ],
+   "text": "bought those forty hours. They"
+  },
+  {
+   "scene": "dark_docs",
+   "seconds": 2.57,
+   "original": [
+    "let people",
+    "experience",
+    "your",
+    "product"
+   ],
+   "text": "bought the eight seconds"
+  },
+  {
+   "scene": "brain_collage",
+   "seconds": 2.03,
+   "original": [
+    "&",
+    "it becomes\ntheirs",
+    "In their",
+    "mind",
+    "Brain"
+   ],
+   "text": "those hours made possible. Your expertise"
+  },
+  {
+   "scene": "flythrough_words",
+   "seconds": 2.37,
+   "original": [
+    "that\u2019s how",
+    "you sell",
+    "without",
+    "selling"
+   ],
+   "text": "runs the same way. The"
+  },
+  {
+   "scene": "follow_needle",
+   "seconds": 2.97,
+   "original": [
+    "follow for more",
+    "insight",
+    "that \nmove the",
+    "Needle"
+   ],
+   "text": "messy part is the thing worth paying for."
+  },
+  {
+   "scene": "needle_solo",
+   "seconds": 1.7,
+   "original": [
+    "follow for more",
+    "insight",
+    "that\nmove the",
+    "Needle"
+   ],
+   "text": "You just have to be"
+  },
+  {
+   "scene": "share_card",
+   "seconds": 1.93,
+   "original": [
+    "Share this",
+    "SHARE",
+    "with",
+    "someone",
+    "who",
+    "needs",
+    "it"
+   ],
+   "text": "the one who can build it."
+  }
+ ]
+}
