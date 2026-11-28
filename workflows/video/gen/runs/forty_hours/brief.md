@@ -30,3 +30,8 @@ Cut points snapped to VO lines: 3.2 / 5.0 / 6.92 / 8.08 / 10.38 / 14.23 / 17.31 
 
 ## Assets: real first
 Real/safe: frames of our own launch.back reels; screenshots of our own pipeline (plan.json, runs/ folder, version files). NOT real: After Effects/Premiere panels (Adobe UI) -> generic flat bars + red playhead, no app chrome. Alarm clock/stopwatch: real licensed stock if fetchable, else generated sticker (never screenshot-like). Generated last resort: red "40h", layer-stack cards, waveform. Library: hand, fist, brain.
+
+## Run notes (2026-11-28, user sign-off)
+- Wording fixes applied (hook "This eight-second shot took forty hours", "One rebuilt at 2am because the audio moved half a second", payoff "...who can show it").
+- Placeholder VO: Higgsfield seed_audio, voice Grady (preset), 3 credits -> vo.mp3. Balance before: 64.47 credits.
+- Real-asset candidates (Wikimedia Commons, rate-limited 429 after ~4 queries; retry slowly): alarm clock photos "Classic alarm clock 20180513.jpg" (CC BY-SA 4.0), "Mechanical Alarm Clock.jpg" (CC BY-SA 4.0), "Old alarm clock on the bookshelf - 50233824038.jpg" (CC BY 2.0, credit needed). Stopwatch and clock video searches pending. Mixkit/Coverr free clips = custom licences, check terms before use.
