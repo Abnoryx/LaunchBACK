@@ -7,7 +7,7 @@ from the Psychology Trick reel, original order S1..S10).
 usage: python3 -m gen.groups                         list groups (scenes, seconds, text capacity, previews)
        python3 -m gen.groups <script.txt> [--group G] [--out plan.json]   rank groups for the script, plan the best (or G)"""
 import glob, json, os, re, sys
-from . import library as LIB
+from . import library as LIB, usage as USE
 HERE = os.path.dirname(os.path.abspath(__file__)); TPL = LIB.TPL
 
 
@@ -63,8 +63,10 @@ def main(a):
         cap = max(1, sum(x['words'] for x in G[k])); gs = sum(x['seconds'] or 0 for x in G[k])
         P = plan(script, G, k); fast = sum(1 for q in P if q['seconds'] and len(q['text'].split()) / q['seconds'] > 4) / len(P)   # share of scenes too dense to read
         return 0.5 * abs(math.log(W / cap)) + (abs(math.log(secs / gs)) if gs else 0.5) + fast
-    rank = sorted(G, key=dist)
+    held = {} if '--ignore-cooldown' in a else USE.blocked(); rank = sorted((k for k in G if k not in held), key=dist) or sorted(G, key=dist)
+    if held: print(f'cooldown: {", ".join(f"{k} (free again {v})" for k, v in held.items())} not used (same reel twice in a row; user rule 2026-11-28, --ignore-cooldown to override)')
     print(f'script: {W} words = {secs:.0f}s spoken'); [print(f"  {k:8s} {len(G[k]):2d} scenes {sum(x['seconds'] or 0 for x in G[k]):5.1f}s capacity {sum(x['words'] for x in G[k]):4d} words  distance {dist(k):.2f}") for k in rank]
+    if force in held: print(f'WARNING: {force} was used recently (free again {held[force]}): the user asked not to reuse a reel twice in a row')
     pick = force or rank[0]; P = plan(script, G, pick)
     res = dict(group=pick, ease=cfg.get('ease', 'quad_out'), keep_original_handoffs=True, scenes=P)
     out = a[a.index('--out') + 1] if '--out' in a else None

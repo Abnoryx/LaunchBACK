@@ -56,6 +56,7 @@ silently).
 - Brand care: commentary words only — no third-party logos, mascots or marks.
 
 ## 4. Pick ONE group, plan its exact scenes -> `gen/runs/<name>/plan.json` + selects video + sign-off
+**User rule (2026-11-28): never build two reels in a row from the same source reel's shots.** A reel used by a previous run is blocked for 7 days (`gen/config.json` `group.cooldown_days`); the ledger is `gen/usage.json` (`python3 -m gen.usage` shows it and what is blocked). `gen.groups` skips blocked reels by itself (and warns if you force one; `--ignore-cooldown` only if the user says so). After a run's reel is delivered, record it: `python3 -m gen.usage record <group> <run>`. Reels become available again after a week.
 **User rule (2026-11-24): a reel is built from ONE group of scenes, never a mix.** A group = one rescened video (`python3 -m
 gen.groups` lists them: `sells`, `gen`, `stop`, `psych` = our rebuild of the Psychology Trick). Use most (>= 80%, `gen/config.json`
 `group.min_scene_use`) if not all of its scenes, the EXACT shots, in the ORIGINAL order, so the cuts, handoffs and transitions

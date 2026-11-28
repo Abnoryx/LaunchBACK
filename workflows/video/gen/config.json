@@ -46,6 +46,7 @@
  "ease": "quad_out",
  "group": {
   "min_scene_use": 0.8,
-  "note": "one rescened video per reel; exact scenes in original order; ease from library/style.py EASE_GRAPHS (more graphs later)"
+  "note": "one rescened video per reel; exact scenes in original order; ease from library/style.py EASE_GRAPHS (more graphs later)",
+  "cooldown_days": 7
  }
 }
