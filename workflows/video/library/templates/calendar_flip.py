@@ -145,7 +145,7 @@ def build(proj, name='calendar_flip', **params):
         if i == len(pages) - 1:
             c.effects(L, drop_shadow('#000000', 45, 220, 17, 54))
     # background: dim document behind everything, green room
-    doc = c.footage(proj.still('census_doc.png', 1128, 893), 0, end, three_d_layer=True, blend=SCREEN)
+    doc = c.footage(proj.still(Pm.get('doc', 'census_doc.png'), 1128, 893), 0, end, three_d_layer=True, blend=SCREEN)
     c.transform(doc, pos=[540, 760, 874], scale=[241, 241, 241]); c.effects(doc, tint('#4B4B4B', '#000000'))
     bg = proj.solid(Lo['bg'], name='green room'); c.footage(bg, 0, end)
     c.finalize()

@@ -1,0 +1,39 @@
+inputs uploaded 21s
+running https://www.kaggle.com/code/abrahamfernadez/render-job
+STATUS running after 20s
+STATUS complete after 425s
+complete in 430s -> /tmp/tmppaxr3mda/res
+frame 21/49 t=7.367 0.90s/frame | frame 31/49 t=7.700 0.85s/frame | frame 41/49 t=8.033 0.84s/frame | warnings: [] |  
+S5 ok 20s 6 t=9.667 0.18s/frame | frame 51/96 t=10.000 0.19s/frame | frame 61/96 t=10.333 0.19s/frame | frame 71/96 t=10.667 0.19s/frame | frame 81/96 t=11.000 0.19s/frame | frame 91/96 t=11.333 0.18s/frame | warnings: [] |  
+S6 ok 22s 200 0.17s/frame | frame 61/110 t=13.533 0.18s/frame | frame 71/110 t=13.867 0.18s/frame | frame 81/110 t=14.200 0.18s/frame | frame 91/110 t=14.533 0.18s/frame | frame 101/110 t=14.867 0.18s/frame | warnings: [] |  
+S7 ok 18s 81/92 t=17.867 0.18s/frame | frame 91/92 t=18.200 0.18s/frame | warnings: ["missing /asset/calendar_2.png","missing /asset/calendar_3.png","missing /asset/calendar_4.png","missing /asset/calendar_5.png"] |  
+S8 ok 17s  t=19.267 0.14s/frame | frame 41/89 t=19.600 0.14s/frame | frame 51/89 t=19.933 0.15s/frame | frame 61/89 t=20.267 0.15s/frame | frame 71/89 t=20.600 0.16s/frame | frame 81/89 t=20.933 0.17s/frame | warnings: [] |  
+S9 ok 17s  t=21.900 0.20s/frame | frame 31/77 t=22.233 0.20s/frame | frame 41/77 t=22.567 0.19s/frame | frame 51/77 t=22.900 0.19s/frame | frame 61/77 t=23.233 0.19s/frame | frame 71/77 t=23.567 0.19s/frame | warnings: [] |  
+S10 ok 23s  t=24.133 0.36s/frame | frame 21/61 t=24.467 0.35s/frame | frame 31/61 t=24.800 0.35s/frame | frame 41/61 t=25.133 0.34s/frame | frame 51/61 t=25.467 0.34s/frame | frame 61/61 t=25.800 0.34s/frame | warnings: [] |  
+S11 ok 32s  t=26.500 0.44s/frame | frame 31/71 t=26.833 0.44s/frame | frame 41/71 t=27.167 0.44s/frame | frame 51/71 t=27.500 0.43s/frame | frame 61/71 t=27.833 0.43s/frame | frame 71/71 t=28.167 0.43s/frame | warnings: [] |  
+S12 ok 22s  t=29.200 0.26s/frame | frame 41/89 t=29.533 0.25s/frame | frame 51/89 t=29.867 0.24s/frame | frame 61/89 t=30.200 0.23s/frame | frame 71/89 t=30.533 0.23s/frame | frame 81/89 t=30.867 0.23s/frame | warnings: [] |  
+S13 ok 10s  t=31.167 0.28s/frame | frame 11/51 t=31.500 0.15s/frame | frame 21/51 t=31.833 0.15s/frame | frame 31/51 t=32.167 0.15s/frame | frame 41/51 t=32.500 0.15s/frame | frame 51/51 t=32.833 0.15s/frame | warnings: [] |  
+S14 ok 10s  t=32.867 0.28s/frame | frame 11/58 t=33.200 0.16s/frame | frame 21/58 t=33.533 0.15s/frame | frame 31/58 t=33.867 0.15s/frame | frame 41/58 t=34.200 0.16s/frame | frame 51/58 t=34.533 0.15s/frame | warnings: [] |  
+done ['S11.mp4', 'S8.mp4', 'S7.mp4', 'S3.mp4', 'S1.mp4', 'S12.mp4', 'S6.mp4', 'S9.mp4', 'S10.mp4', 'S14.mp4', 'forty_r1_540.mp4', 'S13.mp4', 'S5.mp4', 'S2.mp4', 'S4.mp4']
+/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\|'
+  cells[i][c] = re.sub('\\\\\|', '|', cell)
+/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\_'
+  text = re.sub(r'_', '\_', text) # Escape underscores in display text
+[NbConvertApp] Converting notebook __script__.ipynb to html
+[NbConvertApp] Writing 295287 bytes to __results__.html
+
+-> /home/user/LaunchBACK/workflows/video/gen/runs/forty_hours/r1/S5.mp4
+-> /home/user/LaunchBACK/workflows/video/gen/runs/forty_hours/r1/forty_r1_540.mp4
+-> /home/user/LaunchBACK/workflows/video/gen/runs/forty_hours/r1/S1.mp4
+-> /home/user/LaunchBACK/workflows/video/gen/runs/forty_hours/r1/S6.mp4
+-> /home/user/LaunchBACK/workflows/video/gen/runs/forty_hours/r1/S2.mp4
+-> /home/user/LaunchBACK/workflows/video/gen/runs/forty_hours/r1/S3.mp4
+-> /home/user/LaunchBACK/workflows/video/gen/runs/forty_hours/r1/S11.mp4
+-> /home/user/LaunchBACK/workflows/video/gen/runs/forty_hours/r1/S13.mp4
+-> /home/user/LaunchBACK/workflows/video/gen/runs/forty_hours/r1/S9.mp4
+-> /home/user/LaunchBACK/workflows/video/gen/runs/forty_hours/r1/S7.mp4
+-> /home/user/LaunchBACK/workflows/video/gen/runs/forty_hours/r1/S10.mp4
+-> /home/user/LaunchBACK/workflows/video/gen/runs/forty_hours/r1/S8.mp4
+-> /home/user/LaunchBACK/workflows/video/gen/runs/forty_hours/r1/S14.mp4
+-> /home/user/LaunchBACK/workflows/video/gen/runs/forty_hours/r1/S12.mp4
+-> /home/user/LaunchBACK/workflows/video/gen/runs/forty_hours/r1/S4.mp4

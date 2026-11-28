@@ -28,11 +28,11 @@ def merge(a, b):
     return out
 
 
-def docs_comp(proj, end):
+def docs_comp(proj, end, census_f='census_doc.png', chart_f='chart_doc.png'):
     """The three documents in depth: Tint black->colour / white->black, blurred, screened."""
     d = proj.comp('docs', dur=end)
-    chart = proj.still('chart_doc.png', 932, 600)
-    census = proj.still('census_doc.png', 1128, 893)
+    chart = proj.still(chart_f, 932, 600)
+    census = proj.still(census_f, 1128, 893)
     for name, f, pos, sc, col, blur in (('chart far', chart, [60.1, 1932.7, 1567], 297 / 2, '#009329', 10.4),
                                         ('chart near', chart, [990.4, 1480.8, 493], 297 / 2, '#046900', 14.6),
                                         ('census', census, [836.5, 486.1, 1097], 262, '#606060', 14.5)):
@@ -112,7 +112,7 @@ def build(proj, name='dark_docs', **params):
     c.transform(wm, pos=[541.5, 199.9])
     fp = c.text('fineprint', Pm['fineprint'], 0, end, S.FONTS['fine_serif'], 30, '#4A5F45', justify=7415, box=[610, 162], leading=28)
     c.transform(fp, pos=[561, 1629.6])
-    docs = docs_comp(proj, end)
+    docs = docs_comp(proj, end, *Pm.get('docs', ('census_doc.png', 'chart_doc.png')))
     dl = c.precomp(docs, 0, end, three_d_layer=True, collapse_transformation=True)
     c.transform(dl, pos=[926, 960, 0], ori=[355.2, 346.56, 0])
     bg = proj.solid('#070E08', name='bg'); c.footage(bg, 0, end)
