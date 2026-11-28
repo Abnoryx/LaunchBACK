@@ -17,7 +17,7 @@ const doc=pg=>js(pg,()=>JSON.parse(JSON.stringify(window.__docs['pins/reel']||nu
 for(const [name,vp] of [['desktop',{width:1280,height:800}],['phone',{width:390,height:664}]]){const T=m=>name+': '+m;
  /* A-G: the user's complaints, in one session */
  let pg=await open(b,vp);
- ok(await js(pg,()=>document.querySelectorAll('.ri.ready').length)===20,T('all 20 thumbnails load'));
+ {const [rd,tot]=await js(pg,()=>[document.querySelectorAll('.ri.ready').length,document.querySelectorAll('.ri').length]);ok(rd===tot&&tot>0,T(`all ${tot} thumbnails load`));}
  await pg.click('#bPin');await seek(pg,.1);await tap(pg,.3,.3);await seek(pg,.3);await tap(pg,.6,.45);await seek(pg,.5);await tap(pg,.4,.7);await seek(pg,.8);await tap(pg,.7,.25);
  ok(await pg.locator('#plist .row').count()===4,T('4 pins listed'));
  await seek(pg,.95);await pg.waitForTimeout(300);

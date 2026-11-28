@@ -1,3 +1,12 @@
 {
-  "michelin_gen": {"url": "https://claude.ai/artifact/6xxWDVcMFoMxEH9b1iZHJ6", "title": "Michelin reel", "kind": "gen"}
+ "michelin_gen": {
+  "url": "https://claude.ai/artifact/6xxWDVcMFoMxEH9b1iZHJ6",
+  "title": "Michelin reel",
+  "kind": "gen"
+ },
+ "forty_hours": {
+  "url": "https://claude.ai/artifact/XJWVAnRDVeG83tZPc5yue8",
+  "title": "Forty hours reel",
+  "kind": "gen"
+ }
 }
