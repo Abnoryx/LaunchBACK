@@ -1,0 +1,2 @@
+# Posted / scheduled (PostZen, Instagram @launch.back)
+- 2026-11-28: Reel `michelin_gen_r3_1080p.mp4` scheduled for **Mon 2026-11-30 14:00 UTC** (9 AM New York, 2 PM London, 7:30 PM India). PostZen post id `m1799vz771ges3j96fc2g4q5m18k3zzv`, status scheduled. Audience: English-speaking micro creators. Caption ends with "(Some visuals are AI-generated.)". Known open items at scheduling time: S07 B-roll is AI, S14 caption clipped at the edges, reel is silent.
