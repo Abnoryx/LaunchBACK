@@ -23,6 +23,28 @@ SWAP = {'1429': os.path.join(A, 'fh_alarm_clock.png'),          # Seth Godin pho
         '959': os.path.join(A, 'fh_versions_doc.png'), '1692': os.path.join(A, 'fh_versions_doc.png'), '1686': os.path.join(A, 'fh_versions_doc.png'),
         '1696': os.path.join(A, 'fh_wave_chart.png'), '1694': os.path.join(REAL, 'alarm_face.jpg'), '1656': os.path.join(REAL, 'alarm_face.jpg')}
 RED = os.path.join(W, 'red'); os.makedirs(RED, exist_ok=True)
+# Fit every swap to the ORIGINAL footage's width x height, so the slot's scale doesn't stretch or oversize it (user pins r1: 'text looks
+# stretched', 'logo too big, gets cut off'). photos -> cover crop; documents -> contain on white; cutouts/logos -> contain on transparent at FILL.
+FIT = {'1914': ('contain', 0.55), '1969': ('contain', 0.55), '544': ('contain', 0.7), '2385': ('contain', 0.7), '534': ('contain', 0.7), '532': ('contain', 0.7),
+       '530': ('contain', 0.7), '536': ('contain', 0.7), '538': ('contain', 0.7), '542': ('contain', 0.7), '1429': ('contain', 0.85), '1409': ('contain', 0.95),
+       '959': ('doc', 0.92), '1692': ('doc', 0.92), '1686': ('doc', 0.92), '1696': ('doc', 0.92), '805': ('cover', 1), '1694': ('cover', 1), '1656': ('cover', 1),
+       '1663': ('cover', 1), '1690': ('cover', 1), '1674': ('cover', 1)}
+def fitted(fid, src, w, h):
+    mode, k = FIT.get(fid, ('cover', 1)); o = os.path.join(RED, f'fit_{fid}.png')
+    if os.path.exists(o): return o
+    im = Image.open(src).convert('RGBA'); iw, ih = im.size
+    if mode == 'cover':
+        sc = max(w / iw, h / ih); im = im.resize((round(iw * sc), round(ih * sc)), Image.LANCZOS)
+        x0, y0 = (im.size[0] - w) // 2, (im.size[1] - h) // 2; im.crop((x0, y0, x0 + w, y0 + h)).save(o); return o
+    sc = min(w * k / iw, h * k / ih); im = im.resize((max(1, round(iw * sc)), max(1, round(ih * sc))), Image.LANCZOS)
+    c = Image.new('RGBA', (w, h), (255, 255, 255, 255) if mode == 'doc' else (0, 0, 0, 0)); c.alpha_composite(im, ((w - im.size[0]) // 2, (h - im.size[1]) // 2)); c.save(o); return o
+def red_gif(fid, p):   # animated gif (loading dots): blue/green/purple frames -> red
+    from PIL import ImageSequence
+    o = os.path.join(RED, f'red_{fid}.gif')
+    if not os.path.exists(o):
+        im = Image.open(p); fr = [to_red(f.copy()) for f in ImageSequence.Iterator(im)]
+        fr[0].save(o, save_all=True, append_images=fr[1:], loop=0, duration=im.info.get('duration', 40), disposal=2)
+    return o
 def to_red(im):
     a = im.convert('RGBA'); hsv = np.array(a.convert('RGB').convert('HSV')); h = hsv[..., 0].astype(float) * 360 / 255
     m = (hsv[..., 1] > 64) & (h >= 45) & (h <= 320); hsv[..., 0][m] = 251
@@ -66,9 +88,11 @@ for k, v in lut.items():
     for i in range(0, len(d) - 2, 3):
         if d[i + 1] > d[i] + 8: d[i], d[i + 1] = d[i + 1], d[i]
 json.dump(lut, open(os.path.join(RED, 'luts_red.json'), 'w'))
+OFF = {10: [('scene 10', 2)]}   # r1 pin: the light-blue highlight on 'pitching' became a random red box
 slots = json.load(open(os.path.join(HERE, 'slots.json'))); entries = []; unmapped = {}
 for f in sorted(glob.glob(f'{TPL}/templates/shot_*.json')):
-    n = int(re.search(r'shot_(\d+)', f).group(1)); t = json.load(open(f))['template']; texts = {}
+    n = int(re.search(r'shot_(\d+)', f).group(1)); full = json.load(open(f)); t = full['template']; texts = {}
+    dims = {str(q['id']): (q.get('width'), q.get('height')) for q in full['footage']}
     for x in t['params']['texts']:
         k = x['text'].strip()
         if k in slots: texts[x['id']] = x['text'].replace(k, slots[k])
@@ -77,8 +101,9 @@ for f in sorted(glob.glob(f'{TPL}/templates/shot_*.json')):
     foot = {}
     for x in t['params']['footage']:
         fid = str(x['id']); pth = os.path.join(TPL, 'assets', x['name'])
-        if fid in SWAP: foot[fid] = SWAP[fid]
-        elif re.search(r'earnera|spotify|google|gemini|gmail|seth', x['name'], re.I): foot[fid] = MARK
+        if fid in SWAP: foot[fid] = fitted(fid, SWAP[fid], *dims[fid]) if dims.get(fid, (None,))[0] else SWAP[fid]
+        elif fid == '745': foot[fid] = red_gif(fid, pth)
+        elif re.search(r'earnera|spotify|google|gemini|gmail|seth', x['name'], re.I): foot[fid] = fitted(fid, MARK, *dims[fid]) if dims.get(fid, (None,))[0] else MARK
         elif fid == '689':   # 'Emerald depth' palette screenshot: dark greens the hue test misses -> forced red copy
             o = os.path.join(RED, 'red_689.png')
             if not os.path.exists(o):
@@ -94,7 +119,12 @@ for f in sorted(glob.glob(f'{TPL}/templates/shot_*.json')):
     out = os.path.join(W, f'proj_{n:02d}.json')
     r = subprocess.run([sys.executable, '-m', 'extract.aep_template', 'apply', f, pj, out], cwd=VID, capture_output=True, text=True)
     if r.returncode: sys.exit(r.stderr)
-    pd = json.load(open(out)); greens_to_red(pd['comps']); greens_to_red([f.get('color') for f in pd['footage'] if f.get('color')])
+    pd = json.load(open(out))
+    for cn, li in OFF.get(n, []):   # layers that only made sense with the original words (user pins)
+        for c in pd['comps']:
+            for l in c['layers']:
+                if c['name'] == cn and l['i'] == li: l['enabled'] = False
+    greens_to_red(pd['comps']); greens_to_red([f.get('color') for f in pd['footage'] if f.get('color')])
     open(out, 'w').write(json.dumps(pd).replace('KODAK PORTRA 400', 'LAUNCH.BACK 400'))
     a, b = t['window']; entries.append(dict(project=out, comp=t['root'], **{'from': a, 'to': b}, label=f'{n:02d}', footage=['sells', 'red'],
                                             extra=f'{EXTRA} --luts footage/red/luts_red.json'))

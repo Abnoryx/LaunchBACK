@@ -18,7 +18,9 @@ def free_port():
 def engine_args(entry):
     """footage dirs + luts for one scene exactly as the render used them (from the run's render manifest)"""
     foot = [os.path.join(VID, 'library/assets')] + [MAN['footage'][k] for k in entry['footage']]
-    m = re.search(r'--luts\s+(\S+)', entry.get('extra', '')); luts = m.group(1).replace('footage/gen/', '/home/user/tpl/lib/gen/assets/') if m else None
+    m = re.search(r'--luts\s+(\S+)', entry.get('extra', '')); luts = m.group(1) if m else None
+    if luts:   # 'footage/<key>/x' -> that manifest footage dir (any run, not only gen)
+        mk = re.match(r'footage/([^/]+)/(.*)', luts); luts = os.path.join(MAN['footage'][mk.group(1)], mk.group(2)) if mk and mk.group(1) in MAN['footage'] else luts.replace('footage/gen/', '/home/user/tpl/lib/gen/assets/')
     return ','.join(foot), luts
 
 

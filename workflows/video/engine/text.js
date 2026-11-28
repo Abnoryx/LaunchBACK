@@ -238,7 +238,7 @@ export function textAnimation(layer, tComp, ctx) {
   }
   return { text, font, size, fill, tracking, chars, justify: base.justification ?? 7413, leading: base.leading,
     stroke: base.apply_stroke ? base.stroke_color : null, strokeWidth: base.stroke_width || 0,
-    box: base.box_text ? base.box_text_size : null,
+    box: base.box_text ? base.box_text_size : null, boxPos: base.box_text ? base.box_text_pos : null,
     // AE's own saved layout (line baselines + per-glyph advances) and style runs; valid while the text is unchanged
     lines: base.lines && text === base.text ? base.lines : null, runs: base.runs || null,
     caps: !!base.all_caps, vscale: base.vertical_scale ?? 1, hscale: base.horizontal_scale ?? 1 };
@@ -406,7 +406,10 @@ export function drawText(anim, ss = 2) {
     if (f.embolden) { ctx.lineJoin = 'round'; ctx.strokeStyle = ctx.fillStyle; ctx.lineWidth = size * ss * f.embolden; ctx.strokeText(g.ch, -(g.nw ?? g.w) / 2, 0); }
     ctx.restore();
   }
-  return { canvas: cv, ox: ox / ss, oy: oy / ss, scale: ss, fontInfo: f };
+  // replaced paragraph (box) text: AE lays it out from the box's top-left (first baseline ~0.72 em below the top), not the layer origin
+  const bp = anim.boxPos && anim.box ? anim.boxPos : null;
+  const bdx = bp ? bp[0] + (anim.justify === 7415 ? anim.box[0] / 2 : anim.justify === 7414 ? anim.box[0] : 0) : 0, bdy = bp ? bp[1] + anim.size * 0.72 : 0;
+  return { canvas: cv, ox: ox / ss - bdx, oy: oy / ss - bdy, scale: ss, fontInfo: f };
 }
 
 // One glyph rasterised for per-character 3D: canvas + baseline-centre anchor (in px at scale ss).
