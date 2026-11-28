@@ -60,3 +60,5 @@ Built and tested against a mock GitHub API (list, delete template/asset, edit no
   before the footage was harvested are degraded (missing textures). (5) ElevenLabs key was declined: no VO, timings estimated, no SFX/music yet.
 
 - **Edit Lab (build 11+):** `workflows/video/edit_room/` (README = ship checklist; template.html; build.py; tests/run.cjs). Published artifact https://claude.ai/artifact/6xxWDVcMFoMxEH9b1iZHJ6 for the Michelin run. Every render version must ship with it until the user approves the final.
+
+- **Open for round 3 (2026-11-28):** the Michelin reel's Instagram post/profile cards (assets_gen/out/ui_post.jpg, ui_profile.jpg) and S07 B-roll are still AI-generated; per the new REAL-first rule they need a real launch.back screenshot and a real free clip (Wikimedia was rate-limiting, user to supply or retry later).
